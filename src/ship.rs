@@ -12,16 +12,36 @@ pub struct Ship {
 
 impl TerminalDrawble for Ship {
     fn draw(&self, ctx: &mut AsciiContext) {
+        let front = (
+            f32::cos(self.angle) + self.position.0,
+            f32::sin(self.angle) + self.position.1,
+        );
+        let back = (
+            f32::cos(self.angle + std::f32::consts::PI) + self.position.0,
+            f32::sin(self.angle + std::f32::consts::PI) + self.position.1,
+        );
+        let left = (
+            f32::cos(self.angle + std::f32::consts::PI + std::f32::consts::FRAC_PI_4) * 2.0
+                + self.position.0,
+            f32::sin(self.angle + std::f32::consts::PI + std::f32::consts::FRAC_PI_4) * 2.0
+                + self.position.1,
+        );
+        let right = (
+            f32::cos(self.angle + std::f32::consts::PI - std::f32::consts::FRAC_PI_4) * 2.0
+                + self.position.0,
+            f32::sin(self.angle + std::f32::consts::PI - std::f32::consts::FRAC_PI_4) * 2.0
+                + self.position.1,
+        );
         let triangles = [
             Triangle {
-                points: [(0.0, 0.0), (0.2, 0.1), (0.06, 0.2)],
-                colors: [0.0, 1.0, 0.5],
-                color_palette: ColorPalette::Blue,
+                points: [front, back, left],
+                colors: [0.8, 1.0, 0.2],
+                color_palette: ColorPalette::Gray,
             },
             Triangle {
-                points: [(0.01, 0.01), (0.3, 0.3), (0.01, 0.3)],
-                colors: [0.0, 0.5, 1.0],
-                color_palette: ColorPalette::Magenta,
+                points: [right, back, front],
+                colors: [0.7, 1.0, 0.7],
+                color_palette: ColorPalette::Gray,
             },
         ]
         .to_vec();

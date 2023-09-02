@@ -136,6 +136,7 @@ impl AsciiContext {
                 (tri.points[2], tri.points[0]),
             ]
             .iter()
+            .map(|(a, b)| ((a.0 as u16, a.1 as u16), (b.0 as u16, b.1 as u16)))
             .map(|(a, b)| {
                 //first point is the top one
                 if b.1 < a.1 {
@@ -147,17 +148,22 @@ impl AsciiContext {
                 let a_y = a.1 as usize;
                 let b_y = b.1 as usize;
                 let t = top as usize;
-                for y in a_y..b_y {
-                    let segment = line_segments[y - t];
-                    let computed_x = (a.0 + ((y as f32) - a.1) * (b.0 - a.0) / (b.1 - a.1)) as u16;
-                    if segment.0 == u16::MAX {
-                        line_segments[y - t] = (computed_x, u16::MAX, y as u16);
-                    } else {
-                        line_segments[y - t] = (
-                            computed_x.min(segment.0),
-                            computed_x.max(segment.0),
-                            y as u16,
-                        );
+                if a_y != b_y {
+                    for y in a_y..b_y {
+                        let segment = line_segments[y - t];
+                        let computed_x = (a.0 as f32
+                            + ((y as f32) - a.1 as f32) * (b.0 as f32 - a.0 as f32)
+                                / (b.1 as f32 - a.1 as f32))
+                            as u16;
+                        if segment.0 == u16::MAX {
+                            line_segments[y - t] = (computed_x, u16::MAX, y as u16);
+                        } else {
+                            line_segments[y - t] = (
+                                computed_x.min(segment.0),
+                                computed_x.max(segment.0),
+                                y as u16,
+                            );
+                        }
                     }
                 }
             });

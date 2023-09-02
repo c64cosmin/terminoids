@@ -37,9 +37,9 @@ fn start() {
     let camera = Camera {
         position: (0.0, 0.0),
         size: (term_size.0 as f32, term_size.1 as f32),
-        zoom: 100.0,
+        zoom: 5.0,
     };
-    let turn_speed = 5.0;
+    let turn_speed = 0.05;
 
     loop {
         let frame_time = time::Instant::now();
@@ -97,7 +97,7 @@ fn test() {
     let camera = Camera {
         position: (0.0, 0.0),
         size: (term_size.0 as f32, term_size.1 as f32 / 2.0),
-        zoom: 100.0,
+        zoom: 5.0,
     };
 
     /*
