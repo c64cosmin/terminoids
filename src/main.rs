@@ -9,6 +9,7 @@ use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::ship::*;
+use crate::terminaldrawable::TerminalDrawble;
 use std::io::{stdout, Write};
 use std::{thread, time};
 use termion::async_stdin;
@@ -68,22 +69,8 @@ fn start() {
             }
         }
 
-        scr.add_triangles(
-            &[
-                Triangle {
-                    points: [(0.0, 0.0), (0.2, 0.1), (0.06, 0.2)],
-                    colors: [0.0, 1.0, 0.5],
-                    color_palette: ColorPalette::Blue,
-                },
-                Triangle {
-                    points: [(0.01, 0.01), (0.3, 0.3), (0.01, 0.3)],
-                    colors: [0.0, 0.5, 1.0],
-                    color_palette: ColorPalette::Blue,
-                },
-            ]
-            .to_vec(),
-        );
-
+        scr.flush_triangles();
+        ship.draw(&mut scr);
         scr.draw_triangles(&camera);
 
         scr.display();
