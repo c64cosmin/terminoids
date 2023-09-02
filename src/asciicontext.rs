@@ -261,6 +261,10 @@ impl DrawingContext for AsciiContext {
             .for_each(|tri| self.triangles.push(tri.clone()));
     }
 
+    fn add_point(&mut self, point: &Point) {
+        self.points.push(point.clone());
+    }
+
     fn add_points(&mut self, points: &Vec<Point>) {
         points.iter().for_each(|p| self.points.push(p.clone()));
     }

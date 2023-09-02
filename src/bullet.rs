@@ -26,24 +26,17 @@ impl Bullet {
             bullet_type,
         }
     }
-}
 
-impl TerminalDrawble for Bullets {
-    fn draw(&self, ctx: &mut AsciiContext) {
-        let points = self
-            .bullets
-            .iter()
-            .map(|p| Point {
-                position: p.position,
-                color: match p.bullet_type {
-                    BulletType::Normal => 128.0,
-                },
-                color_palette: match p.bullet_type {
-                    BulletType::Normal => ColorPalette::Custom,
-                },
-            })
-            .collect();
-        ctx.add_points(&points);
+    pub fn get_drawable_point(&self) -> Point {
+        Point {
+            position: self.position,
+            color: match self.bullet_type {
+                BulletType::Normal => 128.0,
+            },
+            color_palette: match self.bullet_type {
+                BulletType::Normal => ColorPalette::Custom,
+            },
+        }
     }
 }
 
@@ -69,6 +62,12 @@ impl Sprite for Bullet {
     }
 }
 
+impl TerminalDrawble for Bullet {
+    fn draw(&self, ctx: &mut AsciiContext) {
+        ctx.add_point(&self.get_drawable_point());
+    }
+}
+
 pub struct Bullets {
     pub bullets: Vec<Bullet>,
 }
@@ -86,5 +85,16 @@ impl Sprite for Bullets {
         self.bullets
             .iter_mut()
             .for_each(|bullet| bullet.update(camera));
+    }
+}
+
+impl TerminalDrawble for Bullets {
+    fn draw(&self, ctx: &mut AsciiContext) {
+        let points = self
+            .bullets
+            .iter()
+            .map(|p| p.get_drawable_point())
+            .collect();
+        ctx.add_points(&points);
     }
 }
