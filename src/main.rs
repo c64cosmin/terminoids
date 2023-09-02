@@ -73,7 +73,7 @@ fn start() {
         size: (term_size.0 as f32, term_size.1 as f32),
         zoom: 2.0,
     };
-    let turn_speed = 0.05;
+    let turn_speed = 0.2;
 
     let mut running = true;
 
@@ -110,7 +110,7 @@ fn start() {
 
         scr.flush_triangles();
         asteroids.iter_mut().enumerate().for_each(|(i, a)| {
-            a.angle += (1.0 + (i as f32) * 0.2) * turn_speed;
+            a.angle += (0.02 + (i as f32) * 0.003) * turn_speed;
             a.draw(&mut scr)
         });
         ship.draw(&mut scr);
