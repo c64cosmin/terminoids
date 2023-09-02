@@ -51,7 +51,7 @@ impl TerminalDrawble for Ship {
 }
 
 impl Sprite for Ship {
-    fn update(&mut self, camera: &Camera) {
+    fn update(&mut self, camera: &Camera, delta: f32) {
         self.position.0 += self.speed.0;
         self.position.1 += self.speed.1;
 

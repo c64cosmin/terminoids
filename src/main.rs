@@ -34,6 +34,7 @@ fn start() {
 
     let frame_fps = 30;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
+    let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
 
     let camera = Camera {
         position: (0.0, 0.0),
@@ -83,7 +84,7 @@ fn start() {
     let mut ship_bullets = Bullets::new();
 
     loop {
-        let frame_time = time::Instant::now();
+        let frame_start = time::Instant::now();
 
         match stdin.next() {
             Some(result) => match result {
@@ -105,8 +106,8 @@ fn start() {
         }
 
         //update
-        ship.update(&camera);
-        ship_bullets.update(&camera);
+        ship.update(&camera, delta_time);
+        ship_bullets.update(&camera, delta_time);
 
         print!("{}", termion::cursor::Goto(1, 1));
 
@@ -127,13 +128,16 @@ fn start() {
 
         print!("{}", termion::cursor::Goto(1, 1));
         print!("{}{}", color::Black.bg_str(), color::White.fg_str());
-        println!("FPS{:?}", frame_time.elapsed());
+        println!("FPS{:?}", frame_start.elapsed());
 
         stdout.flush().unwrap();
 
-        if let Some(i) = (frame_len).checked_sub(frame_time.elapsed()) {
+        if let Some(i) = (frame_len).checked_sub(frame_start.elapsed()) {
             thread::sleep(i)
         }
+
+        delta_time =
+            time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
     }
 
     print!("{}", termion::clear::All);

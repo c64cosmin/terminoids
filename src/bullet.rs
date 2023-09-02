@@ -41,7 +41,7 @@ impl Bullet {
 }
 
 impl Sprite for Bullet {
-    fn update(&mut self, camera: &Camera) {
+    fn update(&mut self, camera: &Camera, delta: f32) {
         self.position.0 += self.speed.0;
         self.position.1 += self.speed.1;
 
@@ -81,10 +81,10 @@ impl Bullets {
 }
 
 impl Sprite for Bullets {
-    fn update(&mut self, camera: &Camera) {
+    fn update(&mut self, camera: &Camera, delta: f32) {
         self.bullets
             .iter_mut()
-            .for_each(|bullet| bullet.update(camera));
+            .for_each(|bullet| bullet.update(camera, delta));
     }
 }
 

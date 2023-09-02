@@ -17,6 +17,7 @@ pub struct Asteroid {
     pub speed: (f32, f32),
     pub angle: f32,
     pub size: AsteroidSize,
+    angle_speed: f32,
 }
 
 impl TerminalDrawble for Asteroid {
@@ -58,7 +59,7 @@ impl TerminalDrawble for Asteroid {
 }
 
 impl Sprite for Asteroid {
-    fn update(&mut self, camera: &Camera) {
+    fn update(&mut self, camera: &Camera, delta: f32) {
         //self.position.0 += self.speed.0;
         //self.position.1 += self.speed.1;
         self.angle += 0.05;
@@ -66,6 +67,22 @@ impl Sprite for Asteroid {
 }
 
 impl Asteroid {
+    fn new(position: (f32, f32)) -> Asteroid {
+        let mut rnd = rand::thread_rnd();
+        let mut angle_speed = rnd.gen();
+        if rand::random() {
+            angle_speed *= -1.0;
+        }
+        angle_speed = angle_speed + 0.02;
+        Asteroid {
+            position,
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Small,
+            angle_speed,
+        }
+    }
+
     fn thrust(&mut self, speed: f32, angle: f32) {
         self.speed.0 += angle.cos() * speed;
         self.speed.1 += angle.sin() * speed;
