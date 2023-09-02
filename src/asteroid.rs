@@ -21,6 +21,7 @@ pub struct Asteroid {
     pub angle: f32,
     pub size: AsteroidSize,
     angle_speed: f32,
+    color_palette: ColorPalette,
 }
 
 impl TerminalDrawble for Asteroid {
@@ -47,7 +48,7 @@ impl TerminalDrawble for Asteroid {
             triangles[i] = Triangle {
                 points: [self.position, point_left, point_right],
                 colors: [0.55, 0.2, 0.3],
-                color_palette: ColorPalette::Cyan,
+                color_palette: self.color_palette.clone(),
             };
         }
         ctx.add_triangles(&triangles);
@@ -116,6 +117,20 @@ impl Asteroid {
             angle: 0.0,
             size: AsteroidSize::Huge,
             angle_speed,
+            color_palette: Asteroid::get_random_color(),
+        }
+    }
+
+    fn get_random_color() -> ColorPalette {
+        let mut rnd = rand::thread_rng();
+        match rnd.gen_range(0..6) {
+            0 => ColorPalette::Red,
+            1 => ColorPalette::Green,
+            2 => ColorPalette::Blue,
+            3 => ColorPalette::Yellow,
+            4 => ColorPalette::Magenta,
+            5 => ColorPalette::Cyan,
+            _ => ColorPalette::Gray,
         }
     }
 
@@ -155,6 +170,7 @@ impl Asteroid {
                     AsteroidSize::Huge => AsteroidSize::Big,
                     _ => AsteroidSize::Tiny,
                 },
+                color_palette: Asteroid::get_random_color(),
             },
             Asteroid {
                 position: self.position,
@@ -171,6 +187,7 @@ impl Asteroid {
                     AsteroidSize::Huge => AsteroidSize::Big,
                     _ => AsteroidSize::Tiny,
                 },
+                color_palette: Asteroid::get_random_color(),
             },
         ]
         .to_vec()
