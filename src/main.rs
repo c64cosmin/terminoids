@@ -55,6 +55,12 @@ fn main() {
         scr.set((x, y), v);
         v += 1;
 
+        for yy in 0..5 {
+            for xx in 0..term_size.0 {
+                scr.set((xx, yy), xx as u8);
+            }
+        }
+
         scr.display();
 
         print!("{}", termion::cursor::Goto(1, 1));

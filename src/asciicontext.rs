@@ -7,6 +7,51 @@ pub struct AsciiContext {
     size: (u16, u16),
 }
 
+/*
+const DEFAULT_COLOR: (&str, &str) = (color::Black.bg_str(), color::White.fg_str());
+const BLUE_PALETTE: [(&str, &str); 4] = [
+    (color::Black.bg_str(), color::Blue.fg_str()),
+    (color::Blue.bg_str(), color::LightBlue.fg_str()),
+    (color::LightBlue.bg_str(), color::LightCyan.fg_str()),
+    (color::LightCyan.bg_str(), color::LightWhite.fg_str()),
+];
+const RED_PALETTE: [(&str, &str); 5] = [
+    (color::Black.bg_str(), color::Red.fg_str()),
+    (color::Red.bg_str(), color::LightRed.fg_str()),
+    (color::LightRed.bg_str(), color::Yellow.fg_str()),
+    (color::Yellow.bg_str(), color::LightYellow.fg_str()),
+    (color::LightYellow.bg_str(), color::LightWhite.fg_str()),
+];
+const GRAY_PALETTE: [(&str, &str); 3] = [
+    (color::Black.bg_str(), color::LightBlack.fg_str()),
+    (color::LightBlack.bg_str(), color::White.fg_str()),
+    (color::White.bg_str(), color::LightWhite.fg_str()),
+];
+*/
+//const CHARS_GRADIENT: [char; 4] = ['\u{2591}', '\u{2592}', '\u{2593}', '\u{2593}'];
+const CHARS_GRADIENT: [char; 4] = ['.', 'x', '%', '#'];
+const DEFAULT_COLOR: (&str, &str) = ("\u{1b}[48;5;0m", "\u{1b}[38;5;7m");
+const PALETTE_RANGE: u8 = 32;
+const BLUE_PALETTE: [(&str, &str); 4] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;4m"),
+    ("\u{1b}[48;5;4m", "\u{1b}[38;5;12m"),
+    ("\u{1b}[48;5;12m", "\u{1b}[38;5;14m"),
+    ("\u{1b}[48;5;14m", "\u{1b}[38;5;15m"),
+];
+
+const RED_PALETTE: [(&str, &str); 4] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;1m"),
+    ("\u{1b}[48;5;1m", "\u{1b}[38;5;9m"),
+    ("\u{1b}[48;5;9m", "\u{1b}[38;5;11m"),
+    ("\u{1b}[48;5;11m", "\u{1b}[38;5;15m"),
+];
+
+const GRAY_PALETTE: [(&str, &str); 3] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;8m"),
+    ("\u{1b}[48;5;8m", "\u{1b}[38;5;7m"),
+    ("\u{1b}[48;5;7m", "\u{1b}[38;5;15m"),
+];
+
 impl AsciiContext {
     pub fn new(size: (u16, u16)) -> AsciiContext {
         let bitmap: Vec<u8> = vec![0; (size.0 * size.1) as usize];
@@ -19,36 +64,63 @@ impl AsciiContext {
         self.bitmap[i as usize] = v;
     }
 
+    fn blue_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let collen: u8 = BLUE_PALETTE.len() as u8;
+        let charrange: u8 = PALETTE_RANGE / CHARS_GRADIENT.len() as u8;
+        let v_col = (luma * collen / PALETTE_RANGE) as usize;
+        let v_char = (((luma * collen) % PALETTE_RANGE) / charrange) as usize;
+        (
+            match v_col {
+                0..=3 => BLUE_PALETTE[v_col],
+                _ => DEFAULT_COLOR,
+            },
+            match v_char {
+                0..=4 => CHARS_GRADIENT[v_char],
+                _ => ' ',
+            },
+        )
+    }
+
+    fn red_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let collen: u8 = RED_PALETTE.len() as u8;
+        let charrange: u8 = PALETTE_RANGE / CHARS_GRADIENT.len() as u8;
+        let v_col = (luma * collen / PALETTE_RANGE) as usize;
+        let v_char = (((luma * collen) % PALETTE_RANGE) / charrange) as usize;
+        (
+            match v_col {
+                0..=4 => RED_PALETTE[v_col],
+                _ => DEFAULT_COLOR,
+            },
+            match v_char {
+                0..=4 => CHARS_GRADIENT[v_char],
+                _ => ' ',
+            },
+        )
+    }
+
+    fn gray_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let collen: u8 = GRAY_PALETTE.len() as u8;
+        let charrange: u8 = PALETTE_RANGE / CHARS_GRADIENT.len() as u8;
+        let v_col = (luma * collen / PALETTE_RANGE) as usize;
+        let v_char = (((luma * collen) % PALETTE_RANGE) / charrange) as usize;
+        (
+            match v_col {
+                0..=2 => GRAY_PALETTE[v_col],
+                _ => DEFAULT_COLOR,
+            },
+            match v_char {
+                0..=4 => CHARS_GRADIENT[v_char],
+                _ => ' ',
+            },
+        )
+    }
+
     fn fill_color(&self, color: u8) {
-        let colors = 8;
-        let chars = 5;
-
-        let (fg, bg) = match (color % (colors * chars)) / chars {
-            0 => (color::Black.bg_str(), color::Blue.fg_str()),
-            1 => (color::Blue.bg_str(), color::LightBlue.fg_str()),
-            2 => (color::LightBlue.bg_str(), color::LightCyan.fg_str()),
-            3 => (color::LightCyan.bg_str(), color::LightWhite.fg_str()),
-            4 => (color::LightWhite.bg_str(), color::LightCyan.fg_str()),
-            5 => (color::LightCyan.bg_str(), color::LightBlue.fg_str()),
-            6 => (color::LightBlue.bg_str(), color::Blue.fg_str()),
-            7 => (color::Blue.bg_str(), color::Black.fg_str()),
-            _ => (color::Black.bg_str(), color::White.fg_str()),
-        };
-
-        let chr = match (color % (colors * chars)) % chars {
-            /*
-            0 => '.',
-            1 => 'x',
-            2 => '%',
-            3 => '#',
-            4 => '@',
-            */
-            0 => ' ',
-            1 => '\u{2591}',
-            2 => '\u{2592}',
-            3 => '\u{2593}',
-            4 => '\u{2593}',
-            _ => 0 as char,
+        let ((fg, bg), chr) = match color {
+            0..=31 => self.blue_palette(color),
+            32..=63 => self.red_palette(color - 32),
+            64..=95 => self.gray_palette(color - 64),
+            _ => (DEFAULT_COLOR, ' '),
         };
 
         print!("{}{}{}", bg, fg, chr);
