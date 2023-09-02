@@ -75,29 +75,24 @@ fn start() {
     };
     let turn_speed = 0.2;
 
-    let mut running = true;
-
-    while running {
+    loop {
         let frame_time = time::Instant::now();
 
-        let mut stdin_flushed = false;
-        while !stdin_flushed {
-            match stdin.next() {
-                Some(result) => match result {
-                    Ok(key) => match key {
-                        Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
-                            running = false;
-                        }
-                        Key::Left => ship.angle -= turn_speed,
-                        Key::Right => ship.angle += turn_speed,
-                        key => {
-                            print!("Key pressed: {:?}", key);
-                        }
-                    },
-                    _ => {}
+        match stdin.next() {
+            Some(result) => match result {
+                Ok(key) => match key {
+                    Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
+                        break;
+                    }
+                    Key::Left => ship.angle -= turn_speed,
+                    Key::Right => ship.angle += turn_speed,
+                    key => {
+                        print!("Key pressed: {:?}", key);
+                    }
                 },
-                _ => stdin_flushed = true,
-            }
+                _ => {}
+            },
+            _ => {}
         }
 
         print!("{}", termion::cursor::Goto(1, 1));
@@ -113,6 +108,13 @@ fn start() {
             a.angle += (0.02 + (i as f32) * 0.003) * turn_speed;
             a.draw(&mut scr)
         });
+        if ship.angle < 0.0 {
+            ship.angle += std::f32::consts::PI * 2.0;
+        }
+
+        if ship.angle > std::f32::consts::PI * 2.0 {
+            ship.angle -= std::f32::consts::PI * 2.0;
+        }
         ship.draw(&mut scr);
         scr.draw_triangles(&camera);
 
