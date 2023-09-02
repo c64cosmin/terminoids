@@ -15,6 +15,6 @@ pub enum ColorPalette {
 #[derive(Clone)]
 pub struct Triangle {
     pub points: [Point; 3],
+    pub colors: [ColorLuma; 3],
     pub color_palette: ColorPalette,
-    pub color_intensity: ColorLuma,
 }
