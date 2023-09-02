@@ -18,14 +18,14 @@ pub struct Bullet {
 impl Bullet {
     pub fn new(position: (f32, f32), angle: f32, bullet_type: BulletType) -> Bullet {
         let linear_speed = match bullet_type {
-            BulletType::Normal => 8.0,
+            BulletType::Normal => 15.0,
         };
         let speed = (angle.cos() * linear_speed, angle.sin() * linear_speed);
         Bullet {
             position,
             speed,
             bullet_type,
-            life: 0.0,
+            life: 2.0,
         }
     }
 
@@ -62,11 +62,11 @@ impl Sprite for Bullet {
             self.position.1 = -bounds.1;
         }
 
-        self.life += delta;
+        self.life -= delta;
     }
 
     fn is_alive(&self) -> bool {
-        self.life < 4.0
+        self.life > 0.0
     }
 }
 

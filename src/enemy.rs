@@ -1,5 +1,6 @@
 use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
+use crate::bullet::*;
 use crate::drawables::*;
 use crate::ship::*;
 use crate::sprite::*;
@@ -7,7 +8,7 @@ use crate::terminaldrawable::*;
 use rand::Rng;
 
 pub struct Enemies {
-    asteroids: Vec<Asteroid>,
+    pub asteroids: Vec<Asteroid>,
     time: f32,
 }
 
@@ -47,6 +48,34 @@ impl Enemies {
                 self.time = 5.0;
             }
         }
+    }
+
+    pub fn collide(&mut self, bullets: &mut Bullets) {
+        self.damage::<Asteroid>(&self.asteroids, bullets)
+            .iter()
+            .for_each(|&i| {
+                self.asteroids.remove(i);
+            });
+    }
+
+    fn damage<T: Collidable>(&self, collection: &Vec<T>, bullets: &mut Bullets) -> Vec<usize> {
+        let mut damaged = Vec::<usize>::with_capacity(10);
+        collection.iter().enumerate().for_each(|(i, obj)| {
+            let mut collided = false;
+
+            bullets.bullets.iter_mut().for_each(|bullet| {
+                if obj.collide(bullet.position) {
+                    collided = true;
+                    bullet.life = 0.0;
+                }
+            });
+
+            if collided {
+                damaged.push(i);
+            }
+        });
+
+        damaged
     }
 }
 

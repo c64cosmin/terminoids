@@ -23,14 +23,7 @@ pub struct Asteroid {
 
 impl TerminalDrawble for Asteroid {
     fn draw(&self, ctx: &mut AsciiContext) {
-        let (sides, radius) = match self.size {
-            AsteroidSize::Tiny => (3, 1.9),
-            AsteroidSize::Small => (4, 2.1),
-            AsteroidSize::Medium => (5, 2.6),
-            AsteroidSize::Big => (6, 3.3),
-            AsteroidSize::Huge => (7, 4.0),
-        };
-
+        let (sides, radius) = self.get_description();
         let mut triangles = vec![EMPTY_TRIANGLE; sides];
 
         let n = sides as f32;
@@ -95,6 +88,15 @@ impl Sprite for Asteroid {
     }
 }
 
+impl Collidable for Asteroid {
+    fn collide(&self, p: Vec2) -> bool {
+        if distance(self.position, p) < self.get_description().1 {
+            return true;
+        }
+        return false;
+    }
+}
+
 impl Asteroid {
     pub fn new(position: (f32, f32)) -> Asteroid {
         let mut rnd = rand::thread_rng();
@@ -112,6 +114,16 @@ impl Asteroid {
             angle: 0.0,
             size: AsteroidSize::Huge,
             angle_speed,
+        }
+    }
+
+    fn get_description(&self) -> (usize, f32) {
+        match self.size {
+            AsteroidSize::Tiny => (3, 1.9),
+            AsteroidSize::Small => (4, 2.1),
+            AsteroidSize::Medium => (5, 2.6),
+            AsteroidSize::Big => (6, 3.3),
+            AsteroidSize::Huge => (7, 4.0),
         }
     }
 }
