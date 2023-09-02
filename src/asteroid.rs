@@ -103,11 +103,14 @@ impl Asteroid {
                 true => -1.0,
                 false => 1.0,
             };
+        let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
+        let move_speed = rnd.gen::<f32>() * 0.5 + 0.1;
+        let speed: Vec2 = (angle.cos() * move_speed, angle.sin() * move_speed);
         Asteroid {
             position,
-            speed: (0.0, 0.0),
+            speed,
             angle: 0.0,
-            size: AsteroidSize::Small,
+            size: AsteroidSize::Huge,
             angle_speed,
         }
     }

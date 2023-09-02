@@ -87,6 +87,10 @@ pub fn distance(a: Vec2, b: Vec2) -> f32 {
     f32::sqrt((a.0 - b.0).powi(2) + (a.1 - b.1).powi(2))
 }
 
+pub fn length(a: Vec2) -> f32 {
+    f32::sqrt(a.0 * a.0 + a.1 * a.1)
+}
+
 #[derive(Clone, Debug)]
 pub struct Camera {
     pub position: Vec2,

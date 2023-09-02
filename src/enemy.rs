@@ -26,7 +26,7 @@ impl Enemies {
     pub fn update_with_ship(&mut self, camera: &Camera, delta: f32, ship: &Ship) {
         self.update(camera, delta);
 
-        if self.time > 5.0 {
+        if self.time < 0.0 {
             let mut rnd = rand::thread_rng();
             let bounds = camera.get_bounds();
             let position: (f32, f32) = (
@@ -44,7 +44,7 @@ impl Enemies {
 
             if distance(ship.position, position) > 7.0 {
                 self.asteroids.push(Asteroid::new(position));
-                self.time = 0.0;
+                self.time = 5.0;
             }
         }
     }
@@ -58,7 +58,7 @@ impl TerminalDrawble for Enemies {
 
 impl Sprite for Enemies {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        self.time += delta;
+        self.time -= delta;
         self.asteroids
             .iter_mut()
             .for_each(|a| a.update(camera, delta));
