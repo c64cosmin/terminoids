@@ -137,15 +137,15 @@ impl Asteroid {
                 false => 1.0,
             };
         let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
-        let move_speed = rnd.gen::<f32>() * 1.5 + 1.5;
-        let speed: Vec2 = (
-            angle.cos() * move_speed + self.speed.0,
-            angle.sin() * move_speed + self.speed.1,
-        );
+        let angle2 = angle + std::f32::consts::FRAC_PI_2;
+        let move_speed = rnd.gen::<f32>() * 1.5 + 0.5;
         [
             Asteroid {
                 position: self.position,
-                speed,
+                speed: (
+                    angle.cos() * move_speed + self.speed.0,
+                    angle.sin() * move_speed + self.speed.1,
+                ),
                 angle,
                 angle_speed,
                 size: match self.size {
@@ -158,7 +158,10 @@ impl Asteroid {
             },
             Asteroid {
                 position: self.position,
-                speed,
+                speed: (
+                    angle2.cos() * move_speed + self.speed.0,
+                    angle2.sin() * move_speed + self.speed.1,
+                ),
                 angle,
                 angle_speed,
                 size: match self.size {

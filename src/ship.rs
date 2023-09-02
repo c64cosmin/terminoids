@@ -9,6 +9,7 @@ pub struct Ship {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub angle: f32,
+    pub fire_cooldown: f32,
 }
 
 impl TerminalDrawble for Ship {
@@ -81,6 +82,8 @@ impl Sprite for Ship {
         if self.angle > std::f32::consts::PI * 2.0 {
             self.angle -= std::f32::consts::PI * 2.0;
         }
+
+        self.fire_cooldown -= delta;
     }
 
     fn is_alive(&self) -> bool {
@@ -95,8 +98,11 @@ impl Ship {
     }
 
     pub fn fire(&mut self, bullets: &mut Bullets) {
-        bullets
-            .bullets
-            .push(Bullet::new(self.position, self.angle, BulletType::Normal));
+        if self.fire_cooldown <= 0.0 {
+            self.fire_cooldown = 0.5;
+            bullets
+                .bullets
+                .push(Bullet::new(self.position, self.angle, BulletType::Normal));
+        }
     }
 }

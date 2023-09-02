@@ -50,6 +50,7 @@ fn start() {
         position: (0.0, 0.0),
         speed: (0.0, 0.0),
         angle: 0.0,
+        fire_cooldown: 0.0,
     };
     let mut ship_bullets = Bullets::new();
 
