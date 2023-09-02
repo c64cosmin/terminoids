@@ -166,7 +166,16 @@ impl AsciiContext {
                 for x in *x0..=*x1 {
                     let color =
                         (get_barycentric((x as f32, *y as f32), &tri) * PALETTE_RANGE as f32) as u8;
-                    self.set((x, *y), color);
+                    let color_offset = match tri.color_palette {
+                        ColorPalette::Red => 1,
+                        ColorPalette::Green => 17,
+                        ColorPalette::Blue => 33,
+                        ColorPalette::Yellow => 49,
+                        ColorPalette::Magenta => 65,
+                        ColorPalette::Cyan => 81,
+                        ColorPalette::Gray => 97,
+                    };
+                    self.set((x, *y), color + color_offset);
                 }
             });
         });
