@@ -58,7 +58,7 @@ impl TerminalDrawble for Asteroid {
 }
 
 impl Sprite for Asteroid {
-    fn update(&mut self) {
+    fn update(&mut self, camera: &Camera) {
         //self.position.0 += self.speed.0;
         //self.position.1 += self.speed.1;
         self.angle += 0.05;

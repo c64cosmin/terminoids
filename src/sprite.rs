@@ -1,3 +1,5 @@
+use crate::drawables::Camera;
+
 pub trait Sprite {
-    fn update(&mut self);
+    fn update(&mut self, camera: &Camera);
 }

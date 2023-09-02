@@ -82,6 +82,7 @@ pub const GRAY_PALETTE: [(&str, &str); 3] = [
 pub type Vec2 = (f32, f32);
 pub type ColorLuma = f32;
 
+#[derive(Clone, Debug)]
 pub struct Camera {
     pub position: Vec2,
     pub size: Vec2,
@@ -125,3 +126,15 @@ pub const EMPTY_TRIANGLE: Triangle = Triangle {
     colors: [0.0, 0.0, 0.0],
     color_palette: ColorPalette::Red,
 };
+
+impl Camera {
+    pub fn get_bounds(&self) -> (f32, f32) {
+        let aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
+        let char_ratio: (f32, f32) = (17.0 / 8.0, 1.0);
+        let default_height: f32 = self.size.1 as f32 / 63.0;
+        (
+            self.size.0 / default_height / self.zoom / char_ratio.0 / 2.0,
+            self.size.1 / default_height / self.zoom / char_ratio.1 / 2.0,
+        )
+    }
+}

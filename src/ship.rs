@@ -8,6 +8,7 @@ pub struct Ship {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub angle: f32,
+    pub bullets: Vec<Point>,
 }
 
 impl TerminalDrawble for Ship {
@@ -50,15 +51,41 @@ impl TerminalDrawble for Ship {
 }
 
 impl Sprite for Ship {
-    fn update(&mut self) {
+    fn update(&mut self, camera: &Camera) {
         self.position.0 += self.speed.0;
         self.position.1 += self.speed.1;
+
+        let damp = 0.96;
+        self.speed.0 *= damp;
+        self.speed.1 *= damp;
+
+        let bounds = camera.get_bounds();
+        if self.position.0 < -bounds.0 {
+            self.position.0 = bounds.0;
+        }
+        if self.position.0 > bounds.0 {
+            self.position.0 = -bounds.0;
+        }
+        if self.position.1 < -bounds.1 {
+            self.position.1 = bounds.1;
+        }
+        if self.position.1 > bounds.1 {
+            self.position.1 = -bounds.1;
+        }
     }
 }
 
 impl Ship {
-    fn thrust(&mut self, speed: f32, angle: f32) {
-        self.speed.0 += angle.cos() * speed;
-        self.speed.1 += angle.sin() * speed;
+    pub fn thrust(&mut self, speed: f32) {
+        self.speed.0 += self.angle.cos() * speed;
+        self.speed.1 += self.angle.sin() * speed;
+    }
+
+    pub fn fire(&mut self) {
+        self.bullets.push(Point {
+            position: self.position,
+            color: 1.0,
+            color_palette: ColorPalette::Gray,
+        });
     }
 }

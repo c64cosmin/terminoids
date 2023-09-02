@@ -11,6 +11,7 @@ use crate::asteroid::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::ship::*;
+use crate::sprite::Sprite;
 use crate::terminaldrawable::TerminalDrawble;
 use std::io::{stdout, Write};
 use std::{thread, time};
@@ -67,6 +68,7 @@ fn start() {
         position: (0.0, 0.0),
         speed: (0.0, 0.0),
         angle: 0.0,
+        bullets: Vec::new(),
     };
     let camera = Camera {
         position: (0.0, 0.0),
@@ -86,6 +88,8 @@ fn start() {
                     }
                     Key::Left => ship.angle -= turn_speed,
                     Key::Right => ship.angle += turn_speed,
+                    Key::Up => ship.thrust(0.1),
+                    Key::Char(' ') => ship.fire(),
                     key => {
                         print!("Key pressed: {:?}", key);
                     }
@@ -94,6 +98,9 @@ fn start() {
             },
             _ => {}
         }
+
+        //update
+        ship.update(&camera);
 
         print!("{}", termion::cursor::Goto(1, 1));
 
@@ -122,7 +129,10 @@ fn start() {
 
         print!("{}", termion::cursor::Goto(1, 1));
         print!("{}{}", color::Black.bg_str(), color::White.fg_str());
-        print!("FPS{:?}", frame_time.elapsed());
+        println!("FPS{:?}", frame_time.elapsed());
+        println!("Position{:?}", ship.position);
+        println!("Camera{:?}", camera);
+        println!("Camera{:?}", camera.get_bounds());
 
         stdout.flush().unwrap();
 
