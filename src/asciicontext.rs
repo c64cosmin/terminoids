@@ -210,6 +210,11 @@ impl DrawingContext for AsciiContext {
         self.bitmap = vec![0; (size.0 * size.1) as usize];
     }
 
+    fn clear(&mut self) {
+        self.bitmap.clear();
+        self.bitmap.resize((self.size.0 * self.size.1) as usize, 0);
+    }
+
     fn flush_triangles(&mut self) {
         self.triangles.resize(0, EMPTY_TRIANGLE);
     }

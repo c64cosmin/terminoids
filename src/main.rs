@@ -104,24 +104,13 @@ fn start() {
 
         print!("{}", termion::cursor::Goto(1, 1));
 
-        for x in 0..term_size.0 {
-            for y in 0..term_size.1 {
-                scr.set((x, y), 0);
-            }
-        }
+        scr.clear();
 
         scr.flush_triangles();
         asteroids.iter_mut().enumerate().for_each(|(i, a)| {
             a.angle += (0.02 + (i as f32) * 0.003) * turn_speed;
             a.draw(&mut scr)
         });
-        if ship.angle < 0.0 {
-            ship.angle += std::f32::consts::PI * 2.0;
-        }
-
-        if ship.angle > std::f32::consts::PI * 2.0 {
-            ship.angle -= std::f32::consts::PI * 2.0;
-        }
         ship.draw(&mut scr);
         scr.draw_triangles(&camera);
 

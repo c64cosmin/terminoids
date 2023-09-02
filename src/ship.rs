@@ -59,6 +59,15 @@ impl Sprite for Ship {
         self.speed.0 *= damp;
         self.speed.1 *= damp;
 
+        //angle bounds
+        if self.angle < 0.0 {
+            self.angle += std::f32::consts::PI * 2.0;
+        }
+        if self.angle > std::f32::consts::PI * 2.0 {
+            self.angle -= std::f32::consts::PI * 2.0;
+        }
+
+        //screen bounds
         let bounds = camera.get_bounds();
         if self.position.0 < -bounds.0 {
             self.position.0 = bounds.0;
