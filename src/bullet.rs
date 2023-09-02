@@ -1,0 +1,90 @@
+use crate::asciicontext::AsciiContext;
+use crate::drawables::*;
+use crate::drawingcontext::DrawingContext;
+use crate::sprite::*;
+use crate::terminaldrawable::*;
+
+pub enum BulletType {
+    Normal,
+}
+
+pub struct Bullet {
+    pub position: (f32, f32),
+    pub speed: (f32, f32),
+    pub bullet_type: BulletType,
+}
+
+impl Bullet {
+    pub fn new(position: (f32, f32), angle: f32, bullet_type: BulletType) -> Bullet {
+        let linear_speed = match bullet_type {
+            BulletType::Normal => 0.1,
+        };
+        let speed = (angle.cos() * linear_speed, angle.sin() * linear_speed);
+        Bullet {
+            position,
+            speed,
+            bullet_type,
+        }
+    }
+}
+
+impl TerminalDrawble for Bullets {
+    fn draw(&self, ctx: &mut AsciiContext) {
+        let points = self
+            .bullets
+            .iter()
+            .map(|p| Point {
+                position: p.position,
+                color: match p.bullet_type {
+                    BulletType::Normal => 128.0,
+                },
+                color_palette: match p.bullet_type {
+                    BulletType::Normal => ColorPalette::Custom,
+                },
+            })
+            .collect();
+        ctx.add_points(&points);
+    }
+}
+
+impl Sprite for Bullet {
+    fn update(&mut self, camera: &Camera) {
+        self.position.0 += self.speed.0;
+        self.position.1 += self.speed.1;
+
+        //screen bounds
+        let bounds = camera.get_bounds();
+        if self.position.0 < -bounds.0 {
+            self.position.0 = bounds.0;
+        }
+        if self.position.0 > bounds.0 {
+            self.position.0 = -bounds.0;
+        }
+        if self.position.1 < -bounds.1 {
+            self.position.1 = bounds.1;
+        }
+        if self.position.1 > bounds.1 {
+            self.position.1 = -bounds.1;
+        }
+    }
+}
+
+pub struct Bullets {
+    pub bullets: Vec<Bullet>,
+}
+
+impl Bullets {
+    pub fn new() -> Bullets {
+        Bullets {
+            bullets: Vec::with_capacity(100),
+        }
+    }
+}
+
+impl Sprite for Bullets {
+    fn update(&mut self, camera: &Camera) {
+        self.bullets
+            .iter_mut()
+            .for_each(|bullet| bullet.update(camera));
+    }
+}

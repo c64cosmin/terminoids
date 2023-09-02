@@ -288,6 +288,8 @@ impl DrawingContext for AsciiContext {
                     128 => {
                         print!("{}", color::Fg(color::LightWhite));
                         print!("{}", CHAR_BALL);
+                        last_pixel = pixel;
+                        was_colored = true;
                     }
                     _ => {
                         last_char = self.fill_color(pixel - 1, last_pixel - 1, last_char);

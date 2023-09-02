@@ -1,5 +1,6 @@
 pub mod asciicontext;
 pub mod asteroid;
+pub mod bullet;
 pub mod drawables;
 pub mod drawingcontext;
 pub mod ship;
@@ -8,6 +9,7 @@ pub mod terminaldrawable;
 
 use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
+use crate::bullet::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::ship::*;
@@ -31,6 +33,12 @@ fn start() {
 
     let frame_fps = 30;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
+
+    let camera = Camera {
+        position: (0.0, 0.0),
+        size: (term_size.0 as f32, term_size.1 as f32),
+        zoom: 2.0,
+    };
 
     let mut asteroids = [
         Asteroid {
@@ -64,18 +72,14 @@ fn start() {
             size: AsteroidSize::Huge,
         },
     ];
+
+    let turn_speed = 0.2;
     let mut ship = Ship {
         position: (0.0, 0.0),
         speed: (0.0, 0.0),
         angle: 0.0,
-        bullets: Vec::new(),
     };
-    let camera = Camera {
-        position: (0.0, 0.0),
-        size: (term_size.0 as f32, term_size.1 as f32),
-        zoom: 2.0,
-    };
-    let turn_speed = 0.2;
+    let mut ship_bullets = Bullets::new();
 
     loop {
         let frame_time = time::Instant::now();
@@ -89,7 +93,7 @@ fn start() {
                     Key::Left => ship.angle -= turn_speed,
                     Key::Right => ship.angle += turn_speed,
                     Key::Up => ship.thrust(0.1),
-                    Key::Char(' ') => ship.fire(),
+                    Key::Char(' ') => ship.fire(&mut ship_bullets),
                     key => {
                         print!("Key pressed: {:?}", key);
                     }
@@ -101,17 +105,20 @@ fn start() {
 
         //update
         ship.update(&camera);
+        ship_bullets.update(&camera);
 
         print!("{}", termion::cursor::Goto(1, 1));
 
+        scr.flush_triangles();
+        scr.flush_points();
         scr.clear();
 
-        scr.flush_triangles();
         asteroids.iter_mut().enumerate().for_each(|(i, a)| {
             a.angle += (0.02 + (i as f32) * 0.003) * turn_speed;
             a.draw(&mut scr)
         });
         ship.draw(&mut scr);
+        ship_bullets.draw(&mut scr);
 
         scr.draw_triangles(&camera);
         scr.draw_points(&camera);

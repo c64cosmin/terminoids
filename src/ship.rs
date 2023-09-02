@@ -1,4 +1,5 @@
 use crate::asciicontext::AsciiContext;
+use crate::bullet::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::sprite::*;
@@ -8,7 +9,6 @@ pub struct Ship {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub angle: f32,
-    pub bullets: Vec<Point>,
 }
 
 impl TerminalDrawble for Ship {
@@ -47,8 +47,6 @@ impl TerminalDrawble for Ship {
         ]
         .to_vec();
         ctx.add_triangles(&triangles);
-
-        ctx.add_points(&self.bullets);
     }
 }
 
@@ -92,11 +90,9 @@ impl Ship {
         self.speed.1 += self.angle.sin() * speed;
     }
 
-    pub fn fire(&mut self) {
-        self.bullets.push(Point {
-            position: self.position,
-            color: 128.0,
-            color_palette: ColorPalette::Custom,
-        });
+    pub fn fire(&mut self, bullets: &mut Bullets) {
+        bullets
+            .bullets
+            .push(Bullet::new(self.position, self.angle, BulletType::Normal));
     }
 }
