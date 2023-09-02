@@ -9,12 +9,6 @@ pub struct AsciiContext {
 
 /*
 const DEFAULT_COLOR: (&str, &str) = (color::Black.bg_str(), color::White.fg_str());
-const BLUE_PALETTE: [(&str, &str); 4] = [
-    (color::Black.bg_str(), color::Blue.fg_str()),
-    (color::Blue.bg_str(), color::LightBlue.fg_str()),
-    (color::LightBlue.bg_str(), color::LightCyan.fg_str()),
-    (color::LightCyan.bg_str(), color::LightWhite.fg_str()),
-];
 const RED_PALETTE: [(&str, &str); 5] = [
     (color::Black.bg_str(), color::Red.fg_str()),
     (color::Red.bg_str(), color::LightRed.fg_str()),
@@ -22,28 +16,70 @@ const RED_PALETTE: [(&str, &str); 5] = [
     (color::Yellow.bg_str(), color::LightYellow.fg_str()),
     (color::LightYellow.bg_str(), color::LightWhite.fg_str()),
 ];
+const GREEN_PALETTE: [(&str, &str); 3] = [
+    (color::Black.bg_str(), color::Green.fg_str()),
+    (color::Green.bg_str(), color::LightGreen.fg_str()),
+    (color::LightGreen.bg_str(), color::LightYellow.fg_str()),
+];
+const BLUE_PALETTE: [(&str, &str); 4] = [
+    (color::Black.bg_str(), color::Blue.fg_str()),
+    (color::Blue.bg_str(), color::LightBlue.fg_str()),
+    (color::LightBlue.bg_str(), color::LightCyan.fg_str()),
+    (color::LightCyan.bg_str(), color::LightWhite.fg_str()),
+];
+const YELLOW_PALETTE: [(&str, &str); 5] = [
+    (color::Black.bg_str(), color::Yellow.fg_str()),
+    (color::Yellow.bg_str(), color::LightYellow.fg_str()),
+    (color::LightYellow.bg_str(), color::LightWhite.fg_str()),
+];
+const MAGENTA_PALETTE: [(&str, &str); 2] = [
+    (color::Black.bg_str(), color::Magenta.fg_str()),
+    (color::Magenta.bg_str(), color::LightMagenta.fg_str()),
+];
 const GRAY_PALETTE: [(&str, &str); 3] = [
     (color::Black.bg_str(), color::LightBlack.fg_str()),
     (color::LightBlack.bg_str(), color::White.fg_str()),
     (color::White.bg_str(), color::LightWhite.fg_str()),
 ];
 */
-//const CHARS_GRADIENT: [char; 4] = ['\u{2591}', '\u{2592}', '\u{2593}', '\u{2593}'];
-const CHARS_GRADIENT: [char; 4] = ['.', 'x', '%', '#'];
+const CHARS_GRADIENT: [char; 5] = [' ', '\u{2591}', '\u{2592}', '\u{2593}', '\u{2593}'];
+//const CHARS_GRADIENT: [char; 5] = ['.', 'x', '%', '#', '@'];
 const DEFAULT_COLOR: (&str, &str) = ("\u{1b}[48;5;0m", "\u{1b}[38;5;7m");
-const PALETTE_RANGE: u8 = 32;
-const BLUE_PALETTE: [(&str, &str); 4] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;4m"),
-    ("\u{1b}[48;5;4m", "\u{1b}[38;5;12m"),
-    ("\u{1b}[48;5;12m", "\u{1b}[38;5;14m"),
-    ("\u{1b}[48;5;14m", "\u{1b}[38;5;15m"),
-];
+const PALETTE_RANGE: u8 = 16;
 
-const RED_PALETTE: [(&str, &str); 4] = [
+const RED_PALETTE: [(&str, &str); 3] = [
     ("\u{1b}[48;5;0m", "\u{1b}[38;5;1m"),
     ("\u{1b}[48;5;1m", "\u{1b}[38;5;9m"),
     ("\u{1b}[48;5;9m", "\u{1b}[38;5;11m"),
+];
+
+const GREEN_PALETTE: [(&str, &str); 3] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;2m"),
+    ("\u{1b}[48;5;2m", "\u{1b}[38;5;10m"),
+    ("\u{1b}[48;5;10m", "\u{1b}[38;5;11m"),
+];
+
+const BLUE_PALETTE: [(&str, &str); 3] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;4m"),
+    ("\u{1b}[48;5;4m", "\u{1b}[38;5;12m"),
+    ("\u{1b}[48;5;12m", "\u{1b}[38;5;14m"),
+];
+
+const YELLOW_PALETTE: [(&str, &str); 3] = [
+    ("\u{1b}[48;5;8m", "\u{1b}[38;5;3m"),
+    ("\u{1b}[48;5;3m", "\u{1b}[38;5;11m"),
     ("\u{1b}[48;5;11m", "\u{1b}[38;5;15m"),
+];
+
+const MAGENTA_PALETTE: [(&str, &str); 2] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;5m"),
+    ("\u{1b}[48;5;5m", "\u{1b}[38;5;13m"),
+];
+
+const CYAN_PALETTE: [(&str, &str); 3] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;6m"),
+    ("\u{1b}[48;5;6m", "\u{1b}[38;5;14m"),
+    ("\u{1b}[48;5;14m", "\u{1b}[38;5;15m"),
 ];
 
 const GRAY_PALETTE: [(&str, &str); 3] = [
@@ -64,62 +100,59 @@ impl AsciiContext {
         self.bitmap[i as usize] = v;
     }
 
-    fn blue_palette(&self, luma: u8) -> ((&str, &str), char) {
-        let collen: u8 = BLUE_PALETTE.len() as u8;
-        let charrange: u8 = PALETTE_RANGE / CHARS_GRADIENT.len() as u8;
-        let v_col = (luma * collen / PALETTE_RANGE) as usize;
-        let v_char = (((luma * collen) % PALETTE_RANGE) / charrange) as usize;
-        (
-            match v_col {
-                0..=3 => BLUE_PALETTE[v_col],
-                _ => DEFAULT_COLOR,
-            },
-            match v_char {
-                0..=4 => CHARS_GRADIENT[v_char],
-                _ => ' ',
-            },
-        )
+    fn get_indexes(&self, luma: u8, color_len: usize) -> (usize, usize) {
+        let char_len: u8 = CHARS_GRADIENT.len() as u8;
+        let color_len: u8 = color_len as u8;
+        let v_col = luma * color_len / PALETTE_RANGE;
+        let v_char = ((luma * color_len) % PALETTE_RANGE) * char_len / PALETTE_RANGE;
+
+        (v_col as usize, v_char as usize)
     }
 
     fn red_palette(&self, luma: u8) -> ((&str, &str), char) {
-        let collen: u8 = RED_PALETTE.len() as u8;
-        let charrange: u8 = PALETTE_RANGE / CHARS_GRADIENT.len() as u8;
-        let v_col = (luma * collen / PALETTE_RANGE) as usize;
-        let v_char = (((luma * collen) % PALETTE_RANGE) / charrange) as usize;
-        (
-            match v_col {
-                0..=4 => RED_PALETTE[v_col],
-                _ => DEFAULT_COLOR,
-            },
-            match v_char {
-                0..=4 => CHARS_GRADIENT[v_char],
-                _ => ' ',
-            },
-        )
+        let (v_col, v_char) = self.get_indexes(luma, RED_PALETTE.len());
+        (RED_PALETTE[v_col], CHARS_GRADIENT[v_char])
+    }
+
+    fn green_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let (v_col, v_char) = self.get_indexes(luma, GREEN_PALETTE.len());
+        (GREEN_PALETTE[v_col], CHARS_GRADIENT[v_char])
+    }
+
+    fn blue_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let (v_col, v_char) = self.get_indexes(luma, BLUE_PALETTE.len());
+        (BLUE_PALETTE[v_col], CHARS_GRADIENT[v_char])
+    }
+
+    fn yellow_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let (v_col, v_char) = self.get_indexes(luma, YELLOW_PALETTE.len());
+        (YELLOW_PALETTE[v_col], CHARS_GRADIENT[v_char])
+    }
+
+    fn magenta_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let (v_col, v_char) = self.get_indexes(luma, MAGENTA_PALETTE.len());
+        (MAGENTA_PALETTE[v_col], CHARS_GRADIENT[v_char])
+    }
+
+    fn cyan_palette(&self, luma: u8) -> ((&str, &str), char) {
+        let (v_col, v_char) = self.get_indexes(luma, CYAN_PALETTE.len());
+        (CYAN_PALETTE[v_col], CHARS_GRADIENT[v_char])
     }
 
     fn gray_palette(&self, luma: u8) -> ((&str, &str), char) {
-        let collen: u8 = GRAY_PALETTE.len() as u8;
-        let charrange: u8 = PALETTE_RANGE / CHARS_GRADIENT.len() as u8;
-        let v_col = (luma * collen / PALETTE_RANGE) as usize;
-        let v_char = (((luma * collen) % PALETTE_RANGE) / charrange) as usize;
-        (
-            match v_col {
-                0..=2 => GRAY_PALETTE[v_col],
-                _ => DEFAULT_COLOR,
-            },
-            match v_char {
-                0..=4 => CHARS_GRADIENT[v_char],
-                _ => ' ',
-            },
-        )
+        let (v_col, v_char) = self.get_indexes(luma, GRAY_PALETTE.len());
+        (GRAY_PALETTE[v_col], CHARS_GRADIENT[v_char])
     }
 
     fn fill_color(&self, color: u8) {
         let ((fg, bg), chr) = match color {
-            0..=31 => self.blue_palette(color),
-            32..=63 => self.red_palette(color - 32),
-            64..=95 => self.gray_palette(color - 64),
+            0..=15 => self.red_palette(color),
+            16..=31 => self.green_palette(color - 16),
+            32..=47 => self.blue_palette(color - 32),
+            48..=63 => self.yellow_palette(color - 48),
+            64..=79 => self.magenta_palette(color - 64),
+            80..=95 => self.cyan_palette(color - 80),
+            96..=111 => self.gray_palette(color - 96),
             _ => (DEFAULT_COLOR, ' '),
         };
 
