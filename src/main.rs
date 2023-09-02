@@ -16,7 +16,7 @@ use termion::raw::IntoRawMode;
 use termion::raw::RawTerminal;
 use termion::terminal_size;
 
-fn main() {
+fn start() {
     let term_size = terminal_size().unwrap();
     let mut scr: AsciiContext = AsciiContext::new(term_size);
     let mut stdin = async_stdin().keys();
@@ -54,17 +54,15 @@ fn main() {
 
         let triangle = Triangle {
             points: [(x, y), (x + 10.0, y + 10.0), (x + 6.0, y + 20.0)],
-            colors: [0.0, 1.0, 0.5],
-            color: ColorPalette::Blue,
+            color_intensity: 0.5,
+            color_palette: ColorPalette::Blue,
         };
 
-        /*
         for x in 0..term_size.0 {
             for y in 0..term_size.1 {
                 scr.set((x, y), 0);
             }
         }
-        */
 
         scr.draw_triangles(&[triangle].to_vec());
 
@@ -83,4 +81,33 @@ fn main() {
 
     print!("{}", termion::clear::All);
     stdout.suspend_raw_mode().unwrap();
+}
+
+fn test() {
+    let mut scr: AsciiContext = AsciiContext::new((50, 50));
+
+    let x: f32 = 1.0;
+    let y: f32 = 1.0;
+
+    let triangle = Triangle {
+        points: [(x, y), (x + 10.0, y + 10.0), (x + 6.0, y + 20.0)],
+        color_intensity: 0.5,
+        color_palette: ColorPalette::Blue,
+    };
+
+    /*
+    for x in 0..term_size.0 {
+        for y in 0..term_size.1 {
+            scr.set((x, y), 0);
+        }
+    }
+    */
+
+    scr.draw_triangles(&[triangle].to_vec());
+
+    scr.display();
+}
+
+fn main() {
+    start();
 }
