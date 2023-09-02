@@ -13,8 +13,8 @@ pub struct Ship {
 impl TerminalDrawble for Ship {
     fn draw(&self, ctx: &mut AsciiContext) {
         let front = (
-            f32::cos(self.angle) + self.position.0,
-            f32::sin(self.angle) + self.position.1,
+            f32::cos(self.angle) * 1.5 + self.position.0,
+            f32::sin(self.angle) * 1.5 + self.position.1,
         );
         let back = (
             f32::cos(self.angle + std::f32::consts::PI) + self.position.0,

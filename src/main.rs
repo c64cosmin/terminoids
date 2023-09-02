@@ -1,4 +1,5 @@
 pub mod asciicontext;
+pub mod asteroid;
 pub mod drawables;
 pub mod drawingcontext;
 pub mod ship;
@@ -6,6 +7,7 @@ pub mod sprite;
 pub mod terminaldrawable;
 
 use crate::asciicontext::AsciiContext;
+use crate::asteroid::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::ship::*;
@@ -29,6 +31,38 @@ fn start() {
     let frame_fps = 30;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
 
+    let mut asteroids = [
+        Asteroid {
+            position: (8.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Tiny,
+        },
+        Asteroid {
+            position: (16.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Small,
+        },
+        Asteroid {
+            position: (8.0, 5.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Medium,
+        },
+        Asteroid {
+            position: (-8.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Big,
+        },
+        Asteroid {
+            position: (-16.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Huge,
+        },
+    ];
     let mut ship = Ship {
         position: (0.0, 0.0),
         speed: (0.0, 0.0),
@@ -37,7 +71,7 @@ fn start() {
     let camera = Camera {
         position: (0.0, 0.0),
         size: (term_size.0 as f32, term_size.1 as f32),
-        zoom: 5.0,
+        zoom: 2.0,
     };
     let turn_speed = 0.05;
 
@@ -70,6 +104,10 @@ fn start() {
         }
 
         scr.flush_triangles();
+        asteroids.iter_mut().enumerate().for_each(|(i, a)| {
+            a.angle += (1.0 + (i as f32) * 0.2) * turn_speed;
+            a.draw(&mut scr)
+        });
         ship.draw(&mut scr);
         scr.draw_triangles(&camera);
 
