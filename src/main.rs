@@ -4,8 +4,9 @@ pub mod drawingcontext;
 pub mod terminaldrawable;
 
 use crate::asciicontext::AsciiContext;
+use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
-use std::io::{stdin, stdout, Write};
+use std::io::{stdout, Write};
 use std::{thread, time};
 use termion::async_stdin;
 use termion::color;
@@ -24,9 +25,8 @@ fn main() {
     let frame_fps = 30;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
 
-    let mut x: u16 = 10;
-    let mut y: u16 = 10;
-    let mut v: u8 = 1;
+    let mut x: f32 = 1.0;
+    let mut y: f32 = 1.0;
 
     loop {
         let frame_time = time::Instant::now();
@@ -37,10 +37,10 @@ fn main() {
                     Key::Char('q') => {
                         break;
                     }
-                    Key::Up => y -= 1,
-                    Key::Down => y += 1,
-                    Key::Left => x -= 1,
-                    Key::Right => x += 1,
+                    Key::Up => y -= 1.0,
+                    Key::Down => y += 1.0,
+                    Key::Left => x -= 1.0,
+                    Key::Right => x += 1.0,
                     key => {
                         print!("Key pressed: {:?}", key);
                     }
@@ -52,14 +52,13 @@ fn main() {
 
         print!("{}", termion::cursor::Goto(1, 1));
 
-        scr.set((x, y), v);
-        v += 1;
+        let triangle = Triangle {
+            points: [(x, y), (x + 10.0, y + 10.0), (x + 6.0, y + 20.0)],
+            colors: [0.0, 1.0, 0.5],
+            color: ColorPalette::Blue,
+        };
 
-        for yy in 0..5 {
-            for xx in 0..term_size.0 {
-                scr.set((xx, yy), xx as u8);
-            }
-        }
+        scr.draw_triangles(&[triangle].to_vec());
 
         scr.display();
 

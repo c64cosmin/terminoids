@@ -165,7 +165,67 @@ impl DrawingContext for AsciiContext {
         self.bitmap = vec![0; (size.0 * size.1) as usize];
     }
 
-    fn draw_triangles(&self, triangles: &Vec<Triangle>) {}
+    fn draw_triangles(&mut self, triangles: &Vec<Triangle>) {
+        let vertices: Vec<[(u16, u16); 3]> = triangles
+            .iter()
+            .map(|tri| {
+                [
+                    (tri.points[0].0 as u16, tri.points[0].1 as u16),
+                    (tri.points[1].0 as u16, tri.points[1].1 as u16),
+                    (tri.points[2].0 as u16, tri.points[2].1 as u16),
+                ]
+            })
+            .collect();
+        let min_y: Vec<(u16, usize)> = triangles
+            .iter()
+            .map(|tri| {
+                let min = tri.points[0].1.min(tri.points[1].1).min(tri.points[2].1);
+                let mut i: usize = 0;
+                if tri.points[1].1 == min {
+                    i = 1;
+                }
+                if tri.points[2].1 == min {
+                    i = 2;
+                }
+
+                (min as u16, i)
+            })
+            .collect();
+        let max_y: Vec<(u16, usize)> = triangles
+            .iter()
+            .map(|tri| {
+                let max = tri.points[0].1.max(tri.points[1].1).max(tri.points[2].1);
+                let mut i: usize = 0;
+                if tri.points[1].1 == max {
+                    i = 1;
+                }
+                if tri.points[2].1 == max {
+                    i = 2;
+                }
+
+                (max as u16, i)
+            })
+            .collect();
+
+        //first element is number of lines
+        //second is the index of minimum
+        //third is the index of maximum
+        //forth is the index of the middle on Y axis
+        //the forth is extracted by doing a trick
+        //3 - min_index - max_index is always going to be the remaining vertice
+        type Data = (u16, usize, usize, usize);
+        let heights: Vec<Data> = min_y
+            .iter()
+            .zip(max_y)
+            .map(|(min, max)| (max.0 - min.0, min.1, max.1, 3 - min.1 - max.1))
+            .collect();
+
+        vertices.iter().zip(heights).for_each(|(vert, data)| {
+            for y in 0..data.0 {
+                self.set((vert[0].0, vert[0].1 + y), y as u8 + 3);
+            }
+        });
+    }
 
     fn display(&self) {
         for (i, line) in self.bitmap.chunks(self.size.0 as usize).enumerate() {
