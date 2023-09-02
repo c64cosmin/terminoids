@@ -66,10 +66,7 @@ impl Sprite for Bullet {
     }
 
     fn is_alive(&self) -> bool {
-        if self.life > 3.0 {
-            return false;
-        }
-        return true;
+        self.life < 4.0
     }
 }
 
