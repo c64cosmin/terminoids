@@ -1,7 +1,7 @@
 pub type Point = (f32, f32);
 pub type ColorLuma = f32;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum ColorPalette {
     Red,
     Green,
@@ -12,7 +12,7 @@ pub enum ColorPalette {
     Gray,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Triangle {
     pub points: [Point; 3],
     pub colors: [ColorLuma; 3],

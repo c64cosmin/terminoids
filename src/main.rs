@@ -52,19 +52,27 @@ fn start() {
 
         print!("{}", termion::cursor::Goto(1, 1));
 
-        let triangle = Triangle {
-            points: [(x, y), (x + 10.0, y + 10.0), (x + 6.0, y + 20.0)],
-            color_intensity: 0.5,
-            color_palette: ColorPalette::Blue,
-        };
-
         for x in 0..term_size.0 {
             for y in 0..term_size.1 {
                 scr.set((x, y), 0);
             }
         }
 
-        scr.draw_triangles(&[triangle].to_vec());
+        scr.draw_triangles(
+            &[
+                Triangle {
+                    points: [(x, y), (x + 20.0, y + 10.0), (x + 6.0, y + 20.0)],
+                    colors: [0.0, 1.0, 0.5],
+                    color_palette: ColorPalette::Blue,
+                },
+                Triangle {
+                    points: [(30.0, 10.0), (50.0, 20.0), (40.0, 40.0)],
+                    colors: [0.0, 0.5, 1.0],
+                    color_palette: ColorPalette::Blue,
+                },
+            ]
+            .to_vec(),
+        );
 
         scr.display();
 
@@ -84,16 +92,11 @@ fn start() {
 }
 
 fn test() {
-    let mut scr: AsciiContext = AsciiContext::new((50, 50));
+    let term_size = terminal_size().unwrap();
+    let mut scr: AsciiContext = AsciiContext::new((term_size.0, term_size.1 / 2));
 
     let x: f32 = 1.0;
     let y: f32 = 1.0;
-
-    let triangle = Triangle {
-        points: [(x, y), (x + 10.0, y + 10.0), (x + 6.0, y + 20.0)],
-        color_intensity: 0.5,
-        color_palette: ColorPalette::Blue,
-    };
 
     /*
     for x in 0..term_size.0 {
@@ -103,7 +106,21 @@ fn test() {
     }
     */
 
-    scr.draw_triangles(&[triangle].to_vec());
+    scr.draw_triangles(
+        &[
+            Triangle {
+                points: [(x, y), (x + 20.0, y + 10.0), (x + 6.0, y + 20.0)],
+                colors: [0.0, 1.0, 0.5],
+                color_palette: ColorPalette::Blue,
+            },
+            Triangle {
+                points: [(30.0, 10.0), (50.0, 20.0), (40.0, 40.0)],
+                colors: [0.0, 0.5, 1.0],
+                color_palette: ColorPalette::Blue,
+            },
+        ]
+        .to_vec(),
+    );
 
     scr.display();
 }

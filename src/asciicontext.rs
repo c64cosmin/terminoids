@@ -171,11 +171,11 @@ fn edge_function(a: Point, b: Point, c: Point) -> f32 {
     (c.0 - a.0) * (b.1 - a.1) - (c.1 - a.1) * (b.0 - a.0)
 }
 
-fn get_barycentric(point: Point, triangle: Triangle) -> ColorLuma {
-    let area: f32 = edge_function(triangle.points[0], triangle.points[1], triangle.points[1]);
-    let w0: f32 = edge_function(triangle.points[1], triangle.points[2], point);
-    let w1: f32 = edge_function(triangle.points[2], triangle.points[0], point);
-    let w2: f32 = edge_function(triangle.points[0], triangle.points[1], point);
+fn get_barycentric(point: Point, triangle: &Triangle) -> ColorLuma {
+    let area: f32 = edge_function(triangle.points[0], triangle.points[1], triangle.points[2]);
+    let w0: f32 = edge_function(triangle.points[1], triangle.points[2], point) / area;
+    let w1: f32 = edge_function(triangle.points[2], triangle.points[0], point) / area;
+    let w2: f32 = edge_function(triangle.points[0], triangle.points[1], point) / area;
 
     triangle.colors[0] * w0 + triangle.colors[1] * w1 + triangle.colors[2] * w2
 }
@@ -234,8 +234,9 @@ impl DrawingContext for AsciiContext {
 
             line_segments.iter().for_each(|(x0, x1, y)| {
                 for x in *x0..=*x1 {
-                    let color = get_barycentric((x as f32, *y as f32), *tri);
-                    self.set((x, *y), x as u8);
+                    let color =
+                        (get_barycentric((x as f32, *y as f32), tri) * PALETTE_RANGE as f32) as u8;
+                    self.set((x, *y), color);
                 }
             });
         });
