@@ -5,8 +5,6 @@ use termion::color;
 pub struct AsciiContext {
     bitmap: Vec<u8>,
     size: (u16, u16),
-    last_color: u8,
-    last_char: char,
 }
 
 /*
@@ -94,12 +92,7 @@ impl AsciiContext {
     pub fn new(size: (u16, u16)) -> AsciiContext {
         let bitmap: Vec<u8> = vec![0; (size.0 * size.1) as usize];
 
-        AsciiContext {
-            bitmap,
-            size,
-            last_color: 0,
-            last_char: ' ',
-        }
+        AsciiContext { bitmap, size }
     }
 
     pub fn set(&mut self, pos: (u16, u16), v: u8) {
@@ -151,13 +144,12 @@ impl AsciiContext {
         (GRAY_PALETTE[v_col], CHARS_GRADIENT[v_char])
     }
 
-    fn fill_color(&mut self, color: u8) {
-        if self.last_color == color {
-            print!("{}", self.last_char);
-            return;
+    fn fill_color(&self, color: u8, last_color: u8, last_char: char) -> char {
+        if last_color == color {
+            print!("{}", last_char);
+            return last_char;
         }
 
-        self.last_color = color;
         let ((fg, bg), chr) = match color {
             0..=15 => self.red_palette(color),
             16..=31 => self.green_palette(color - 16),
@@ -170,6 +162,8 @@ impl AsciiContext {
         };
 
         print!("{}{}{}", bg, fg, chr);
+
+        return chr;
     }
 }
 
@@ -236,9 +230,9 @@ impl DrawingContext for AsciiContext {
             let indices = [data.1, data.3, data.2];
             for y in 0..data.0 {
                 lines[lines_it + y as usize] = (
-                    tri.points[0].0 as u16,
-                    tri.points[1].0 as u16,
-                    tri.points[0].1 as u16 + y,
+                    tri.points[indices[0]].0 as u16,
+                    tri.points[indices[1]].1 as u16 + y,
+                    y,
                 );
             }
             lines_it += data.0 as usize;
@@ -246,7 +240,7 @@ impl DrawingContext for AsciiContext {
 
         lines.iter().for_each(|line| {
             for x in 0..line.2 {
-                self.set((line.0 + x, line.1), x as u8);
+                self.set((line.0 + x, line.1), line.1 as u8);
             }
         });
     }
@@ -258,6 +252,8 @@ impl DrawingContext for AsciiContext {
             }
 
             let mut was_colored = false;
+            let mut last_pixel: u8 = 0;
+            let mut last_char: char = '!';
 
             for &pixel in line.iter() {
                 match pixel {
@@ -269,10 +265,11 @@ impl DrawingContext for AsciiContext {
                         print!(" ");
                     }
                     _ => {
-                        self.fill_color(pixel - 1);
+                        last_char = self.fill_color(pixel - 1, last_pixel - 1, last_char);
                         was_colored = true;
                     }
                 }
+                last_pixel = pixel;
             }
 
             print!("\r");
