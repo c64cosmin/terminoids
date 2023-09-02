@@ -6,9 +6,10 @@ pub struct AsciiContext {
     bitmap: Vec<u8>,
     size: (u16, u16),
     triangles: Vec<Triangle>,
+    points: Vec<Point>,
 }
 
-pub fn vertex_shader(input: &Point, camera: &Camera) -> Point {
+pub fn vertex_shader(input: &Vec2, camera: &Camera) -> Vec2 {
     let aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
     let char_ratio: (f32, f32) = (17.0 / 8.0, 1.0);
     let default_height: f32 = camera.size.1 as f32 / 63.0;
@@ -26,6 +27,7 @@ impl AsciiContext {
             bitmap,
             size,
             triangles: Vec::with_capacity(100),
+            points: Vec::with_capacity(100),
         }
     }
 
@@ -181,6 +183,7 @@ impl AsciiContext {
                         ColorPalette::Magenta => 65,
                         ColorPalette::Cyan => 81,
                         ColorPalette::Gray => 97,
+                        ColorPalette::Custom => 0,
                     };
                     self.set((x, *y), color + color_offset);
                 }
@@ -189,11 +192,11 @@ impl AsciiContext {
     }
 }
 
-fn edge_function(a: Point, b: Point, c: Point) -> f32 {
+fn edge_function(a: Vec2, b: Vec2, c: Vec2) -> f32 {
     (c.0 - a.0) * (b.1 - a.1) - (c.1 - a.1) * (b.0 - a.0)
 }
 
-fn get_barycentric(point: Point, triangle: &Triangle) -> ColorLuma {
+fn get_barycentric(point: Vec2, triangle: &Triangle) -> ColorLuma {
     let area: f32 = edge_function(triangle.points[0], triangle.points[1], triangle.points[2]);
     let w0: f32 = edge_function(triangle.points[1], triangle.points[2], point) / area;
     let w1: f32 = edge_function(triangle.points[2], triangle.points[0], point) / area;
@@ -211,10 +214,18 @@ impl DrawingContext for AsciiContext {
         self.triangles.resize(0, EMPTY_TRIANGLE);
     }
 
+    fn flush_points(&mut self) {
+        self.points.resize(0, EMPTY_POINT);
+    }
+
     fn add_triangles(&mut self, triangle: &Vec<Triangle>) {
         triangle
             .iter()
             .for_each(|tri| self.triangles.push(tri.clone()));
+    }
+
+    fn add_points(&mut self, points: &Vec<Point>) {
+        points.iter().for_each(|p| self.points.push(p.clone()));
     }
 
     fn display(&self) {

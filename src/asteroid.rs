@@ -38,11 +38,11 @@ impl TerminalDrawble for Asteroid {
             let angle_left = (i as f32) * u + self.angle;
             let angle_right = (i as f32) * u + u + self.angle;
 
-            let point_left: Point = (
+            let point_left: Vec2 = (
                 f32::cos(angle_left) * radius + self.position.0,
                 f32::sin(angle_left) * radius + self.position.1,
             );
-            let point_right: Point = (
+            let point_right: Vec2 = (
                 f32::cos(angle_right) * radius + self.position.0,
                 f32::sin(angle_right) * radius + self.position.1,
             );

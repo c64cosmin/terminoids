@@ -79,12 +79,12 @@ pub const GRAY_PALETTE: [(&str, &str); 3] = [
     ("\u{1b}[48;5;7m", "\u{1b}[38;5;15m"),
 ];
 
-pub type Point = (f32, f32);
+pub type Vec2 = (f32, f32);
 pub type ColorLuma = f32;
 
 pub struct Camera {
-    pub position: Point,
-    pub size: Point,
+    pub position: Vec2,
+    pub size: Vec2,
     pub zoom: f32,
 }
 
@@ -97,14 +97,28 @@ pub enum ColorPalette {
     Magenta,
     Cyan,
     Gray,
+    Custom,
 }
 
 #[derive(Clone, Debug)]
 pub struct Triangle {
-    pub points: [Point; 3],
+    pub points: [Vec2; 3],
     pub colors: [ColorLuma; 3],
     pub color_palette: ColorPalette,
 }
+
+#[derive(Clone, Debug)]
+pub struct Point {
+    pub position: Vec2,
+    pub color: ColorLuma,
+    pub color_palette: ColorPalette,
+}
+
+pub const EMPTY_POINT: Point = Point {
+    position: (0.0, 0.0),
+    color: 0.0,
+    color_palette: ColorPalette::Red,
+};
 
 pub const EMPTY_TRIANGLE: Triangle = Triangle {
     points: [(0.0, 0.0), (0.0, 0.0), (0.0, 0.0)],
