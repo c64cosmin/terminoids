@@ -83,6 +83,10 @@ pub const GRAY_PALETTE: [(&str, &str); 3] = [
 pub type Vec2 = (f32, f32);
 pub type ColorLuma = f32;
 
+pub fn distance(a: Vec2, b: Vec2) -> f32 {
+    f32::sqrt((a.0 - b.0).powi(2) + (a.1 - b.1).powi(2))
+}
+
 #[derive(Clone, Debug)]
 pub struct Camera {
     pub position: Vec2,

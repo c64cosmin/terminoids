@@ -78,7 +78,7 @@ fn start() {
         //update
         ship.update(&camera, delta_time);
         ship_bullets.update(&camera, delta_time);
-        enemies.update(&camera, delta_time);
+        enemies.update_with_ship(&camera, delta_time, &ship);
 
         print!("{}", termion::cursor::Goto(1, 1));
 

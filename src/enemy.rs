@@ -1,6 +1,7 @@
 use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
 use crate::drawables::*;
+use crate::ship::*;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
@@ -21,19 +22,11 @@ impl Enemies {
     pub fn init_level(&mut self, level: u16) {
         self.asteroids.clear();
     }
-}
 
-impl TerminalDrawble for Enemies {
-    fn draw(&self, ctx: &mut AsciiContext) {
-        self.asteroids.iter().for_each(|a| a.draw(ctx));
-    }
-}
+    pub fn update_with_ship(&mut self, camera: &Camera, delta: f32, ship: &Ship) {
+        self.update(camera, delta);
 
-impl Sprite for Enemies {
-    fn update(&mut self, camera: &Camera, delta: f32) {
-        self.time += delta;
-        if self.time > 3.0 {
-            self.time = 0.0;
+        if self.time > 5.0 {
             let mut rnd = rand::thread_rng();
             let bounds = camera.get_bounds();
             let position: (f32, f32) = (
@@ -48,9 +41,24 @@ impl Sprite for Enemies {
                         false => 1.0,
                     },
             );
-            self.asteroids.push(Asteroid::new(position));
-        }
 
+            if distance(ship.position, position) > 7.0 {
+                self.asteroids.push(Asteroid::new(position));
+                self.time = 0.0;
+            }
+        }
+    }
+}
+
+impl TerminalDrawble for Enemies {
+    fn draw(&self, ctx: &mut AsciiContext) {
+        self.asteroids.iter().for_each(|a| a.draw(ctx));
+    }
+}
+
+impl Sprite for Enemies {
+    fn update(&mut self, camera: &Camera, delta: f32) {
+        self.time += delta;
         self.asteroids
             .iter_mut()
             .for_each(|a| a.update(camera, delta));
