@@ -1,3 +1,5 @@
+use crate::asciicontext::AsciiContext;
+
 pub trait TerminalDrawble {
-    fn draw(&self);
+    fn draw(&self, ctx: AsciiContext);
 }

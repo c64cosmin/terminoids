@@ -1,17 +1,21 @@
+use crate::asciicontext::AsciiContext;
+use crate::sprite::*;
+use crate::terminaldrawable::*;
+
 pub struct Ship {
-    position: (f32, f32),
-    speed: (f32, f32),
-    angle: f32,
+    pub position: (f32, f32),
+    pub speed: (f32, f32),
+    pub angle: f32,
 }
 
 impl TerminalDrawble for Ship {
-    fn draw(&self) {}
+    fn draw(&self, ctx: AsciiContext) {}
 }
 
 impl Sprite for Ship {
     fn update(&mut self) {
-        position.0 += speed.0;
-        position.1 += speed.1;
+        self.position.0 += self.speed.0;
+        self.position.1 += self.speed.1;
     }
 }
 

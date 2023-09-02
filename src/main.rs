@@ -1,11 +1,14 @@
 pub mod asciicontext;
 pub mod drawables;
 pub mod drawingcontext;
+pub mod ship;
+pub mod sprite;
 pub mod terminaldrawable;
 
 use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::ship::*;
 use std::io::{stdout, Write};
 use std::{thread, time};
 use termion::async_stdin;
@@ -25,8 +28,12 @@ fn start() {
     let frame_fps = 30;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
 
-    let mut x: f32 = 1.0;
-    let mut y: f32 = 1.0;
+    let mut ship = Ship {
+        position: (0.0, 0.0),
+        speed: (0.0, 0.0),
+        angle: 0.0,
+    };
+    let turn_speed = 5.0;
 
     loop {
         let frame_time = time::Instant::now();
@@ -37,10 +44,8 @@ fn start() {
                     Key::Char('q') => {
                         break;
                     }
-                    Key::Up => y -= 1.0,
-                    Key::Down => y += 1.0,
-                    Key::Left => x -= 1.0,
-                    Key::Right => x += 1.0,
+                    Key::Left => ship.angle -= turn_speed,
+                    Key::Right => ship.angle += turn_speed,
                     key => {
                         print!("Key pressed: {:?}", key);
                     }
@@ -58,21 +63,23 @@ fn start() {
             }
         }
 
-        scr.draw_triangles(
+        scr.add_triangles(
             &[
                 Triangle {
-                    points: [(x, y), (x + 20.0, y + 10.0), (x + 6.0, y + 20.0)],
+                    points: [(0.0, 0.0), (0.2, 0.1), (0.06, 0.2)],
                     colors: [0.0, 1.0, 0.5],
                     color_palette: ColorPalette::Blue,
                 },
                 Triangle {
-                    points: [(30.0, 10.0), (50.0, 20.0), (40.0, 40.0)],
+                    points: [(0.3, 0.1), (0.5, 0.2), (0.4, 0.4)],
                     colors: [0.0, 0.5, 1.0],
                     color_palette: ColorPalette::Blue,
                 },
             ]
             .to_vec(),
         );
+
+        scr.draw_triangles();
 
         scr.display();
 

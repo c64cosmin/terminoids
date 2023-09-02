@@ -1,98 +1,22 @@
 use crate::drawables::*;
-use crate::drawingcontext::DrawingContext;
+use crate::drawingcontext::*;
 use termion::color;
 
 pub struct AsciiContext {
     bitmap: Vec<u8>,
     size: (u16, u16),
+    triangles: Vec<Triangle>,
 }
-
-/*
-const DEFAULT_COLOR: (&str, &str) = (color::Black.bg_str(), color::White.fg_str());
-const RED_PALETTE: [(&str, &str); 5] = [
-    (color::Black.bg_str(), color::Red.fg_str()),
-    (color::Red.bg_str(), color::LightRed.fg_str()),
-    (color::LightRed.bg_str(), color::Yellow.fg_str()),
-    (color::Yellow.bg_str(), color::LightYellow.fg_str()),
-    (color::LightYellow.bg_str(), color::LightWhite.fg_str()),
-];
-const GREEN_PALETTE: [(&str, &str); 3] = [
-    (color::Black.bg_str(), color::Green.fg_str()),
-    (color::Green.bg_str(), color::LightGreen.fg_str()),
-    (color::LightGreen.bg_str(), color::LightYellow.fg_str()),
-];
-const BLUE_PALETTE: [(&str, &str); 4] = [
-    (color::Black.bg_str(), color::Blue.fg_str()),
-    (color::Blue.bg_str(), color::LightBlue.fg_str()),
-    (color::LightBlue.bg_str(), color::LightCyan.fg_str()),
-    (color::LightCyan.bg_str(), color::LightWhite.fg_str()),
-];
-const YELLOW_PALETTE: [(&str, &str); 5] = [
-    (color::Black.bg_str(), color::Yellow.fg_str()),
-    (color::Yellow.bg_str(), color::LightYellow.fg_str()),
-    (color::LightYellow.bg_str(), color::LightWhite.fg_str()),
-];
-const MAGENTA_PALETTE: [(&str, &str); 2] = [
-    (color::Black.bg_str(), color::Magenta.fg_str()),
-    (color::Magenta.bg_str(), color::LightMagenta.fg_str()),
-];
-const GRAY_PALETTE: [(&str, &str); 3] = [
-    (color::Black.bg_str(), color::LightBlack.fg_str()),
-    (color::LightBlack.bg_str(), color::White.fg_str()),
-    (color::White.bg_str(), color::LightWhite.fg_str()),
-];
-*/
-const CHARS_GRADIENT: [char; 5] = [' ', '\u{2591}', '\u{2592}', '\u{2593}', '\u{2593}'];
-//const CHARS_GRADIENT: [char; 5] = ['.', 'x', '%', '#', '@'];
-const DEFAULT_COLOR: (&str, &str) = ("\u{1b}[48;5;0m", "\u{1b}[38;5;7m");
-const PALETTE_RANGE: u8 = 16;
-
-const RED_PALETTE: [(&str, &str); 3] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;1m"),
-    ("\u{1b}[48;5;1m", "\u{1b}[38;5;9m"),
-    ("\u{1b}[48;5;9m", "\u{1b}[38;5;11m"),
-];
-
-const GREEN_PALETTE: [(&str, &str); 3] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;2m"),
-    ("\u{1b}[48;5;2m", "\u{1b}[38;5;10m"),
-    ("\u{1b}[48;5;10m", "\u{1b}[38;5;11m"),
-];
-
-const BLUE_PALETTE: [(&str, &str); 3] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;4m"),
-    ("\u{1b}[48;5;4m", "\u{1b}[38;5;12m"),
-    ("\u{1b}[48;5;12m", "\u{1b}[38;5;14m"),
-];
-
-const YELLOW_PALETTE: [(&str, &str); 3] = [
-    ("\u{1b}[48;5;8m", "\u{1b}[38;5;3m"),
-    ("\u{1b}[48;5;3m", "\u{1b}[38;5;11m"),
-    ("\u{1b}[48;5;11m", "\u{1b}[38;5;15m"),
-];
-
-const MAGENTA_PALETTE: [(&str, &str); 2] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;5m"),
-    ("\u{1b}[48;5;5m", "\u{1b}[38;5;13m"),
-];
-
-const CYAN_PALETTE: [(&str, &str); 3] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;6m"),
-    ("\u{1b}[48;5;6m", "\u{1b}[38;5;14m"),
-    ("\u{1b}[48;5;14m", "\u{1b}[38;5;15m"),
-];
-
-const GRAY_PALETTE: [(&str, &str); 3] = [
-    ("\u{1b}[48;5;0m", "\u{1b}[38;5;8m"),
-    ("\u{1b}[48;5;8m", "\u{1b}[38;5;7m"),
-    ("\u{1b}[48;5;7m", "\u{1b}[38;5;15m"),
-];
 
 impl AsciiContext {
     pub fn new(size: (u16, u16)) -> AsciiContext {
         let bitmap: Vec<u8> = vec![0; (size.0 * size.1) as usize];
 
-        AsciiContext { bitmap, size }
+        AsciiContext {
+            bitmap,
+            size,
+            triangles: Vec::with_capacity(100),
+        }
     }
 
     pub fn set(&mut self, pos: (u16, u16), v: u8) {
@@ -165,28 +89,9 @@ impl AsciiContext {
 
         return chr;
     }
-}
 
-fn edge_function(a: Point, b: Point, c: Point) -> f32 {
-    (c.0 - a.0) * (b.1 - a.1) - (c.1 - a.1) * (b.0 - a.0)
-}
-
-fn get_barycentric(point: Point, triangle: &Triangle) -> ColorLuma {
-    let area: f32 = edge_function(triangle.points[0], triangle.points[1], triangle.points[2]);
-    let w0: f32 = edge_function(triangle.points[1], triangle.points[2], point) / area;
-    let w1: f32 = edge_function(triangle.points[2], triangle.points[0], point) / area;
-    let w2: f32 = edge_function(triangle.points[0], triangle.points[1], point) / area;
-
-    triangle.colors[0] * w0 + triangle.colors[1] * w1 + triangle.colors[2] * w2
-}
-
-impl DrawingContext for AsciiContext {
-    fn resize(&mut self, size: (u16, u16)) {
-        self.bitmap = vec![0; (size.0 * size.1) as usize];
-    }
-
-    fn draw_triangles(&mut self, triangles: &Vec<Triangle>) {
-        triangles.iter().for_each(|tri| {
+    pub fn draw_triangles(&mut self) {
+        self.triangles.iter().for_each(|tri| {
             //find the extremities of the triangle
             let top = tri.points[0].1.min(tri.points[1].1).min(tri.points[2].1);
             let bot = tri.points[0].1.max(tri.points[1].1).max(tri.points[2].1);
@@ -240,6 +145,33 @@ impl DrawingContext for AsciiContext {
                 }
             });
         });
+    }
+}
+
+fn edge_function(a: Point, b: Point, c: Point) -> f32 {
+    (c.0 - a.0) * (b.1 - a.1) - (c.1 - a.1) * (b.0 - a.0)
+}
+
+fn get_barycentric(point: Point, triangle: &Triangle) -> ColorLuma {
+    let area: f32 = edge_function(triangle.points[0], triangle.points[1], triangle.points[2]);
+    let w0: f32 = edge_function(triangle.points[1], triangle.points[2], point) / area;
+    let w1: f32 = edge_function(triangle.points[2], triangle.points[0], point) / area;
+    let w2: f32 = edge_function(triangle.points[0], triangle.points[1], point) / area;
+
+    triangle.colors[0] * w0 + triangle.colors[1] * w1 + triangle.colors[2] * w2
+}
+
+impl DrawingContext for AsciiContext {
+    fn resize(&mut self, size: (u16, u16)) {
+        self.bitmap = vec![0; (size.0 * size.1) as usize];
+    }
+
+    fn flush_triangles(&mut self) {
+        self.triangles.resize(0, EMPTY_TRIANGLE);
+    }
+
+    fn add_triangles(&mut self, triangle: &Vec<Triangle>) {
+        triangle.iter().for_each(|tri| self.triangles.push(*tri));
     }
 
     fn display(&self) {
