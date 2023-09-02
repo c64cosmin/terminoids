@@ -58,6 +58,14 @@ fn main() {
             color: ColorPalette::Blue,
         };
 
+        /*
+        for x in 0..term_size.0 {
+            for y in 0..term_size.1 {
+                scr.set((x, y), 0);
+            }
+        }
+        */
+
         scr.draw_triangles(&[triangle].to_vec());
 
         scr.display();

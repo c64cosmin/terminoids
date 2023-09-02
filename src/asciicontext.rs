@@ -231,7 +231,7 @@ impl DrawingContext for AsciiContext {
             for y in 0..data.0 {
                 lines[lines_it + y as usize] = (
                     tri.points[indices[0]].0 as u16,
-                    tri.points[indices[1]].1 as u16 + y,
+                    tri.points[indices[0]].1 as u16 + y,
                     y,
                 );
             }
@@ -240,7 +240,7 @@ impl DrawingContext for AsciiContext {
 
         lines.iter().for_each(|line| {
             for x in 0..line.2 {
-                self.set((line.0 + x, line.1), line.1 as u8);
+                self.set((line.0 + x, line.1), line.1 as u8 + x as u8);
             }
         });
     }
@@ -261,15 +261,16 @@ impl DrawingContext for AsciiContext {
                         if was_colored {
                             print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
                             was_colored = false;
+                            last_pixel = 0;
                         }
                         print!(" ");
                     }
                     _ => {
                         last_char = self.fill_color(pixel - 1, last_pixel - 1, last_char);
+                        last_pixel = pixel;
                         was_colored = true;
                     }
                 }
-                last_pixel = pixel;
             }
 
             print!("\r");
