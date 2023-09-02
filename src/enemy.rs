@@ -35,13 +35,14 @@ impl Sprite for Enemies {
         if self.time > 3.0 {
             self.time = 0.0;
             let mut rnd = rand::thread_rng();
+            let bounds = camera.get_bounds();
             let position: (f32, f32) = (
-                (rnd.gen::<f32>() + 1.0)
+                (rnd.gen::<f32>() * bounds.0)
                     * match rand::random() {
                         true => -1.0,
                         false => 1.0,
                     },
-                (rnd.gen::<f32>() + 1.0)
+                (rnd.gen::<f32>() * bounds.1)
                     * match rand::random() {
                         true => -1.0,
                         false => 1.0,
@@ -53,5 +54,10 @@ impl Sprite for Enemies {
         self.asteroids
             .iter_mut()
             .for_each(|a| a.update(camera, delta));
+        self.asteroids.retain(|a| a.is_alive());
+    }
+
+    fn is_alive(&self) -> bool {
+        return true;
     }
 }

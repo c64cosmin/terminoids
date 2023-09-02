@@ -12,18 +12,20 @@ pub struct Bullet {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub bullet_type: BulletType,
+    pub life: f32,
 }
 
 impl Bullet {
     pub fn new(position: (f32, f32), angle: f32, bullet_type: BulletType) -> Bullet {
         let linear_speed = match bullet_type {
-            BulletType::Normal => 0.1,
+            BulletType::Normal => 8.0,
         };
         let speed = (angle.cos() * linear_speed, angle.sin() * linear_speed);
         Bullet {
             position,
             speed,
             bullet_type,
+            life: 0.0,
         }
     }
 
@@ -42,8 +44,8 @@ impl Bullet {
 
 impl Sprite for Bullet {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        self.position.0 += self.speed.0;
-        self.position.1 += self.speed.1;
+        self.position.0 += self.speed.0 * delta;
+        self.position.1 += self.speed.1 * delta;
 
         //screen bounds
         let bounds = camera.get_bounds();
@@ -59,6 +61,15 @@ impl Sprite for Bullet {
         if self.position.1 > bounds.1 {
             self.position.1 = -bounds.1;
         }
+
+        self.life += delta;
+    }
+
+    fn is_alive(&self) -> bool {
+        if self.life > 3.0 {
+            return false;
+        }
+        return true;
     }
 }
 
@@ -85,6 +96,11 @@ impl Sprite for Bullets {
         self.bullets
             .iter_mut()
             .for_each(|bullet| bullet.update(camera, delta));
+        self.bullets.retain(|bullet| bullet.is_alive());
+    }
+
+    fn is_alive(&self) -> bool {
+        return true;
     }
 }
 

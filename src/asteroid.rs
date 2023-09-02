@@ -61,19 +61,48 @@ impl TerminalDrawble for Asteroid {
 
 impl Sprite for Asteroid {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        self.position.0 += self.speed.0;
-        self.position.1 += self.speed.1;
-        self.angle += self.angle_speed;
+        self.position.0 += self.speed.0 * delta;
+        self.position.1 += self.speed.1 * delta;
+
+        //screen bounds
+        let bounds = camera.get_bounds();
+        if self.position.0 < -bounds.0 {
+            self.position.0 = bounds.0;
+        }
+        if self.position.0 > bounds.0 {
+            self.position.0 = -bounds.0;
+        }
+        if self.position.1 < -bounds.1 {
+            self.position.1 = bounds.1;
+        }
+        if self.position.1 > bounds.1 {
+            self.position.1 = -bounds.1;
+        }
+
+        self.angle += self.angle_speed * delta;
+
+        //angle bounds
+        if self.angle < 0.0 {
+            self.angle += std::f32::consts::PI * 2.0;
+        }
+        if self.angle > std::f32::consts::PI * 2.0 {
+            self.angle -= std::f32::consts::PI * 2.0;
+        }
+    }
+
+    fn is_alive(&self) -> bool {
+        return true;
     }
 }
 
 impl Asteroid {
     pub fn new(position: (f32, f32)) -> Asteroid {
         let mut rnd = rand::thread_rng();
-        let mut angle_speed: f32 = rnd.gen::<f32>() * 0.02 + 0.02;
-        if rand::random() {
-            angle_speed *= -1.0;
-        }
+        let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
+            * match rand::random() {
+                true => -1.0,
+                false => 1.0,
+            };
         Asteroid {
             position,
             speed: (0.0, 0.0),
@@ -81,10 +110,5 @@ impl Asteroid {
             size: AsteroidSize::Small,
             angle_speed,
         }
-    }
-
-    fn thrust(&mut self, speed: f32, angle: f32) {
-        self.speed.0 += angle.cos() * speed;
-        self.speed.1 += angle.sin() * speed;
     }
 }

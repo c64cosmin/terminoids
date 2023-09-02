@@ -13,6 +13,7 @@ use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::enemy::*;
 use crate::ship::*;
 use crate::sprite::Sprite;
 use crate::terminaldrawable::TerminalDrawble;
@@ -42,15 +43,9 @@ fn start() {
         zoom: 2.0,
     };
 
-    let mut asteroids = [
-        Asteroid::new((8.0, 0.0)),
-        Asteroid::new((16.0, 0.0)),
-        Asteroid::new((8.0, 5.0)),
-        Asteroid::new((-8.0, 0.0)),
-        Asteroid::new((-16.0, 0.0)),
-    ];
+    let mut enemies: Enemies = Enemies::new();
 
-    let turn_speed = 0.2;
+    let turn_speed = 2.0;
     let mut ship = Ship {
         position: (0.0, 0.0),
         speed: (0.0, 0.0),
@@ -67,9 +62,9 @@ fn start() {
                     Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
                         break;
                     }
-                    Key::Left => ship.angle -= turn_speed,
-                    Key::Right => ship.angle += turn_speed,
-                    Key::Up => ship.thrust(0.1),
+                    Key::Left => ship.angle -= turn_speed * delta_time,
+                    Key::Right => ship.angle += turn_speed * delta_time,
+                    Key::Up => ship.thrust(1.0),
                     Key::Char(' ') => ship.fire(&mut ship_bullets),
                     key => {
                         print!("Key pressed: {:?}", key);
@@ -83,9 +78,7 @@ fn start() {
         //update
         ship.update(&camera, delta_time);
         ship_bullets.update(&camera, delta_time);
-        asteroids
-            .iter_mut()
-            .for_each(|a| a.update(&camera, delta_time));
+        enemies.update(&camera, delta_time);
 
         print!("{}", termion::cursor::Goto(1, 1));
 
@@ -93,7 +86,7 @@ fn start() {
         scr.flush_points();
         scr.clear();
 
-        asteroids.iter().for_each(|a| a.draw(&mut scr));
+        enemies.draw(&mut scr);
         ship.draw(&mut scr);
         ship_bullets.draw(&mut scr);
 

@@ -52,20 +52,8 @@ impl TerminalDrawble for Ship {
 
 impl Sprite for Ship {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        self.position.0 += self.speed.0;
-        self.position.1 += self.speed.1;
-
-        let damp = 0.96;
-        self.speed.0 *= damp;
-        self.speed.1 *= damp;
-
-        //angle bounds
-        if self.angle < 0.0 {
-            self.angle += std::f32::consts::PI * 2.0;
-        }
-        if self.angle > std::f32::consts::PI * 2.0 {
-            self.angle -= std::f32::consts::PI * 2.0;
-        }
+        self.position.0 += self.speed.0 * delta;
+        self.position.1 += self.speed.1 * delta;
 
         //screen bounds
         let bounds = camera.get_bounds();
@@ -81,6 +69,22 @@ impl Sprite for Ship {
         if self.position.1 > bounds.1 {
             self.position.1 = -bounds.1;
         }
+
+        let damp = 0.96;
+        self.speed.0 *= damp;
+        self.speed.1 *= damp;
+
+        //angle bounds
+        if self.angle < 0.0 {
+            self.angle += std::f32::consts::PI * 2.0;
+        }
+        if self.angle > std::f32::consts::PI * 2.0 {
+            self.angle -= std::f32::consts::PI * 2.0;
+        }
+    }
+
+    fn is_alive(&self) -> bool {
+        return true;
     }
 }
 
