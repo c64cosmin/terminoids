@@ -178,11 +178,10 @@ impl DrawingContext for AsciiContext {
             let top = tri.points[0].1.min(tri.points[1].1).min(tri.points[2].1);
             let bot = tri.points[0].1.max(tri.points[1].1).max(tri.points[2].1);
 
-            println!("top:{} bot:{}", top, bot);
-
             let vector_len = (bot - top) as usize + 1;
             //create the vector of lines
-            let mut line_segments: Vec<(u16, u16, u16)> = vec![(0, 0, 0); vector_len];
+            let mut line_segments: Vec<(u16, u16, u16)> =
+                vec![(u16::MAX, u16::MAX, u16::MAX); vector_len];
 
             //all edges
             [
@@ -204,11 +203,18 @@ impl DrawingContext for AsciiContext {
                 let t = top as usize;
                 if a_y != b_y {
                     for y in a_y..=b_y {
-                        line_segments[y - t] = (
-                            0,
-                            (a.0 + ((y as f32) - a.1) * (b.0 - a.0) / (b.1 - a.1)) as u16,
-                            y as u16,
-                        );
+                        let segment = line_segments[y - t];
+                        let computed_x =
+                            (a.0 + ((y as f32) - a.1) * (b.0 - a.0) / (b.1 - a.1)) as u16;
+                        if segment.0 == u16::MAX {
+                            line_segments[y - t] = (computed_x, u16::MAX, y as u16);
+                        } else {
+                            line_segments[y - t] = (
+                                computed_x.min(segment.0),
+                                computed_x.max(segment.0),
+                                y as u16,
+                            );
+                        }
                     }
                 }
             });
