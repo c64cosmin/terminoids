@@ -256,6 +256,10 @@ impl DrawingContext for AsciiContext {
                 }
             }
 
+            if was_colored {
+                print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
+            }
+
             print!("\r");
         }
     }

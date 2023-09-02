@@ -130,9 +130,6 @@ fn start() {
         print!("{}", termion::cursor::Goto(1, 1));
         print!("{}{}", color::Black.bg_str(), color::White.fg_str());
         println!("FPS{:?}", frame_time.elapsed());
-        println!("Position{:?}", ship.position);
-        println!("Camera{:?}", camera);
-        println!("Camera{:?}", camera.get_bounds());
 
         stdout.flush().unwrap();
 
