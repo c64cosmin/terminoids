@@ -5,6 +5,7 @@ use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
 
+#[derive(Clone, Debug)]
 pub enum AsteroidSize {
     Tiny,
     Small,
@@ -13,6 +14,7 @@ pub enum AsteroidSize {
     Huge,
 }
 
+#[derive(Clone, Debug)]
 pub struct Asteroid {
     pub position: (f32, f32),
     pub speed: (f32, f32),
@@ -125,5 +127,49 @@ impl Asteroid {
             AsteroidSize::Big => (6, 3.3),
             AsteroidSize::Huge => (7, 4.0),
         }
+    }
+
+    pub fn split(&self) -> Vec<Asteroid> {
+        let mut rnd = rand::thread_rng();
+        let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
+            * match rand::random() {
+                true => -1.0,
+                false => 1.0,
+            };
+        let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
+        let move_speed = rnd.gen::<f32>() * 1.5 + 1.5;
+        let speed: Vec2 = (
+            angle.cos() * move_speed + self.speed.0,
+            angle.sin() * move_speed + self.speed.1,
+        );
+        [
+            Asteroid {
+                position: self.position,
+                speed,
+                angle,
+                angle_speed,
+                size: match self.size {
+                    AsteroidSize::Small => AsteroidSize::Tiny,
+                    AsteroidSize::Medium => AsteroidSize::Small,
+                    AsteroidSize::Big => AsteroidSize::Medium,
+                    AsteroidSize::Huge => AsteroidSize::Big,
+                    _ => AsteroidSize::Tiny,
+                },
+            },
+            Asteroid {
+                position: self.position,
+                speed,
+                angle,
+                angle_speed,
+                size: match self.size {
+                    AsteroidSize::Small => AsteroidSize::Tiny,
+                    AsteroidSize::Medium => AsteroidSize::Small,
+                    AsteroidSize::Big => AsteroidSize::Medium,
+                    AsteroidSize::Huge => AsteroidSize::Big,
+                    _ => AsteroidSize::Tiny,
+                },
+            },
+        ]
+        .to_vec()
     }
 }

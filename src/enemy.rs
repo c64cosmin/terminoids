@@ -24,10 +24,14 @@ impl Enemies {
         self.asteroids.clear();
     }
 
+    fn get_entities_no(&self) -> usize {
+        return self.asteroids.len();
+    }
+
     pub fn update_with_ship(&mut self, camera: &Camera, delta: f32, ship: &Ship) {
         self.update(camera, delta);
 
-        if self.time < 0.0 {
+        if (self.time < 0.0 || self.get_entities_no() == 0) && self.get_entities_no() < 8 {
             let mut rnd = rand::thread_rng();
             let bounds = camera.get_bounds();
             let position: (f32, f32) = (
@@ -45,17 +49,28 @@ impl Enemies {
 
             if distance(ship.position, position) > 7.0 {
                 self.asteroids.push(Asteroid::new(position));
-                self.time = 5.0;
+                self.time = 10.0;
             }
         }
     }
 
     pub fn collide(&mut self, bullets: &mut Bullets) {
-        self.damage::<Asteroid>(&self.asteroids, bullets)
+        let mut new_asteroids: Vec<Asteroid> = Vec::<Asteroid>::with_capacity(10);
+        let damaged: Vec<usize> = self.damage::<Asteroid>(&self.asteroids, bullets);
+        damaged.iter().for_each(|&i| match self.asteroids[i].size {
+            AsteroidSize::Tiny => {}
+            _ => self.asteroids[i]
+                .split()
+                .iter()
+                .for_each(|a| new_asteroids.push(a.clone())),
+        });
+        damaged.iter().rev().for_each(|&i| {
+            self.asteroids.remove(i);
+        });
+
+        new_asteroids
             .iter()
-            .for_each(|&i| {
-                self.asteroids.remove(i);
-            });
+            .for_each(|na| self.asteroids.push(na.clone()));
     }
 
     fn damage<T: Collidable>(&self, collection: &Vec<T>, bullets: &mut Bullets) -> Vec<usize> {
