@@ -12,8 +12,8 @@ pub fn vertex_shader(input: &Point, camera: &Camera) -> Point {
     let aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
     let char_ratio: (f32, f32) = (17.0 / 8.0, 1.0);
     (
-        input.0 * camera.zoom * char_ratio.0,
-        input.1 * camera.zoom * char_ratio.1,
+        input.0 * camera.zoom * char_ratio.0 + camera.size.0 / 2.0,
+        input.1 * camera.zoom * char_ratio.1 + camera.size.1 / 2.0,
     )
 }
 
