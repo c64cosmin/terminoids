@@ -179,16 +179,7 @@ impl DrawingContext for AsciiContext {
     }
 
     fn draw_triangles(&mut self, triangles: &Vec<Triangle>) {
-        let vertices: Vec<[(u16, u16); 3]> = triangles
-            .iter()
-            .map(|tri| {
-                [
-                    (tri.points[0].0 as u16, tri.points[0].1 as u16),
-                    (tri.points[1].0 as u16, tri.points[1].1 as u16),
-                    (tri.points[2].0 as u16, tri.points[2].1 as u16),
-                ]
-            })
-            .collect();
+        //find the minimum on Y axis and it's index
         let min_y: Vec<(u16, usize)> = triangles
             .iter()
             .map(|tri| {
@@ -204,6 +195,7 @@ impl DrawingContext for AsciiContext {
                 (min as u16, i)
             })
             .collect();
+        //find the maximum on Y axis and it's index
         let max_y: Vec<(u16, usize)> = triangles
             .iter()
             .map(|tri| {
@@ -227,15 +219,34 @@ impl DrawingContext for AsciiContext {
         //the forth is extracted by doing a trick
         //3 - min_index - max_index is always going to be the remaining vertice
         type Data = (u16, usize, usize, usize);
-        let heights: Vec<Data> = min_y
+        let data: Vec<Data> = min_y
             .iter()
             .zip(max_y)
             .map(|(min, max)| (max.0 - min.0, min.1, max.1, 3 - min.1 - max.1))
             .collect();
 
-        vertices.iter().zip(heights).for_each(|(vert, data)| {
+        let number_of_lines = data.iter().fold(0, |acc, el| acc + el.0);
+
+        //x, y, length
+        type Line = (u16, u16, u16);
+        let mut lines: Vec<Line> = vec![(0, 0, 0); number_of_lines as usize];
+        let mut lines_it: usize = 0;
+
+        triangles.iter().zip(data).for_each(|(tri, data)| {
+            let indices = [data.1, data.3, data.2];
             for y in 0..data.0 {
-                self.set((vert[0].0, vert[0].1 + y), y as u8 + 3);
+                lines[lines_it + y as usize] = (
+                    tri.points[0].0 as u16,
+                    tri.points[1].0 as u16,
+                    tri.points[0].1 as u16 + y,
+                );
+            }
+            lines_it += data.0 as usize;
+        });
+
+        lines.iter().for_each(|line| {
+            for x in 0..line.2 {
+                self.set((line.0 + x, line.1), x as u8);
             }
         });
     }
