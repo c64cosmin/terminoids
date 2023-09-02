@@ -43,36 +43,11 @@ fn start() {
     };
 
     let mut asteroids = [
-        Asteroid {
-            position: (8.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Tiny,
-        },
-        Asteroid {
-            position: (16.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Small,
-        },
-        Asteroid {
-            position: (8.0, 5.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Medium,
-        },
-        Asteroid {
-            position: (-8.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Big,
-        },
-        Asteroid {
-            position: (-16.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Huge,
-        },
+        Asteroid::new((8.0, 0.0)),
+        Asteroid::new((16.0, 0.0)),
+        Asteroid::new((8.0, 5.0)),
+        Asteroid::new((-8.0, 0.0)),
+        Asteroid::new((-16.0, 0.0)),
     ];
 
     let turn_speed = 0.2;
@@ -108,6 +83,9 @@ fn start() {
         //update
         ship.update(&camera, delta_time);
         ship_bullets.update(&camera, delta_time);
+        asteroids
+            .iter_mut()
+            .for_each(|a| a.update(&camera, delta_time));
 
         print!("{}", termion::cursor::Goto(1, 1));
 
@@ -115,10 +93,7 @@ fn start() {
         scr.flush_points();
         scr.clear();
 
-        asteroids.iter_mut().enumerate().for_each(|(i, a)| {
-            a.angle += (0.02 + (i as f32) * 0.003) * turn_speed;
-            a.draw(&mut scr)
-        });
+        asteroids.iter().for_each(|a| a.draw(&mut scr));
         ship.draw(&mut scr);
         ship_bullets.draw(&mut scr);
 
@@ -155,36 +130,11 @@ fn test() {
     };
 
     let mut asteroids = [
-        Asteroid {
-            position: (8.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Tiny,
-        },
-        Asteroid {
-            position: (16.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Small,
-        },
-        Asteroid {
-            position: (8.0, 5.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Medium,
-        },
-        Asteroid {
-            position: (-8.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Big,
-        },
-        Asteroid {
-            position: (-16.0, 0.0),
-            speed: (0.0, 0.0),
-            angle: 0.0,
-            size: AsteroidSize::Huge,
-        },
+        Asteroid::new((8.0, 0.0)),
+        Asteroid::new((16.0, 0.0)),
+        Asteroid::new((8.0, 5.0)),
+        Asteroid::new((-8.0, 0.0)),
+        Asteroid::new((-16.0, 0.0)),
     ]
     .iter()
     .for_each(|a| a.draw(&mut scr));

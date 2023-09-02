@@ -3,6 +3,7 @@ use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
+use rand::Rng;
 
 pub enum AsteroidSize {
     Tiny,
@@ -60,20 +61,19 @@ impl TerminalDrawble for Asteroid {
 
 impl Sprite for Asteroid {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        //self.position.0 += self.speed.0;
-        //self.position.1 += self.speed.1;
-        self.angle += 0.05;
+        self.position.0 += self.speed.0;
+        self.position.1 += self.speed.1;
+        self.angle += self.angle_speed;
     }
 }
 
 impl Asteroid {
-    fn new(position: (f32, f32)) -> Asteroid {
-        let mut rnd = rand::thread_rnd();
-        let mut angle_speed = rnd.gen();
+    pub fn new(position: (f32, f32)) -> Asteroid {
+        let mut rnd = rand::thread_rng();
+        let mut angle_speed: f32 = rnd.gen::<f32>() * 0.02 + 0.02;
         if rand::random() {
             angle_speed *= -1.0;
         }
-        angle_speed = angle_speed + 0.02;
         Asteroid {
             position,
             speed: (0.0, 0.0),
