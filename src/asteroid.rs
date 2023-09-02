@@ -49,7 +49,7 @@ impl TerminalDrawble for Asteroid {
 
             triangles[i] = Triangle {
                 points: [self.position, point_left, point_right],
-                colors: [0.5, 0.1, 0.2],
+                colors: [0.55, 0.2, 0.3],
                 color_palette: ColorPalette::Cyan,
             };
         }
