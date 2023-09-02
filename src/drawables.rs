@@ -33,6 +33,7 @@ pub const GRAY_PALETTE: [(&str, &str); 3] = [
     (color::White.bg_str(), color::LightWhite.fg_str()),
 ];
 */
+pub const CHAR_BALL: char = '\u{25CF}';
 pub const CHARS_GRADIENT: [char; 5] = [' ', '\u{2591}', '\u{2592}', '\u{2593}', '\u{2593}'];
 //pub const CHARS_GRADIENT: [char; 5] = ['.', 'x', '%', '#', '@'];
 pub const DEFAULT_COLOR: (&str, &str) = ("\u{1b}[48;5;0m", "\u{1b}[38;5;7m");

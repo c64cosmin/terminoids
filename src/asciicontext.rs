@@ -190,6 +190,38 @@ impl AsciiContext {
             });
         });
     }
+
+    pub fn draw_points(&mut self, camera: &Camera) {
+        let shaded_points: Vec<Point> = self
+            .points
+            .iter()
+            .map(|p| Point {
+                position: vertex_shader(&p.position, camera),
+                color: p.color,
+                color_palette: p.color_palette.clone(),
+            })
+            .collect();
+        shaded_points.iter().for_each(|p| {
+            let color = match p.color_palette {
+                ColorPalette::Custom => p.color as u8,
+                _ => (p.color * PALETTE_RANGE as f32) as u8,
+            };
+            let color_offset = match p.color_palette {
+                ColorPalette::Red => 1,
+                ColorPalette::Green => 17,
+                ColorPalette::Blue => 33,
+                ColorPalette::Yellow => 49,
+                ColorPalette::Magenta => 65,
+                ColorPalette::Cyan => 81,
+                ColorPalette::Gray => 97,
+                ColorPalette::Custom => 0,
+            };
+            self.set(
+                (p.position.0 as u16, p.position.1 as u16),
+                color + color_offset,
+            );
+        });
+    }
 }
 
 fn edge_function(a: Vec2, b: Vec2, c: Vec2) -> f32 {
@@ -252,6 +284,10 @@ impl DrawingContext for AsciiContext {
                             last_pixel = 0;
                         }
                         print!(" ");
+                    }
+                    128 => {
+                        print!("{}", color::Fg(color::LightWhite));
+                        print!("{}", CHAR_BALL);
                     }
                     _ => {
                         last_char = self.fill_color(pixel - 1, last_pixel - 1, last_char);

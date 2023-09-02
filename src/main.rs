@@ -112,8 +112,9 @@ fn start() {
             a.draw(&mut scr)
         });
         ship.draw(&mut scr);
-        scr.draw_triangles(&camera);
 
+        scr.draw_triangles(&camera);
+        scr.draw_points(&camera);
         scr.display();
 
         print!("{}", termion::cursor::Goto(1, 1));

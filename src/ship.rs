@@ -47,6 +47,8 @@ impl TerminalDrawble for Ship {
         ]
         .to_vec();
         ctx.add_triangles(&triangles);
+
+        ctx.add_points(&self.bullets);
     }
 }
 
@@ -93,8 +95,8 @@ impl Ship {
     pub fn fire(&mut self) {
         self.bullets.push(Point {
             position: self.position,
-            color: 1.0,
-            color_palette: ColorPalette::Gray,
+            color: 128.0,
+            color_palette: ColorPalette::Custom,
         });
     }
 }
