@@ -33,6 +33,11 @@ fn start() {
         speed: (0.0, 0.0),
         angle: 0.0,
     };
+    let camera = Camera {
+        position: (0.0, 0.0),
+        size: (term_size.0 as f32, term_size.1 as f32),
+        zoom: 100.0,
+    };
     let turn_speed = 5.0;
 
     loop {
@@ -71,7 +76,7 @@ fn start() {
                     color_palette: ColorPalette::Blue,
                 },
                 Triangle {
-                    points: [(0.3, 0.1), (0.5, 0.2), (0.4, 0.4)],
+                    points: [(0.01, 0.01), (0.3, 0.3), (0.01, 0.3)],
                     colors: [0.0, 0.5, 1.0],
                     color_palette: ColorPalette::Blue,
                 },
@@ -79,7 +84,7 @@ fn start() {
             .to_vec(),
         );
 
-        scr.draw_triangles();
+        scr.draw_triangles(&camera);
 
         scr.display();
 
@@ -102,8 +107,11 @@ fn test() {
     let term_size = terminal_size().unwrap();
     let mut scr: AsciiContext = AsciiContext::new((term_size.0, term_size.1 / 2));
 
-    let x: f32 = 1.0;
-    let y: f32 = 1.0;
+    let camera = Camera {
+        position: (0.0, 0.0),
+        size: (term_size.0 as f32, term_size.1 as f32 / 2.0),
+        zoom: 100.0,
+    };
 
     /*
     for x in 0..term_size.0 {
@@ -113,21 +121,23 @@ fn test() {
     }
     */
 
-    scr.draw_triangles(
+    scr.add_triangles(
         &[
             Triangle {
-                points: [(x, y), (x + 20.0, y + 10.0), (x + 6.0, y + 20.0)],
+                points: [(0.0, 0.0), (0.2, 0.1), (0.06, 0.2)],
                 colors: [0.0, 1.0, 0.5],
                 color_palette: ColorPalette::Blue,
             },
             Triangle {
-                points: [(30.0, 10.0), (50.0, 20.0), (40.0, 40.0)],
-                colors: [0.0, 0.5, 1.0],
+                points: [(0.1, 0.1), (0.4, 0.4), (0.1, 0.4)],
+                colors: [1.0, 1.0, 1.0],
                 color_palette: ColorPalette::Blue,
             },
         ]
         .to_vec(),
     );
+
+    scr.draw_triangles(&camera);
 
     scr.display();
 }

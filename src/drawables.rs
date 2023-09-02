@@ -82,6 +82,12 @@ pub const GRAY_PALETTE: [(&str, &str); 3] = [
 pub type Point = (f32, f32);
 pub type ColorLuma = f32;
 
+pub struct Camera {
+    pub position: Point,
+    pub size: Point,
+    pub zoom: f32,
+}
+
 #[derive(Clone, Debug)]
 pub enum ColorPalette {
     Red,

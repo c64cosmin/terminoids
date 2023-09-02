@@ -8,6 +8,15 @@ pub struct AsciiContext {
     triangles: Vec<Triangle>,
 }
 
+pub fn vertex_shader(input: &Point, camera: &Camera) -> Point {
+    let aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
+    let char_ratio: (f32, f32) = (17.0 / 8.0, 1.0);
+    (
+        input.0 * camera.zoom * char_ratio.0,
+        input.1 * camera.zoom * char_ratio.1,
+    )
+}
+
 impl AsciiContext {
     pub fn new(size: (u16, u16)) -> AsciiContext {
         let bitmap: Vec<u8> = vec![0; (size.0 * size.1) as usize];
@@ -21,7 +30,9 @@ impl AsciiContext {
 
     pub fn set(&mut self, pos: (u16, u16), v: u8) {
         let i = pos.1 * self.size.0 + pos.0;
-        self.bitmap[i as usize] = v;
+        if pos.0 < self.size.0 && pos.1 < self.size.1 {
+            self.bitmap[i as usize] = v;
+        }
     }
 
     fn get_indexes(&self, luma: u8, color_len: usize) -> (usize, usize) {
@@ -90,8 +101,25 @@ impl AsciiContext {
         return chr;
     }
 
-    pub fn draw_triangles(&mut self) {
-        self.triangles.iter().for_each(|tri| {
+    pub fn draw_triangles(&mut self, camera: &Camera) {
+        let shaded_triangles: Vec<Triangle> = self
+            .triangles
+            .iter()
+            .map(|tri| {
+                //vertex shader
+                Triangle {
+                    points: [
+                        vertex_shader(&tri.points[0], camera),
+                        vertex_shader(&tri.points[1], camera),
+                        vertex_shader(&tri.points[2], camera),
+                    ],
+                    colors: tri.colors,
+                    color_palette: tri.color_palette.clone(),
+                }
+            })
+            .collect();
+
+        shaded_triangles.iter().for_each(|tri| {
             //find the extremities of the triangle
             let top = tri.points[0].1.min(tri.points[1].1).min(tri.points[2].1);
             let bot = tri.points[0].1.max(tri.points[1].1).max(tri.points[2].1);
@@ -119,20 +147,17 @@ impl AsciiContext {
                 let a_y = a.1 as usize;
                 let b_y = b.1 as usize;
                 let t = top as usize;
-                if a_y != b_y {
-                    for y in a_y..=b_y {
-                        let segment = line_segments[y - t];
-                        let computed_x =
-                            (a.0 + ((y as f32) - a.1) * (b.0 - a.0) / (b.1 - a.1)) as u16;
-                        if segment.0 == u16::MAX {
-                            line_segments[y - t] = (computed_x, u16::MAX, y as u16);
-                        } else {
-                            line_segments[y - t] = (
-                                computed_x.min(segment.0),
-                                computed_x.max(segment.0),
-                                y as u16,
-                            );
-                        }
+                for y in a_y..b_y {
+                    let segment = line_segments[y - t];
+                    let computed_x = (a.0 + ((y as f32) - a.1) * (b.0 - a.0) / (b.1 - a.1)) as u16;
+                    if segment.0 == u16::MAX {
+                        line_segments[y - t] = (computed_x, u16::MAX, y as u16);
+                    } else {
+                        line_segments[y - t] = (
+                            computed_x.min(segment.0),
+                            computed_x.max(segment.0),
+                            y as u16,
+                        );
                     }
                 }
             });
@@ -140,7 +165,7 @@ impl AsciiContext {
             line_segments.iter().for_each(|(x0, x1, y)| {
                 for x in *x0..=*x1 {
                     let color =
-                        (get_barycentric((x as f32, *y as f32), tri) * PALETTE_RANGE as f32) as u8;
+                        (get_barycentric((x as f32, *y as f32), &tri) * PALETTE_RANGE as f32) as u8;
                     self.set((x, *y), color);
                 }
             });
@@ -171,7 +196,9 @@ impl DrawingContext for AsciiContext {
     }
 
     fn add_triangles(&mut self, triangle: &Vec<Triangle>) {
-        triangle.iter().for_each(|tri| self.triangles.push(*tri));
+        triangle
+            .iter()
+            .for_each(|tri| self.triangles.push(tri.clone()));
     }
 
     fn display(&self) {
