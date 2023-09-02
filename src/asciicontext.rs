@@ -5,6 +5,8 @@ use termion::color;
 pub struct AsciiContext {
     bitmap: Vec<u8>,
     size: (u16, u16),
+    last_color: u8,
+    last_char: char,
 }
 
 /*
@@ -92,7 +94,12 @@ impl AsciiContext {
     pub fn new(size: (u16, u16)) -> AsciiContext {
         let bitmap: Vec<u8> = vec![0; (size.0 * size.1) as usize];
 
-        AsciiContext { bitmap, size }
+        AsciiContext {
+            bitmap,
+            size,
+            last_color: 0,
+            last_char: ' ',
+        }
     }
 
     pub fn set(&mut self, pos: (u16, u16), v: u8) {
@@ -144,7 +151,13 @@ impl AsciiContext {
         (GRAY_PALETTE[v_col], CHARS_GRADIENT[v_char])
     }
 
-    fn fill_color(&self, color: u8) {
+    fn fill_color(&mut self, color: u8) {
+        if self.last_color == color {
+            print!("{}", self.last_char);
+            return;
+        }
+
+        self.last_color = color;
         let ((fg, bg), chr) = match color {
             0..=15 => self.red_palette(color),
             16..=31 => self.green_palette(color - 16),
