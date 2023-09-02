@@ -11,9 +11,10 @@ pub struct AsciiContext {
 pub fn vertex_shader(input: &Point, camera: &Camera) -> Point {
     let aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
     let char_ratio: (f32, f32) = (17.0 / 8.0, 1.0);
+    let default_height: f32 = camera.size.1 as f32 / 63.0;
     (
-        input.0 * camera.zoom * char_ratio.0 + camera.size.0 / 2.0,
-        input.1 * camera.zoom * char_ratio.1 + camera.size.1 / 2.0,
+        input.0 * default_height * camera.zoom * char_ratio.0 + camera.size.0 / 2.0,
+        input.1 * default_height * camera.zoom * char_ratio.1 + camera.size.1 / 2.0,
     )
 }
 
@@ -30,7 +31,7 @@ impl AsciiContext {
 
     pub fn set(&mut self, pos: (u16, u16), v: u8) {
         let i = pos.1 * self.size.0 + pos.0;
-        if pos.0 < self.size.0 && pos.1 < self.size.1 {
+        if pos.0 < self.size.0 && pos.1 < self.size.1 && i < self.size.0 * self.size.1 {
             self.bitmap[i as usize] = v;
         }
     }

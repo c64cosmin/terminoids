@@ -75,24 +75,29 @@ fn start() {
     };
     let turn_speed = 0.05;
 
-    loop {
+    let mut running = true;
+
+    while running {
         let frame_time = time::Instant::now();
 
-        match stdin.next() {
-            Some(result) => match result {
-                Ok(key) => match key {
-                    Key::Char('q') => {
-                        break;
-                    }
-                    Key::Left => ship.angle -= turn_speed,
-                    Key::Right => ship.angle += turn_speed,
-                    key => {
-                        print!("Key pressed: {:?}", key);
-                    }
+        let mut stdin_flushed = false;
+        while !stdin_flushed {
+            match stdin.next() {
+                Some(result) => match result {
+                    Ok(key) => match key {
+                        Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
+                            running = false;
+                        }
+                        Key::Left => ship.angle -= turn_speed,
+                        Key::Right => ship.angle += turn_speed,
+                        key => {
+                            print!("Key pressed: {:?}", key);
+                        }
+                    },
+                    _ => {}
                 },
-                _ => {}
-            },
-            _ => {}
+                _ => stdin_flushed = true,
+            }
         }
 
         print!("{}", termion::cursor::Goto(1, 1));
@@ -138,33 +143,46 @@ fn test() {
         zoom: 5.0,
     };
 
-    /*
-    for x in 0..term_size.0 {
-        for y in 0..term_size.1 {
-            scr.set((x, y), 0);
-        }
-    }
-    */
-
-    scr.add_triangles(
-        &[
-            Triangle {
-                points: [(0.0, 0.0), (0.2, 0.1), (0.06, 0.2)],
-                colors: [0.0, 1.0, 0.5],
-                color_palette: ColorPalette::Blue,
-            },
-            Triangle {
-                points: [(0.1, 0.1), (0.4, 0.4), (0.1, 0.4)],
-                colors: [1.0, 1.0, 1.0],
-                color_palette: ColorPalette::Blue,
-            },
-        ]
-        .to_vec(),
-    );
+    let mut asteroids = [
+        Asteroid {
+            position: (8.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Tiny,
+        },
+        Asteroid {
+            position: (16.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Small,
+        },
+        Asteroid {
+            position: (8.0, 5.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Medium,
+        },
+        Asteroid {
+            position: (-8.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Big,
+        },
+        Asteroid {
+            position: (-16.0, 0.0),
+            speed: (0.0, 0.0),
+            angle: 0.0,
+            size: AsteroidSize::Huge,
+        },
+    ]
+    .iter()
+    .for_each(|a| a.draw(&mut scr));
 
     scr.draw_triangles(&camera);
 
     scr.display();
+
+    println!("{:?}", term_size);
 }
 
 fn main() {
