@@ -307,6 +307,18 @@ impl DrawingContext for AsciiContext {
                         last_pixel = pixel;
                         was_colored = true;
                     }
+                    129 => {
+                        print!("{}{}", color::Bg(color::LightRed), color::Fg(color::Black));
+                        print!("{}", CHAR_PIERCING0);
+                        last_pixel = pixel;
+                        was_colored = true;
+                    }
+                    130 => {
+                        print!("{}{}", color::Bg(color::LightRed), color::Fg(color::Black));
+                        print!("{}", CHAR_PIERCING1);
+                        last_pixel = pixel;
+                        was_colored = true;
+                    }
                     _ => {
                         last_char = self.fill_color(pixel - 1, last_pixel - 1, last_char);
                         last_pixel = pixel;

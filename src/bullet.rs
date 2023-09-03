@@ -4,6 +4,7 @@ use crate::drawingcontext::DrawingContext;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 
+#[derive(Clone, Debug)]
 pub enum BulletType {
     Normal,
     Piercing,
@@ -20,14 +21,17 @@ impl Bullet {
     pub fn new(position: (f32, f32), angle: f32, bullet_type: BulletType) -> Bullet {
         let linear_speed = match bullet_type {
             BulletType::Normal => 15.0,
-            BulletType::Piercing => 18.0,
+            BulletType::Piercing => 20.0,
         };
         let speed = (angle.cos() * linear_speed, angle.sin() * linear_speed);
         Bullet {
             position,
             speed,
-            bullet_type,
-            life: 2.0,
+            bullet_type: bullet_type.clone(),
+            life: match bullet_type {
+                BulletType::Normal => 2.0,
+                BulletType::Piercing => 3.0,
+            },
         }
     }
 
@@ -36,7 +40,7 @@ impl Bullet {
             position: self.position,
             color: match self.bullet_type {
                 BulletType::Normal => 128.0,
-                BulletType::Piercing => 129.0 + self.life.rem_euclid(2.0).floor(),
+                BulletType::Piercing => 129.0 + (self.life * 30.0).rem_euclid(2.0).floor(),
             },
             color_palette: match self.bullet_type {
                 BulletType::Normal => ColorPalette::Custom,

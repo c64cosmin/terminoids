@@ -176,9 +176,9 @@ impl Ship {
             life: 5,
             spawning: 2.0,
             score: 0,
-            shield: 30.0,
+            shield: 0.0,
             rapidfire: 0.0,
-            piercing: 0.0,
+            piercing: 20.0,
         }
     }
     pub fn thrust(&mut self) {
@@ -194,10 +194,18 @@ impl Ship {
             return;
         }
         if self.fire_cooldown <= 0.0 {
-            self.fire_cooldown = 0.3;
-            bullets
-                .bullets
-                .push(Bullet::new(self.position, self.angle, BulletType::Piercing));
+            self.fire_cooldown = match self.piercing > 0.0 {
+                false => 0.3,
+                true => 0.1,
+            };
+            bullets.bullets.push(Bullet::new(
+                self.position,
+                self.angle,
+                match self.piercing > 0.0 {
+                    true => BulletType::Piercing,
+                    false => BulletType::Normal,
+                },
+            ));
         }
     }
 
@@ -219,7 +227,7 @@ impl Ship {
     pub fn powerup(&mut self, powerup: &Powerup) {
         match powerup.size {
             PowerupSize::Shield => self.shield = 30.0,
-            PowerupSize::PiercingBullets => self.piercing = 30.0,
+            PowerupSize::PiercingBullets => self.piercing = 20.0,
             PowerupSize::RapidFire => self.rapidfire = 30.0,
         }
     }
