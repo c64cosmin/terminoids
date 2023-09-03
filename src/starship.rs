@@ -25,9 +25,172 @@ pub struct StarShip {
 impl TerminalDrawble for StarShip {
     fn draw(&self, ctx: &mut AsciiContext) {
         match self.size {
-            StarShipSize::Flying => {}
-            StarShipSize::SmallCluster => {}
-            StarShipSize::MediumCluster => {}
+            StarShipSize::Flying => {
+                let (sides, radius) = self.get_description();
+                let mut triangles = vec![EMPTY_TRIANGLE; sides];
+
+                let small_radius = 1.0;
+
+                let ai = self.angle;
+                let al = ai - 2.5 * std::f32::consts::FRAC_PI_4;
+                let ar = ai + 2.5 * std::f32::consts::FRAC_PI_4;
+
+                let point_head: Vec2 = (
+                    ai.cos() * radius * 1.2 + self.position.0,
+                    ai.sin() * radius * 1.2 + self.position.1,
+                );
+
+                let point_left: Vec2 = (
+                    al.cos() * radius * small_radius + self.position.0,
+                    al.sin() * radius * small_radius + self.position.1,
+                );
+                let point_right: Vec2 = (
+                    ar.cos() * radius * small_radius + self.position.0,
+                    ar.sin() * radius * small_radius + self.position.1,
+                );
+
+                let color_a = ai.cos() * 0.4 + 0.5;
+                let color_b = (ai + std::f32::consts::FRAC_PI_4).cos() * 0.3 + 0.5;
+
+                triangles[0] = Triangle {
+                    points: [self.position, point_left, point_head],
+                    colors: [color_a, color_a, color_a],
+                    color_palette: ColorPalette::Yellow,
+                };
+                triangles[1] = Triangle {
+                    points: [self.position, point_right, point_head],
+                    colors: [color_b, color_b, color_b],
+                    color_palette: ColorPalette::Yellow,
+                };
+
+                ctx.add_triangles(&triangles);
+            }
+            StarShipSize::SmallCluster => {
+                let (sides, radius) = self.get_description();
+                let mut triangles = vec![EMPTY_TRIANGLE; sides];
+
+                let n = 4.0;
+                let u = 2.0 * std::f32::consts::PI / n;
+                let sides = 4;
+                let small_radius = 0.4;
+
+                for i in 0..sides {
+                    let ai = (i as f32) * u + self.angle;
+                    let al = ai - std::f32::consts::FRAC_PI_4;
+                    let ar = ai + std::f32::consts::FRAC_PI_4;
+
+                    let point_head: Vec2 = (
+                        ai.cos() * radius * 1.2 + self.position.0,
+                        ai.sin() * radius * 1.2 + self.position.1,
+                    );
+
+                    let point_left: Vec2 = (
+                        al.cos() * radius * small_radius + self.position.0,
+                        al.sin() * radius * small_radius + self.position.1,
+                    );
+                    let point_right: Vec2 = (
+                        ar.cos() * radius * small_radius + self.position.0,
+                        ar.sin() * radius * small_radius + self.position.1,
+                    );
+
+                    let color_a = ai.cos() * 0.4 + 0.5;
+                    let color_b = (ai + u).cos() * 0.3 + 0.5;
+
+                    triangles[i * 2] = Triangle {
+                        points: [self.position, point_left, point_head],
+                        colors: [color_a, color_a, color_a],
+                        color_palette: ColorPalette::Magenta,
+                    };
+                    triangles[i * 2 + 1] = Triangle {
+                        points: [self.position, point_right, point_head],
+                        colors: [color_b, color_b, color_b],
+                        color_palette: ColorPalette::Magenta,
+                    };
+                }
+                ctx.add_triangles(&triangles);
+            }
+            StarShipSize::MediumCluster => {
+                let (sides, radius) = self.get_description();
+                let mut triangles = vec![EMPTY_TRIANGLE; sides];
+
+                let n = 4.0;
+                let u = 2.0 * std::f32::consts::PI / n;
+                let sides = 4;
+                let small_radius = 0.6;
+
+                for i in 0..sides {
+                    let ai = (i as f32) * u + self.angle;
+                    let al = ai - std::f32::consts::FRAC_PI_4;
+                    let ar = ai + std::f32::consts::FRAC_PI_4;
+
+                    let point_head: Vec2 = (
+                        ai.cos() * radius * 1.2 + self.position.0,
+                        ai.sin() * radius * 1.2 + self.position.1,
+                    );
+
+                    let point_left: Vec2 = (
+                        al.cos() * radius * small_radius + self.position.0,
+                        al.sin() * radius * small_radius + self.position.1,
+                    );
+                    let point_right: Vec2 = (
+                        ar.cos() * radius * small_radius + self.position.0,
+                        ar.sin() * radius * small_radius + self.position.1,
+                    );
+
+                    let color_a = ai.cos() * 0.4 + 0.5;
+                    let color_b = (ai + u).cos() * 0.3 + 0.5;
+
+                    triangles[i * 2] = Triangle {
+                        points: [self.position, point_left, point_head],
+                        colors: [color_a, color_a, color_a],
+                        color_palette: ColorPalette::Magenta,
+                    };
+                    triangles[i * 2 + 1] = Triangle {
+                        points: [self.position, point_right, point_head],
+                        colors: [color_b, color_b, color_b],
+                        color_palette: ColorPalette::Magenta,
+                    };
+                }
+
+                let n = 4.0;
+                let u = 2.0 * std::f32::consts::PI / n;
+                let sides = 4;
+
+                for i in 0..sides {
+                    let ai = (i as f32) * u + self.angle + std::f32::consts::FRAC_PI_4;
+                    let al = ai - std::f32::consts::FRAC_PI_4;
+                    let ar = ai + std::f32::consts::FRAC_PI_4;
+
+                    let point_head: Vec2 = (
+                        ai.cos() * radius * 1.5 + self.position.0,
+                        ai.sin() * radius * 1.5 + self.position.1,
+                    );
+
+                    let point_left: Vec2 = (
+                        al.cos() * radius * small_radius + self.position.0,
+                        al.sin() * radius * small_radius + self.position.1,
+                    );
+                    let point_right: Vec2 = (
+                        ar.cos() * radius * small_radius + self.position.0,
+                        ar.sin() * radius * small_radius + self.position.1,
+                    );
+
+                    let color_a = ai.cos() * 0.4 + 0.5;
+                    let color_b = (ai + u).cos() * 0.3 + 0.5;
+
+                    triangles[i * 2 + 8] = Triangle {
+                        points: [self.position, point_left, point_head],
+                        colors: [color_a, color_a, color_a],
+                        color_palette: ColorPalette::Blue,
+                    };
+                    triangles[i * 2 + 9] = Triangle {
+                        points: [self.position, point_right, point_head],
+                        colors: [color_b, color_b, color_b],
+                        color_palette: ColorPalette::Blue,
+                    };
+                }
+                ctx.add_triangles(&triangles);
+            }
             StarShipSize::BigCluster => {
                 let (sides, radius) = self.get_description();
                 let mut triangles = vec![EMPTY_TRIANGLE; sides];
@@ -62,6 +225,7 @@ impl TerminalDrawble for StarShip {
                 let n = 4.0;
                 let u = 2.0 * std::f32::consts::PI / n;
                 let sides = 4;
+                let small_radius = 0.2;
 
                 for i in 0..sides {
                     let ai = (i as f32) * u + self.angle;
@@ -74,12 +238,12 @@ impl TerminalDrawble for StarShip {
                     );
 
                     let point_left: Vec2 = (
-                        al.cos() * radius * 0.2 + self.position.0,
-                        al.sin() * radius * 0.2 + self.position.1,
+                        al.cos() * radius * small_radius + self.position.0,
+                        al.sin() * radius * small_radius + self.position.1,
                     );
                     let point_right: Vec2 = (
-                        ar.cos() * radius * 0.2 + self.position.0,
-                        ar.sin() * radius * 0.2 + self.position.1,
+                        ar.cos() * radius * small_radius + self.position.0,
+                        ar.sin() * radius * small_radius + self.position.1,
                     );
 
                     let color_a = ai.cos() * 0.4 + 0.5;
@@ -112,12 +276,12 @@ impl TerminalDrawble for StarShip {
                     );
 
                     let point_left: Vec2 = (
-                        al.cos() * radius * 0.2 + self.position.0,
-                        al.sin() * radius * 0.2 + self.position.1,
+                        al.cos() * radius * small_radius + self.position.0,
+                        al.sin() * radius * small_radius + self.position.1,
                     );
                     let point_right: Vec2 = (
-                        ar.cos() * radius * 0.2 + self.position.0,
-                        ar.sin() * radius * 0.2 + self.position.1,
+                        ar.cos() * radius * small_radius + self.position.0,
+                        ar.sin() * radius * small_radius + self.position.1,
                     );
 
                     let color_a = ai.cos() * 0.4 + 0.5;
@@ -200,7 +364,7 @@ impl Spawnable for StarShip {
             position,
             speed,
             angle: 0.0,
-            size: StarShipSize::BigCluster,
+            size: StarShipSize::Flying,
             angle_speed,
         }
     }
@@ -209,9 +373,9 @@ impl Spawnable for StarShip {
 impl StarShip {
     fn get_description(&self) -> (usize, f32) {
         match self.size {
-            StarShipSize::Flying => (3, 1.9),
-            StarShipSize::SmallCluster => (4, 2.1),
-            StarShipSize::MediumCluster => (5, 2.6),
+            StarShipSize::Flying => (2, 2.0),
+            StarShipSize::SmallCluster => (8, 3.3),
+            StarShipSize::MediumCluster => (16, 4.5),
             StarShipSize::BigCluster => (18, 5.2),
         }
     }
