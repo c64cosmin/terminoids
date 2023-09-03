@@ -259,6 +259,10 @@ impl Collidable for EnemyType {
     }
 
     fn collide_with_ship(&self, ship: &Ship) -> bool {
+        if ship.shield > 0.0 {
+            return false;
+        }
+
         match self {
             EnemyType::Asteroid(a) => a.collide_with_ship(ship),
             EnemyType::StarShip(s) => s.collide_with_ship(ship),

@@ -19,7 +19,7 @@ pub struct Ship {
     spawning: f32,
     piercing: f32,
     rapidfire: f32,
-    shield: f32,
+    pub shield: f32,
 }
 
 impl TerminalDrawble for Ship {
