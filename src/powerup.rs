@@ -110,18 +110,14 @@ impl Collidable for Powerup {
 impl Spawnable for Powerup {
     fn spawn(position: (f32, f32)) -> Powerup {
         let mut rnd = rand::thread_rng();
-        let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
-            * match rand::random() {
-                true => -1.0,
-                false => 1.0,
-            };
         let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
-        let move_speed = rnd.gen::<f32>() * 0.5 + 0.1;
+        let move_speed = rnd.gen::<f32>() * 1.5 + 0.5;
         let speed: Vec2 = (angle.cos() * move_speed, angle.sin() * move_speed);
         Powerup {
             position,
             speed,
             size: PowerupSize::RapidFire,
+            life: 0.0,
         }
     }
 }

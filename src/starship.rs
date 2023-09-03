@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::enemy::*;
+use crate::powerup::*;
 use crate::ship::*;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
@@ -417,6 +418,16 @@ impl Collidable for StarShip {
                 size: StarShipSize::Flying,
             }));
         }
+
+        //powerup
+        match self.size {
+            StarShipSize::Flying => {
+                if rnd.gen_range(0..15) == 0 {
+                    splitted.push(EnemyType::Powerup(Powerup::spawn(self.position)));
+                }
+            }
+            _ => {}
+        };
 
         splitted
     }

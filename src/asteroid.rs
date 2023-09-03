@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::enemy::EnemyType;
+use crate::powerup::*;
 use crate::ship::Ship;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
@@ -111,8 +112,10 @@ impl Collidable for Asteroid {
     }
 
     fn split(&self) -> Vec<EnemyType> {
+        let mut splitted: Vec<EnemyType> = Vec::with_capacity(4);
+
         match self.size {
-            AsteroidSize::Tiny => Vec::<EnemyType>::new(),
+            AsteroidSize::Tiny => {}
             _ => {
                 let mut rnd = rand::thread_rng();
                 let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
@@ -123,45 +126,56 @@ impl Collidable for Asteroid {
                 let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
                 let angle2 = angle + std::f32::consts::PI;
                 let move_speed = rnd.gen::<f32>() * 2.0 + 0.8;
-                [
-                    EnemyType::Asteroid(Asteroid {
-                        position: self.position,
-                        speed: (
-                            angle.cos() * move_speed + self.speed.0 * 0.5,
-                            angle.sin() * move_speed + self.speed.1 * 0.5,
-                        ),
-                        angle,
-                        angle_speed,
-                        size: match self.size {
-                            AsteroidSize::Small => AsteroidSize::Tiny,
-                            AsteroidSize::Medium => AsteroidSize::Small,
-                            AsteroidSize::Big => AsteroidSize::Medium,
-                            AsteroidSize::Huge => AsteroidSize::Big,
-                            _ => AsteroidSize::Tiny,
-                        },
-                        color_palette: self.color_palette.clone(),
-                    }),
-                    EnemyType::Asteroid(Asteroid {
-                        position: self.position,
-                        speed: (
-                            angle2.cos() * move_speed + self.speed.0 * 0.5,
-                            angle2.sin() * move_speed + self.speed.1 * 0.5,
-                        ),
-                        angle,
-                        angle_speed,
-                        size: match self.size {
-                            AsteroidSize::Small => AsteroidSize::Tiny,
-                            AsteroidSize::Medium => AsteroidSize::Small,
-                            AsteroidSize::Big => AsteroidSize::Medium,
-                            AsteroidSize::Huge => AsteroidSize::Big,
-                            _ => AsteroidSize::Tiny,
-                        },
-                        color_palette: self.color_palette.clone(),
-                    }),
-                ]
-                .to_vec()
+
+                splitted.push(EnemyType::Asteroid(Asteroid {
+                    position: self.position,
+                    speed: (
+                        angle.cos() * move_speed + self.speed.0 * 0.5,
+                        angle.sin() * move_speed + self.speed.1 * 0.5,
+                    ),
+                    angle,
+                    angle_speed,
+                    size: match self.size {
+                        AsteroidSize::Small => AsteroidSize::Tiny,
+                        AsteroidSize::Medium => AsteroidSize::Small,
+                        AsteroidSize::Big => AsteroidSize::Medium,
+                        AsteroidSize::Huge => AsteroidSize::Big,
+                        _ => AsteroidSize::Tiny,
+                    },
+                    color_palette: self.color_palette.clone(),
+                }));
+                splitted.push(EnemyType::Asteroid(Asteroid {
+                    position: self.position,
+                    speed: (
+                        angle2.cos() * move_speed + self.speed.0 * 0.5,
+                        angle2.sin() * move_speed + self.speed.1 * 0.5,
+                    ),
+                    angle,
+                    angle_speed,
+                    size: match self.size {
+                        AsteroidSize::Small => AsteroidSize::Tiny,
+                        AsteroidSize::Medium => AsteroidSize::Small,
+                        AsteroidSize::Big => AsteroidSize::Medium,
+                        AsteroidSize::Huge => AsteroidSize::Big,
+                        _ => AsteroidSize::Tiny,
+                    },
+                    color_palette: self.color_palette.clone(),
+                }));
             }
-        }
+        };
+
+        //powerup
+        match self.size {
+            AsteroidSize::Tiny => {
+                let mut rnd = rand::thread_rng();
+                if rnd.gen_range(0..15) == 0 {
+                    splitted.push(EnemyType::Powerup(Powerup::spawn(self.position)));
+                }
+            }
+            _ => {}
+        };
+
+        splitted
     }
 }
 
