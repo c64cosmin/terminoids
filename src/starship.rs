@@ -1,6 +1,7 @@
 use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::enemy::*;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
@@ -355,6 +356,60 @@ impl Collidable for StarShip {
         }
         return false;
     }
+
+    fn split(&self) -> Vec<EnemyType> {
+        let mut rnd = rand::thread_rng();
+        let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
+            * match rand::random() {
+                true => -1.0,
+                false => 1.0,
+            };
+        let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
+
+        let mut splitted: Vec<EnemyType> = Vec::with_capacity(4);
+
+        //down transform
+        match self.size {
+            StarShipSize::BigCluster => {
+                splitted.push(EnemyType::StarShip(StarShip {
+                    position: self.position,
+                    speed: self.speed,
+                    angle,
+                    angle_speed,
+                    size: StarShipSize::MediumCluster,
+                }));
+            }
+            StarShipSize::MediumCluster => {
+                splitted.push(EnemyType::StarShip(StarShip {
+                    position: self.position,
+                    speed: self.speed,
+                    angle,
+                    angle_speed,
+                    size: StarShipSize::SmallCluster,
+                }));
+            }
+            _ => {}
+        };
+
+        //spawn ships
+        let number = match self.size {
+            StarShipSize::BigCluster | StarShipSize::MediumCluster => 2,
+            StarShipSize::SmallCluster => 4,
+            _ => 0,
+        };
+        let unit = std::f32::consts::PI * 2.0 / number as f32;
+        for i in 0..number {
+            splitted.push(EnemyType::StarShip(StarShip {
+                position: self.position,
+                speed: (0.0, 0.0),
+                angle: angle + (i as f32) * unit,
+                angle_speed,
+                size: StarShipSize::Flying,
+            }));
+        }
+
+        splitted
+    }
 }
 
 impl Spawnable for StarShip {
@@ -386,59 +441,5 @@ impl StarShip {
             StarShipSize::MediumCluster => (16, 4.5),
             StarShipSize::BigCluster => (18, 5.2),
         }
-    }
-
-    pub fn split(&self) -> Vec<StarShip> {
-        let mut rnd = rand::thread_rng();
-        let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
-            * match rand::random() {
-                true => -1.0,
-                false => 1.0,
-            };
-        let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
-
-        let mut splitted: Vec<StarShip> = Vec::with_capacity(4);
-
-        //down transform
-        match self.size {
-            StarShipSize::BigCluster => {
-                splitted.push(StarShip {
-                    position: self.position,
-                    speed: self.speed,
-                    angle,
-                    angle_speed,
-                    size: StarShipSize::MediumCluster,
-                });
-            }
-            StarShipSize::MediumCluster => {
-                splitted.push(StarShip {
-                    position: self.position,
-                    speed: self.speed,
-                    angle,
-                    angle_speed,
-                    size: StarShipSize::SmallCluster,
-                });
-            }
-            _ => {}
-        };
-
-        //spawn ships
-        let number = match self.size {
-            StarShipSize::BigCluster | StarShipSize::MediumCluster => 2,
-            StarShipSize::SmallCluster => 4,
-            _ => 0,
-        };
-        let unit = std::f32::consts::PI * 2.0 / number as f32;
-        for i in 0..number {
-            splitted.push(StarShip {
-                position: self.position,
-                speed: (0.0, 0.0),
-                angle: angle + (i as f32) * unit,
-                angle_speed,
-                size: StarShipSize::Flying,
-            });
-        }
-
-        splitted
     }
 }

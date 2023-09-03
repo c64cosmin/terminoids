@@ -1,6 +1,7 @@
 use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::enemy::*;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
@@ -85,6 +86,10 @@ impl Collidable for Powerup {
         }
         return false;
     }
+
+    fn split(&self) -> Vec<EnemyType> {
+        Vec::new()
+    }
 }
 
 impl Spawnable for Powerup {
@@ -109,9 +114,5 @@ impl Spawnable for Powerup {
 impl Powerup {
     fn get_description(&self) -> f32 {
         1.0
-    }
-
-    pub fn split(&self) -> Vec<Powerup> {
-        [].to_vec()
     }
 }

@@ -8,6 +8,7 @@ use crate::starship::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
 
+#[derive(Clone, Copy, Debug)]
 pub enum EnemyType {
     Asteroid(Asteroid),
     StarShip(StarShip),
@@ -96,15 +97,10 @@ impl Enemies {
     pub fn collide(&mut self, bullets: &mut Bullets) {
         let mut new_objects: Vec<EnemyType> = Vec::<EnemyType>::with_capacity(20);
         let damaged: Vec<usize> = self.damage(&self.enemies, bullets);
-        damaged.iter().for_each(|&i| match self.enemies[i] {
-            EnemyType::Asteroid(a) => a
-                .split()
+        damaged.iter().for_each(|&i| {
+            Collidable::split(&self.enemies[i])
                 .iter()
-                .for_each(|obj| new_objects.push(EnemyType::Asteroid(obj.clone()))),
-            EnemyType::StarShip(s) => s
-                .split()
-                .iter()
-                .for_each(|obj| new_objects.push(EnemyType::StarShip(obj.clone()))),
+                .for_each(|obj| new_objects.push(obj.clone()));
         });
         damaged.iter().rev().for_each(|&i| {
             self.enemies.remove(i);
@@ -164,5 +160,21 @@ impl Sprite for Enemies {
 
     fn is_alive(&self) -> bool {
         return true;
+    }
+}
+
+impl Collidable for EnemyType {
+    fn collide(&self, p: Vec2) -> bool {
+        match self {
+            EnemyType::Asteroid(a) => a.collide(p),
+            EnemyType::StarShip(s) => s.collide(p),
+        }
+    }
+
+    fn split(&self) -> Vec<EnemyType> {
+        match self {
+            EnemyType::Asteroid(a) => a.split(),
+            EnemyType::StarShip(s) => s.split(),
+        }
     }
 }

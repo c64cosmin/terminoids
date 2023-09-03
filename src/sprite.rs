@@ -1,5 +1,6 @@
 use crate::drawables::Camera;
 use crate::drawables::Vec2;
+use crate::enemy::EnemyType;
 
 pub trait Sprite {
     fn update(&mut self, camera: &Camera, delta: f32);
@@ -8,6 +9,7 @@ pub trait Sprite {
 
 pub trait Collidable {
     fn collide(&self, p: Vec2) -> bool;
+    fn split(&self) -> Vec<EnemyType>;
 }
 
 pub trait Spawnable {

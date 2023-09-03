@@ -1,6 +1,7 @@
 use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::enemy::EnemyType;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
@@ -98,6 +99,60 @@ impl Collidable for Asteroid {
         }
         return false;
     }
+
+    fn split(&self) -> Vec<EnemyType> {
+        match self.size {
+            AsteroidSize::Tiny => Vec::<EnemyType>::new(),
+            _ => {
+                let mut rnd = rand::thread_rng();
+                let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
+                    * match rand::random() {
+                        true => -1.0,
+                        false => 1.0,
+                    };
+                let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
+                let angle2 = angle + std::f32::consts::PI;
+                let move_speed = rnd.gen::<f32>() * 2.0 + 0.8;
+                [
+                    EnemyType::Asteroid(Asteroid {
+                        position: self.position,
+                        speed: (
+                            angle.cos() * move_speed + self.speed.0 * 0.5,
+                            angle.sin() * move_speed + self.speed.1 * 0.5,
+                        ),
+                        angle,
+                        angle_speed,
+                        size: match self.size {
+                            AsteroidSize::Small => AsteroidSize::Tiny,
+                            AsteroidSize::Medium => AsteroidSize::Small,
+                            AsteroidSize::Big => AsteroidSize::Medium,
+                            AsteroidSize::Huge => AsteroidSize::Big,
+                            _ => AsteroidSize::Tiny,
+                        },
+                        color_palette: self.color_palette.clone(),
+                    }),
+                    EnemyType::Asteroid(Asteroid {
+                        position: self.position,
+                        speed: (
+                            angle2.cos() * move_speed + self.speed.0 * 0.5,
+                            angle2.sin() * move_speed + self.speed.1 * 0.5,
+                        ),
+                        angle,
+                        angle_speed,
+                        size: match self.size {
+                            AsteroidSize::Small => AsteroidSize::Tiny,
+                            AsteroidSize::Medium => AsteroidSize::Small,
+                            AsteroidSize::Big => AsteroidSize::Medium,
+                            AsteroidSize::Huge => AsteroidSize::Big,
+                            _ => AsteroidSize::Tiny,
+                        },
+                        color_palette: self.color_palette.clone(),
+                    }),
+                ]
+                .to_vec()
+            }
+        }
+    }
 }
 
 impl Spawnable for Asteroid {
@@ -144,59 +199,5 @@ impl Asteroid {
             AsteroidSize::Big => (6, 3.3),
             AsteroidSize::Huge => (7, 4.0),
         }
-    }
-
-    pub fn split(&self) -> Vec<Asteroid> {
-        match self.size {
-            AsteroidSize::Tiny => return [].to_vec(),
-            _ => {}
-        }
-
-        let mut rnd = rand::thread_rng();
-        let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
-            * match rand::random() {
-                true => -1.0,
-                false => 1.0,
-            };
-        let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
-        let angle2 = angle + std::f32::consts::PI;
-        let move_speed = rnd.gen::<f32>() * 2.0 + 0.8;
-        [
-            Asteroid {
-                position: self.position,
-                speed: (
-                    angle.cos() * move_speed + self.speed.0 * 0.5,
-                    angle.sin() * move_speed + self.speed.1 * 0.5,
-                ),
-                angle,
-                angle_speed,
-                size: match self.size {
-                    AsteroidSize::Small => AsteroidSize::Tiny,
-                    AsteroidSize::Medium => AsteroidSize::Small,
-                    AsteroidSize::Big => AsteroidSize::Medium,
-                    AsteroidSize::Huge => AsteroidSize::Big,
-                    _ => AsteroidSize::Tiny,
-                },
-                color_palette: self.color_palette.clone(),
-            },
-            Asteroid {
-                position: self.position,
-                speed: (
-                    angle2.cos() * move_speed + self.speed.0 * 0.5,
-                    angle2.sin() * move_speed + self.speed.1 * 0.5,
-                ),
-                angle,
-                angle_speed,
-                size: match self.size {
-                    AsteroidSize::Small => AsteroidSize::Tiny,
-                    AsteroidSize::Medium => AsteroidSize::Small,
-                    AsteroidSize::Big => AsteroidSize::Medium,
-                    AsteroidSize::Huge => AsteroidSize::Big,
-                    _ => AsteroidSize::Tiny,
-                },
-                color_palette: self.color_palette.clone(),
-            },
-        ]
-        .to_vec()
     }
 }
