@@ -9,7 +9,6 @@ pub mod sprite;
 pub mod terminaldrawable;
 
 use crate::asciicontext::AsciiContext;
-use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
@@ -53,6 +52,8 @@ fn start() {
         fire_cooldown: 0.0,
     };
     let mut ship_bullets = Bullets::new();
+
+    enemies.init_level(&camera, &ship);
 
     loop {
         let frame_start = time::Instant::now();
@@ -112,33 +113,6 @@ fn start() {
 
     print!("{}", termion::clear::All);
     stdout.suspend_raw_mode().unwrap();
-}
-
-fn test() {
-    let term_size = terminal_size().unwrap();
-    let mut scr: AsciiContext = AsciiContext::new((term_size.0, term_size.1 / 2));
-
-    let camera = Camera {
-        position: (0.0, 0.0),
-        size: (term_size.0 as f32, term_size.1 as f32 / 2.0),
-        zoom: 5.0,
-    };
-
-    let mut asteroids = [
-        Asteroid::new((8.0, 0.0)),
-        Asteroid::new((16.0, 0.0)),
-        Asteroid::new((8.0, 5.0)),
-        Asteroid::new((-8.0, 0.0)),
-        Asteroid::new((-16.0, 0.0)),
-    ]
-    .iter()
-    .for_each(|a| a.draw(&mut scr));
-
-    scr.draw_triangles(&camera);
-
-    scr.display();
-
-    println!("{:?}", term_size);
 }
 
 fn main() {

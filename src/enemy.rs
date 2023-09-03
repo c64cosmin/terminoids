@@ -1,4 +1,5 @@
 use crate::asciicontext::AsciiContext;
+use crate::asteroid;
 use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
@@ -20,8 +21,12 @@ impl Enemies {
         }
     }
 
-    pub fn init_level(&mut self, level: u16) {
-        self.asteroids.clear();
+    pub fn init_level(&mut self, camera: &Camera, ship: &Ship) {
+        for _ in 0..3 {
+            if let Some(asteroid) = self.spawn_asteroid(camera, ship) {
+                self.asteroids.push(asteroid);
+            }
+        }
     }
 
     fn get_entities_no(&self) -> usize {
@@ -32,26 +37,34 @@ impl Enemies {
         self.update(camera, delta);
 
         if (self.time < 0.0 || self.get_entities_no() == 0) && self.get_entities_no() < 8 {
-            let mut rnd = rand::thread_rng();
-            let bounds = camera.get_bounds();
-            let position: (f32, f32) = (
-                (rnd.gen::<f32>() * bounds.0)
-                    * match rand::random() {
-                        true => -1.0,
-                        false => 1.0,
-                    },
-                (rnd.gen::<f32>() * bounds.1)
-                    * match rand::random() {
-                        true => -1.0,
-                        false => 1.0,
-                    },
-            );
-
-            if distance(ship.position, position) > 7.0 {
-                self.asteroids.push(Asteroid::new(position));
+            if let Some(asteroid) = self.spawn_asteroid(camera, ship) {
+                self.asteroids.push(asteroid);
                 self.time = 10.0;
             }
         }
+    }
+
+    fn spawn_asteroid(&mut self, camera: &Camera, ship: &Ship) -> Option<Asteroid> {
+        let mut rnd = rand::thread_rng();
+        let bounds = camera.get_bounds();
+        let position: (f32, f32) = (
+            (rnd.gen::<f32>() * bounds.0)
+                * match rand::random() {
+                    true => -1.0,
+                    false => 1.0,
+                },
+            (rnd.gen::<f32>() * bounds.1)
+                * match rand::random() {
+                    true => -1.0,
+                    false => 1.0,
+                },
+        );
+
+        if distance(ship.position, position) > 7.0 {
+            return Some(Asteroid::new(position));
+        }
+
+        None
     }
 
     pub fn collide(&mut self, bullets: &mut Bullets) {

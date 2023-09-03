@@ -138,7 +138,7 @@ pub const EMPTY_TRIANGLE: Triangle = Triangle {
 
 impl Camera {
     pub fn get_bounds(&self) -> (f32, f32) {
-        let aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
+        let _aspect_ratio: (f32, f32) = (1.0, 1.0); //camera.size.1 / camera.size.0, 1.0);
         let char_ratio: (f32, f32) = (17.0 / 8.0, 1.0);
         let default_height: f32 = self.size.1 as f32 / 63.0;
         (

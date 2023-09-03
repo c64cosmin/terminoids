@@ -170,7 +170,7 @@ impl Asteroid {
                     AsteroidSize::Huge => AsteroidSize::Big,
                     _ => AsteroidSize::Tiny,
                 },
-                color_palette: Asteroid::get_random_color(),
+                color_palette: self.color_palette.clone(),
             },
             Asteroid {
                 position: self.position,
@@ -187,7 +187,7 @@ impl Asteroid {
                     AsteroidSize::Huge => AsteroidSize::Big,
                     _ => AsteroidSize::Tiny,
                 },
-                color_palette: Asteroid::get_random_color(),
+                color_palette: self.color_palette.clone(),
             },
         ]
         .to_vec()
