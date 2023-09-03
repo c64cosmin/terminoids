@@ -45,14 +45,7 @@ fn start() {
 
     let mut enemies: Enemies = Enemies::new();
 
-    let turn_speed = 6.0;
-    let thrust_speed = 1.5;
-    let mut ship = Ship {
-        position: (0.0, 0.0),
-        speed: (0.0, 0.0),
-        angle: 0.0,
-        fire_cooldown: 0.0,
-    };
+    let mut ship = Ship::new();
     let mut ship_bullets = Bullets::new();
 
     enemies.init_level(&camera, &ship);
@@ -66,9 +59,9 @@ fn start() {
                     Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
                         break;
                     }
-                    Key::Left => ship.angle -= turn_speed * delta_time,
-                    Key::Right => ship.angle += turn_speed * delta_time,
-                    Key::Up => ship.thrust(thrust_speed),
+                    Key::Left => ship.turn_left(),
+                    Key::Right => ship.turn_right(),
+                    Key::Up => ship.thrust(),
                     Key::Char(' ') => ship.fire(&mut ship_bullets),
                     key => {
                         print!("Key pressed: {:?}", key);
