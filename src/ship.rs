@@ -21,7 +21,7 @@ pub struct Ship {
 impl TerminalDrawble for Ship {
     fn draw(&self, ctx: &mut AsciiContext) {
         if self.spawning > 0.0 {
-            let r = self.spawning * 10.0;
+            let r = self.spawning * 13.0;
             let n = 64;
             let u: f32 = std::f32::consts::PI * 2.0 / n as f32;
 
@@ -33,7 +33,7 @@ impl TerminalDrawble for Ship {
 
                 points.push(Point {
                     position: point,
-                    color: self.spawning / 3.0 * 0.8 + 0.2,
+                    color: self.spawning * 0.4 + 0.2,
                     color_palette: ColorPalette::Red,
                 });
             }
@@ -134,7 +134,7 @@ impl Ship {
             turn_speed: 2.0,
             thrust_speed: 1.5,
             life: 5,
-            spawning: 3.0,
+            spawning: 2.0,
         }
     }
     pub fn thrust(&mut self) {
@@ -180,6 +180,6 @@ impl Ship {
         }
         self.position = empty;
         self.life -= 1;
-        self.spawning = 3.0;
+        self.spawning = 2.0;
     }
 }

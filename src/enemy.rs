@@ -100,10 +100,27 @@ impl Enemies {
     fn get_empty_point(&self, camera: &Camera) -> Vec2 {
         let mut rnd = rand::thread_rng();
         let bounds = camera.get_bounds();
-        let position: (f32, f32) = (0.0, 0.0);
+        let mut position: (f32, f32) = (0.0, 0.0);
 
         for _ in 0..32 {
-            let position: (f32, f32) = (
+            let mut found_space = true;
+
+            self.enemies.iter().for_each(|enemy| {
+                let enemy_position = match enemy {
+                    EnemyType::Asteroid(a) => a.position,
+                    EnemyType::StarShip(s) => s.position,
+                    EnemyType::Powerup(p) => p.position,
+                };
+                if distance(position, enemy_position) < 10.0 {
+                    found_space = false;
+                }
+            });
+
+            if found_space {
+                return position;
+            }
+
+            position = (
                 (rnd.gen::<f32>() * bounds.0)
                     * match rand::random() {
                         true => -1.0,
@@ -115,22 +132,6 @@ impl Enemies {
                         false => 1.0,
                     },
             );
-
-            let mut found_space = true;
-            self.enemies.iter().for_each(|enemy| {
-                let enemy_position = match enemy {
-                    EnemyType::Asteroid(a) => a.position,
-                    EnemyType::StarShip(s) => s.position,
-                    EnemyType::Powerup(p) => p.position,
-                };
-                if distance(position, enemy_position) < 7.0 {
-                    found_space = false;
-                }
-            });
-
-            if found_space {
-                return position;
-            }
         }
 
         return position;
