@@ -19,16 +19,20 @@ pub struct Powerup {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub size: PowerupSize,
+    life: f32,
 }
 
 impl TerminalDrawble for Powerup {
     fn draw(&self, ctx: &mut AsciiContext) {
+        let sides = 8;
         let radius = self.get_description();
-        /*
         let mut triangles = vec![EMPTY_TRIANGLE; sides];
 
         let n = sides as f32;
         let u = 2.0 * std::f32::consts::PI / n;
+
+        let color0 = self.life.cos() * 0.4 + 0.5;
+        let color1 = color0 + 0.1;
 
         for i in 0..sides {
             let angle_left = (i as f32) * u;
@@ -45,17 +49,18 @@ impl TerminalDrawble for Powerup {
 
             triangles[i] = Triangle {
                 points: [self.position, point_left, point_right],
-                colors: [0.55, 0.2, 0.3],
+                colors: [color1, color0, color0],
                 color_palette: ColorPalette::Red,
             };
         }
         ctx.add_triangles(&triangles);
-        */
     }
 }
 
 impl Sprite for Powerup {
     fn update(&mut self, camera: &Camera, delta: f32) {
+        self.life += delta;
+
         self.position.0 += self.speed.0 * delta;
         self.position.1 += self.speed.1 * delta;
 
