@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::enemy::*;
+use crate::ship::*;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
@@ -82,6 +83,15 @@ impl Sprite for Powerup {
 impl Collidable for Powerup {
     fn collide(&self, p: Vec2) -> bool {
         if distance(self.position, p) < self.get_description() {
+            return true;
+        }
+        return false;
+    }
+
+    fn collide_with_ship(&self, ship: &Ship) -> bool {
+        if distance(self.position, ship.position)
+            < self.get_description() + ship.get_description() * 2.0
+        {
             return true;
         }
         return false;

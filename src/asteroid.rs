@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::enemy::EnemyType;
+use crate::ship::Ship;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
@@ -95,6 +96,15 @@ impl Sprite for Asteroid {
 impl Collidable for Asteroid {
     fn collide(&self, p: Vec2) -> bool {
         if distance(self.position, p) < self.get_description().1 {
+            return true;
+        }
+        return false;
+    }
+
+    fn collide_with_ship(&self, ship: &Ship) -> bool {
+        if distance(self.position, ship.position)
+            < self.get_description().1 + ship.get_description()
+        {
             return true;
         }
         return false;

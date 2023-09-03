@@ -182,4 +182,8 @@ impl Ship {
         self.life -= 1;
         self.spawning = 2.0;
     }
+
+    pub fn get_description(&self) -> f32 {
+        1.5
+    }
 }

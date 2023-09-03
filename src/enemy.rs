@@ -231,6 +231,14 @@ impl Collidable for EnemyType {
         }
     }
 
+    fn collide_with_ship(&self, ship: &Ship) -> bool {
+        match self {
+            EnemyType::Asteroid(a) => a.collide_with_ship(ship),
+            EnemyType::StarShip(s) => s.collide_with_ship(ship),
+            EnemyType::Powerup(p) => p.collide_with_ship(ship),
+        }
+    }
+
     fn split(&self) -> Vec<EnemyType> {
         match self {
             EnemyType::Asteroid(a) => a.split(),
