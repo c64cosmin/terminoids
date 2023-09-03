@@ -176,8 +176,8 @@ impl Ship {
             life: 5,
             spawning: 2.0,
             score: 0,
-            shield: 0.0,
-            splitfire: 20.0,
+            shield: 3.0,
+            splitfire: 0.0,
             piercing: 0.0,
         }
     }
@@ -237,9 +237,9 @@ impl Ship {
 
     pub fn powerup(&mut self, powerup: &Powerup) {
         match powerup.size {
-            PowerupSize::Shield => self.shield = 30.0,
-            PowerupSize::PiercingBullets => self.piercing = 20.0,
-            PowerupSize::SplitFire => self.splitfire = 30.0,
+            PowerupSize::Shield => self.shield = 10.0,
+            PowerupSize::PiercingBullets => self.piercing = 5.0,
+            PowerupSize::SplitFire => self.splitfire = 7.0,
         }
     }
 
@@ -249,6 +249,7 @@ impl Ship {
             self.life -= 1;
         }
         self.spawning = 2.0;
+        self.shield = 5.0;
     }
 
     pub fn get_description(&self) -> f32 {

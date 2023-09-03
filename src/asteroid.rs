@@ -168,7 +168,7 @@ impl Collidable for Asteroid {
         match self.size {
             AsteroidSize::Tiny => {
                 let mut rnd = rand::thread_rng();
-                if rnd.gen_range(0..15) == 0 {
+                if rnd.gen_range(0..25) == 0 {
                     splitted.push(EnemyType::Powerup(Powerup::spawn(self.position)));
                 }
             }

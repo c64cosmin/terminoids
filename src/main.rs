@@ -114,6 +114,8 @@ fn start() {
 
     print!("{}", termion::clear::All);
     stdout.suspend_raw_mode().unwrap();
+
+    println!("Your score was : {}", ship.score);
 }
 
 fn main() {

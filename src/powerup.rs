@@ -50,7 +50,11 @@ impl TerminalDrawble for Powerup {
             triangles[i] = Triangle {
                 points: [self.position, point_left, point_right],
                 colors: [color1, color0, color0],
-                color_palette: ColorPalette::Red,
+                color_palette: match self.size {
+                    PowerupSize::Shield => ColorPalette::Blue,
+                    PowerupSize::SplitFire => ColorPalette::Green,
+                    PowerupSize::PiercingBullets => ColorPalette::Yellow,
+                },
             };
         }
         ctx.add_triangles(&triangles);
