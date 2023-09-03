@@ -81,7 +81,7 @@ fn start() {
         ship.update(&camera, delta_time);
         ship_bullets.update(&camera, delta_time);
         enemies.update_with_ship(&camera, delta_time, &ship);
-        enemies.collide_with_bullets(&mut ship_bullets);
+        enemies.collide_with_bullets(&mut ship_bullets, &mut ship);
         enemies.collide_with_ship(&camera, &mut ship);
 
         print!("{}", termion::cursor::Goto(1, 1));
@@ -96,12 +96,13 @@ fn start() {
 
         scr.draw_triangles(&camera);
         scr.draw_points(&camera);
+        scr.lifes = ship.life;
+        scr.score = ship.score;
         scr.display();
 
         print!("{}", termion::cursor::Goto(1, 1));
         print!("{}{}", color::Black.bg_str(), color::White.fg_str());
-        println!("Lifes : {}", ship.life);
-        println!("FPS{:?}", frame_start.elapsed());
+        print!("\nFPS{:?}", frame_start.elapsed());
 
         stdout.flush().unwrap();
 

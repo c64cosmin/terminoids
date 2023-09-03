@@ -148,7 +148,7 @@ impl Enemies {
         });
     }
 
-    pub fn collide_with_bullets(&mut self, bullets: &mut Bullets) {
+    pub fn collide_with_bullets(&mut self, bullets: &mut Bullets, ship: &mut Ship) {
         let mut new_objects: Vec<EnemyType> = Vec::<EnemyType>::with_capacity(20);
         let damaged: Vec<usize> = self.damage(&self.enemies, bullets);
         damaged.iter().for_each(|&i| {
@@ -157,6 +157,22 @@ impl Enemies {
                 .for_each(|obj| new_objects.push(obj.clone()));
         });
         damaged.iter().rev().for_each(|&i| {
+            ship.score += match self.enemies[i] {
+                EnemyType::Powerup(_) => 1000,
+                EnemyType::Asteroid(a) => match a.size {
+                    AsteroidSize::Huge => 200,
+                    AsteroidSize::Big => 150,
+                    AsteroidSize::Medium => 100,
+                    AsteroidSize::Small => 75,
+                    AsteroidSize::Tiny => 50,
+                },
+                EnemyType::StarShip(s) => match s.size {
+                    StarShipSize::BigCluster => 250,
+                    StarShipSize::MediumCluster => 200,
+                    StarShipSize::SmallCluster => 150,
+                    StarShipSize::Flying => 100,
+                },
+            };
             self.enemies.remove(i);
         });
 

@@ -7,6 +7,8 @@ pub struct AsciiContext {
     size: (u16, u16),
     triangles: Vec<Triangle>,
     points: Vec<Point>,
+    pub lifes: i8,
+    pub score: u32,
 }
 
 pub fn vertex_shader(input: &Vec2, camera: &Camera) -> Vec2 {
@@ -28,6 +30,8 @@ impl AsciiContext {
             size,
             triangles: Vec::with_capacity(100),
             points: Vec::with_capacity(100),
+            lifes: 0,
+            score: 0,
         }
     }
 
@@ -274,6 +278,13 @@ impl DrawingContext for AsciiContext {
         for (i, line) in self.bitmap.chunks(self.size.0 as usize).enumerate() {
             if i != 0 {
                 print!("\n");
+            }
+
+            if i == 1 {
+                print!("{}", termion::cursor::Goto(1, 1));
+                print!("{}{}", color::Black.bg_str(), color::White.fg_str());
+                print!("Lifes : {} Score : {}", self.lifes, self.score);
+                print!("{}", termion::cursor::Goto(1, 2));
             }
 
             let mut was_colored = false;

@@ -11,6 +11,7 @@ pub struct Ship {
     pub speed: (f32, f32),
     pub angle: f32,
     pub life: i8,
+    pub score: u32,
     fire_cooldown: f32,
     thrust_speed: f32,
     angle_speed: f32,
@@ -135,6 +136,7 @@ impl Ship {
             thrust_speed: 1.5,
             life: 5,
             spawning: 2.0,
+            score: 0,
         }
     }
     pub fn thrust(&mut self) {
