@@ -2,6 +2,8 @@
 
 ![Screenshot](asterscr0.png)
 
+![Screenshot](asterscr1.png)
+
 ### Building
 
 ```
