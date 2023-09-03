@@ -173,8 +173,9 @@ impl AsciiContext {
 
             line_segments.iter().for_each(|(x0, x1, y)| {
                 for x in *x0..=*x1 {
-                    let color =
-                        (get_barycentric((x as f32, *y as f32), &tri) * PALETTE_RANGE as f32) as u8;
+                    let color = ((get_barycentric((x as f32, *y as f32), &tri)
+                        * PALETTE_RANGE as f32) as u8)
+                        .min(PALETTE_RANGE - 1);
                     let color_offset = match tri.color_palette {
                         ColorPalette::Red => 1,
                         ColorPalette::Green => 17,
