@@ -17,6 +17,9 @@ pub struct Ship {
     angle_speed: f32,
     turn_speed: f32,
     spawning: f32,
+    piercing: f32,
+    rapidfire: f32,
+    shield: f32,
 }
 
 impl TerminalDrawble for Ship {
@@ -41,6 +44,39 @@ impl TerminalDrawble for Ship {
 
             ctx.add_points(&points);
             return;
+        }
+
+        if self.shield > 0.0 {
+            let sides = 7;
+            let radius = self.get_description() * (2.5 + (self.shield * 5.0).cos() * 0.3);
+            let mut triangles = vec![EMPTY_TRIANGLE; sides];
+
+            let n = sides as f32;
+            let u = 2.0 * std::f32::consts::PI / n;
+
+            let color0 = ((self.shield * 5.0).cos() * 0.4 + 0.5) * (self.shield / 15.0) + 0.1;
+            let color1 = color0 + 0.1;
+
+            for i in 0..sides {
+                let angle_left = (i as f32) * u + self.angle + self.shield;
+                let angle_right = (i as f32) * u + u + self.angle + self.shield;
+
+                let point_left: Vec2 = (
+                    f32::cos(angle_left) * radius + self.position.0,
+                    f32::sin(angle_left) * radius + self.position.1,
+                );
+                let point_right: Vec2 = (
+                    f32::cos(angle_right) * radius + self.position.0,
+                    f32::sin(angle_right) * radius + self.position.1,
+                );
+
+                triangles[i] = Triangle {
+                    points: [self.position, point_left, point_right],
+                    colors: [color1, color0, color0],
+                    color_palette: ColorPalette::Blue,
+                };
+            }
+            ctx.add_triangles(&triangles);
         }
 
         let front = (
@@ -117,6 +153,9 @@ impl Sprite for Ship {
 
         self.fire_cooldown -= delta;
         self.spawning -= delta;
+        self.rapidfire -= delta;
+        self.shield -= delta;
+        self.piercing -= delta;
     }
 
     fn is_alive(&self) -> bool {
@@ -137,6 +176,9 @@ impl Ship {
             life: 5,
             spawning: 2.0,
             score: 0,
+            shield: 30.0,
+            rapidfire: 0.0,
+            piercing: 0.0,
         }
     }
     pub fn thrust(&mut self) {
@@ -174,7 +216,13 @@ impl Ship {
         self.turn(self.turn_speed);
     }
 
-    pub fn powerup(&mut self, powerup: &Powerup) {}
+    pub fn powerup(&mut self, powerup: &Powerup) {
+        match powerup.size {
+            PowerupSize::Shield => self.shield = 30.0,
+            PowerupSize::PiercingBullets => self.piercing = 30.0,
+            PowerupSize::RapidFire => self.rapidfire = 30.0,
+        }
+    }
 
     pub fn damage(&mut self, empty: Vec2) {
         self.position = empty;

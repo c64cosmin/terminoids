@@ -28,8 +28,8 @@ impl Enemies {
     pub fn new() -> Enemies {
         Enemies {
             enemies: Vec::with_capacity(100),
-            time: 30.0,
-            time_interval: 15.0,
+            time: 60.0,
+            time_interval: 40.0,
             level: 0,
             level_interval: 8,
         }
@@ -164,7 +164,10 @@ impl Enemies {
         });
         damaged.iter().rev().for_each(|&i| {
             ship.score += match self.enemies[i] {
-                EnemyType::Powerup(_) => 1000,
+                EnemyType::Powerup(p) => {
+                    ship.powerup(&p);
+                    1000
+                }
                 EnemyType::Asteroid(a) => match a.size {
                     AsteroidSize::Huge => 200,
                     AsteroidSize::Big => 150,
