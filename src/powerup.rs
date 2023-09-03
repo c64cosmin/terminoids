@@ -24,8 +24,8 @@ pub struct Powerup {
 
 impl TerminalDrawble for Powerup {
     fn draw(&self, ctx: &mut AsciiContext) {
-        let sides = 8;
-        let radius = self.get_description();
+        let sides = 6;
+        let radius = self.get_description() * (0.8 + self.life.cos() * 0.3);
         let mut triangles = vec![EMPTY_TRIANGLE; sides];
 
         let n = sides as f32;
@@ -59,7 +59,7 @@ impl TerminalDrawble for Powerup {
 
 impl Sprite for Powerup {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        self.life += delta;
+        self.life += delta * 10.0;
 
         self.position.0 += self.speed.0 * delta;
         self.position.1 += self.speed.1 * delta;
@@ -124,6 +124,6 @@ impl Spawnable for Powerup {
 
 impl Powerup {
     fn get_description(&self) -> f32 {
-        1.0
+        2.0
     }
 }
