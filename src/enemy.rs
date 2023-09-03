@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
+use crate::powerup::Powerup;
 use crate::ship::*;
 use crate::sprite::*;
 use crate::starship::*;
@@ -12,6 +13,7 @@ use rand::Rng;
 pub enum EnemyType {
     Asteroid(Asteroid),
     StarShip(StarShip),
+    Powerup(Powerup),
 }
 
 pub struct Enemies {
@@ -56,6 +58,7 @@ impl Enemies {
                     | StarShipSize::SmallCluster => true,
                     _ => false,
                 },
+                EnemyType::Powerup(_) => false,
             })
             .count();
     }
@@ -109,6 +112,7 @@ impl Enemies {
         new_objects.iter().for_each(|n| match n {
             EnemyType::Asteroid(a) => self.enemies.push(EnemyType::Asteroid(a.clone())),
             EnemyType::StarShip(s) => self.enemies.push(EnemyType::StarShip(s.clone())),
+            EnemyType::Powerup(s) => self.enemies.push(EnemyType::Powerup(s.clone())),
         });
     }
 
@@ -121,6 +125,7 @@ impl Enemies {
                 if match obj {
                     EnemyType::Asteroid(a) => a.collide(bullet.position),
                     EnemyType::StarShip(s) => s.collide(bullet.position),
+                    EnemyType::Powerup(p) => p.collide(bullet.position),
                 } {
                     collided = true;
                     bullet.life = 0.0;
@@ -141,6 +146,7 @@ impl TerminalDrawble for Enemies {
         self.enemies.iter().for_each(|obj| match obj {
             EnemyType::Asteroid(a) => a.draw(ctx),
             EnemyType::StarShip(s) => s.draw(ctx),
+            EnemyType::Powerup(p) => p.draw(ctx),
         });
     }
 }
@@ -151,10 +157,12 @@ impl Sprite for Enemies {
         self.enemies.iter_mut().for_each(|obj| match obj {
             EnemyType::Asteroid(a) => a.update(camera, delta),
             EnemyType::StarShip(s) => s.update(camera, delta),
+            EnemyType::Powerup(p) => p.update(camera, delta),
         });
         self.enemies.retain(|obj| match obj {
             EnemyType::Asteroid(a) => a.is_alive(),
             EnemyType::StarShip(s) => s.is_alive(),
+            EnemyType::Powerup(_) => true,
         });
     }
 
@@ -164,10 +172,11 @@ impl Sprite for Enemies {
 }
 
 impl Collidable for EnemyType {
-    fn collide(&self, p: Vec2) -> bool {
+    fn collide(&self, point: Vec2) -> bool {
         match self {
-            EnemyType::Asteroid(a) => a.collide(p),
-            EnemyType::StarShip(s) => s.collide(p),
+            EnemyType::Asteroid(a) => a.collide(point),
+            EnemyType::StarShip(s) => s.collide(point),
+            EnemyType::Powerup(p) => p.collide(point),
         }
     }
 
@@ -175,6 +184,7 @@ impl Collidable for EnemyType {
         match self {
             EnemyType::Asteroid(a) => a.split(),
             EnemyType::StarShip(s) => s.split(),
+            EnemyType::Powerup(p) => p.split(),
         }
     }
 }
