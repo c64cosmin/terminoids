@@ -125,7 +125,7 @@ impl Collidable for Asteroid {
                     };
                 let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
                 let angle2 = angle + std::f32::consts::PI;
-                let move_speed = rnd.gen::<f32>() * 2.0 + 0.8;
+                let move_speed = rnd.gen::<f32>() * 2.2 + 1.2;
 
                 splitted.push(EnemyType::Asteroid(Asteroid {
                     position: self.position,
