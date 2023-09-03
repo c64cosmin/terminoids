@@ -139,7 +139,7 @@ impl Enemies {
 
     pub fn collide_with_ship(&mut self, camera: &Camera, ship: &mut Ship) {
         self.enemies.iter().for_each(|enemy| {
-            if enemy.collide(ship.position) {
+            if enemy.collide_with_ship(ship) {
                 match enemy {
                     EnemyType::Powerup(powerup) => ship.powerup(&powerup),
                     _ => ship.damage(self.get_empty_point(camera)),
