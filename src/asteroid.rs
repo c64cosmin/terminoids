@@ -147,6 +147,11 @@ impl Asteroid {
     }
 
     pub fn split(&self) -> Vec<Asteroid> {
+        match self.size {
+            AsteroidSize::Tiny => return [].to_vec(),
+            _ => {}
+        }
+
         let mut rnd = rand::thread_rng();
         let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
             * match rand::random() {
