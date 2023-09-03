@@ -6,6 +6,7 @@ pub mod drawingcontext;
 pub mod enemy;
 pub mod ship;
 pub mod sprite;
+pub mod starship;
 pub mod terminaldrawable;
 
 use crate::asciicontext::AsciiContext;

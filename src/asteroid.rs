@@ -100,8 +100,8 @@ impl Collidable for Asteroid {
     }
 }
 
-impl Asteroid {
-    pub fn new(position: (f32, f32)) -> Asteroid {
+impl Spawnable for Asteroid {
+    fn spawn(position: (f32, f32)) -> Asteroid {
         let mut rnd = rand::thread_rng();
         let angle_speed: f32 = (rnd.gen::<f32>() * 0.2 + 0.2)
             * match rand::random() {
@@ -120,7 +120,9 @@ impl Asteroid {
             color_palette: Asteroid::get_random_color(),
         }
     }
+}
 
+impl Asteroid {
     fn get_random_color() -> ColorPalette {
         let mut rnd = rand::thread_rng();
         match rnd.gen_range(0..6) {

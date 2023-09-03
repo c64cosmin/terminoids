@@ -9,3 +9,7 @@ pub trait Sprite {
 pub trait Collidable {
     fn collide(&self, p: Vec2) -> bool;
 }
+
+pub trait Spawnable {
+    fn spawn(position: Vec2) -> Self;
+}

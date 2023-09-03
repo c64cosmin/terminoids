@@ -1,15 +1,21 @@
 use crate::asciicontext::AsciiContext;
-use crate::asteroid;
 use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
 use crate::ship::*;
 use crate::sprite::*;
+use crate::starship::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
 
+pub enum EnemyType {
+    Asteroid,
+    StarShip,
+}
+
 pub struct Enemies {
     pub asteroids: Vec<Asteroid>,
+    pub ships: Vec<StarShip>,
     time: f32,
 }
 
@@ -17,13 +23,14 @@ impl Enemies {
     pub fn new() -> Enemies {
         Enemies {
             asteroids: Vec::with_capacity(100),
+            ships: Vec::with_capacity(100),
             time: 0.0,
         }
     }
 
     pub fn init_level(&mut self, camera: &Camera, ship: &Ship) {
         for _ in 0..3 {
-            if let Some(asteroid) = self.spawn_asteroid(camera, ship) {
+            if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
                 self.asteroids.push(asteroid);
             }
         }
@@ -45,14 +52,14 @@ impl Enemies {
         self.update(camera, delta);
 
         if (self.time < 0.0 || self.get_entities_no() == 0) && self.get_entities_no() < 8 {
-            if let Some(asteroid) = self.spawn_asteroid(camera, ship) {
+            if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
                 self.asteroids.push(asteroid);
                 self.time = 10.0;
             }
         }
     }
 
-    fn spawn_asteroid(&mut self, camera: &Camera, ship: &Ship) -> Option<Asteroid> {
+    fn spawn<T: Spawnable>(&mut self, camera: &Camera, ship: &Ship) -> Option<T> {
         let mut rnd = rand::thread_rng();
         let bounds = camera.get_bounds();
         let position: (f32, f32) = (
@@ -69,7 +76,7 @@ impl Enemies {
         );
 
         if distance(ship.position, position) > 7.0 {
-            return Some(Asteroid::new(position));
+            return Some(T::spawn(position));
         }
 
         None
