@@ -49,8 +49,6 @@ fn start() {
     let mut ship = Ship::new();
     let mut ship_bullets = Bullets::new();
 
-    enemies.init_level(&camera, &ship);
-
     loop {
         let frame_start = time::Instant::now();
 

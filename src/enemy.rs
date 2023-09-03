@@ -19,28 +19,20 @@ pub enum EnemyType {
 pub struct Enemies {
     pub enemies: Vec<EnemyType>,
     time: f32,
+    time_interval: f32,
+    level: u8,
+    level_interval: u8,
 }
 
 impl Enemies {
     pub fn new() -> Enemies {
         Enemies {
             enemies: Vec::with_capacity(100),
-            time: 0.0,
+            time: 30.0,
+            time_interval: 15.0,
+            level: 0,
+            level_interval: 8,
         }
-    }
-
-    pub fn init_level(&mut self, camera: &Camera, ship: &Ship) {
-        for _ in 0..1 {
-            if let Some(obj) = self.spawn::<StarShip>(camera, ship) {
-                self.enemies.push(EnemyType::StarShip(obj));
-            }
-        }
-        for _ in 0..1 {
-            if let Some(obj) = self.spawn::<Asteroid>(camera, ship) {
-                self.enemies.push(EnemyType::Asteroid(obj));
-            }
-        }
-        self.time = 30.0;
     }
 
     fn get_entities_no(&self) -> usize {
@@ -67,9 +59,23 @@ impl Enemies {
         self.update(camera, delta);
 
         if (self.time < 0.0 || self.get_entities_no() == 0) && self.get_entities_no() < 8 {
-            if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
-                self.enemies.push(EnemyType::Asteroid(asteroid));
-                self.time = 10.0;
+            let mut rnd = rand::thread_rng();
+            let choice: u8 = rnd.gen_range(0..self.level_interval);
+            if choice > 0 {
+                if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
+                    self.level += 1;
+                    if self.level > self.level_interval {
+                        self.level = 0;
+                        self.level_interval = (self.level_interval - 1).max(2);
+                    }
+                    self.enemies.push(EnemyType::Asteroid(asteroid));
+                    self.time = self.time_interval;
+                }
+            } else {
+                if let Some(starship) = self.spawn::<StarShip>(camera, ship) {
+                    self.enemies.push(EnemyType::StarShip(starship));
+                    self.time = self.time_interval;
+                }
             }
         }
     }
@@ -221,6 +227,8 @@ impl TerminalDrawble for Enemies {
 impl Sprite for Enemies {
     fn update(&mut self, camera: &Camera, delta: f32) {
         self.time -= delta;
+        self.time_interval = (self.time_interval - delta / 120.0).max(1.0);
+
         self.enemies.iter_mut().for_each(|obj| match obj {
             EnemyType::Asteroid(a) => a.update(camera, delta),
             EnemyType::StarShip(s) => s.update(camera, delta),
