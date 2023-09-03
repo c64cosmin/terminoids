@@ -422,7 +422,7 @@ impl Collidable for StarShip {
         //powerup
         match self.size {
             StarShipSize::Flying => {
-                if rnd.gen_range(0..25) == 0 {
+                if rnd.gen_range(0..20) == 0 {
                     splitted.push(EnemyType::Powerup(Powerup::spawn(self.position)));
                 }
             }
