@@ -5,7 +5,7 @@ use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AsteroidSize {
     Tiny,
     Small,
@@ -14,7 +14,7 @@ pub enum AsteroidSize {
     Huge,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Asteroid {
     pub position: (f32, f32),
     pub speed: (f32, f32),

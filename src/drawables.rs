@@ -98,7 +98,7 @@ pub struct Camera {
     pub zoom: f32,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ColorPalette {
     Red,
     Green,

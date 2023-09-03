@@ -5,7 +5,7 @@ use crate::sprite::*;
 use crate::terminaldrawable::*;
 use rand::Rng;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum StarShipSize {
     Flying,
     SmallCluster,
@@ -13,7 +13,7 @@ pub enum StarShipSize {
     BigCluster,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct StarShip {
     pub position: (f32, f32),
     pub speed: (f32, f32),

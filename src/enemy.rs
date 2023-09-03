@@ -9,21 +9,19 @@ use crate::terminaldrawable::*;
 use rand::Rng;
 
 pub enum EnemyType {
-    Asteroid,
-    StarShip,
+    Asteroid(Asteroid),
+    StarShip(StarShip),
 }
 
 pub struct Enemies {
-    pub asteroids: Vec<Asteroid>,
-    pub ships: Vec<StarShip>,
+    pub enemies: Vec<EnemyType>,
     time: f32,
 }
 
 impl Enemies {
     pub fn new() -> Enemies {
         Enemies {
-            asteroids: Vec::with_capacity(100),
-            ships: Vec::with_capacity(100),
+            enemies: Vec::with_capacity(100),
             time: 0.0,
         }
     }
@@ -31,7 +29,7 @@ impl Enemies {
     pub fn init_level(&mut self, camera: &Camera, ship: &Ship) {
         for _ in 0..3 {
             if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
-                self.asteroids.push(asteroid);
+                self.enemies.push(EnemyType::Asteroid(asteroid));
             }
         }
         self.time = 30.0;
@@ -39,11 +37,19 @@ impl Enemies {
 
     fn get_entities_no(&self) -> usize {
         return self
-            .asteroids
+            .enemies
             .iter()
-            .filter(|a| match a.size {
-                AsteroidSize::Huge | AsteroidSize::Big | AsteroidSize::Medium => true,
-                _ => false,
+            .filter(|asteroid| match asteroid {
+                EnemyType::Asteroid(a) => match a.size {
+                    AsteroidSize::Huge | AsteroidSize::Big | AsteroidSize::Medium => true,
+                    _ => false,
+                },
+                EnemyType::StarShip(s) => match s.size {
+                    StarShipSize::BigCluster
+                    | StarShipSize::MediumCluster
+                    | StarShipSize::SmallCluster => true,
+                    _ => false,
+                },
             })
             .count();
     }
@@ -53,7 +59,7 @@ impl Enemies {
 
         if (self.time < 0.0 || self.get_entities_no() == 0) && self.get_entities_no() < 8 {
             if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
-                self.asteroids.push(asteroid);
+                self.enemies.push(EnemyType::Asteroid(asteroid));
                 self.time = 10.0;
             }
         }
@@ -83,31 +89,38 @@ impl Enemies {
     }
 
     pub fn collide(&mut self, bullets: &mut Bullets) {
-        let mut new_asteroids: Vec<Asteroid> = Vec::<Asteroid>::with_capacity(10);
-        let damaged: Vec<usize> = self.damage::<Asteroid>(&self.asteroids, bullets);
-        damaged.iter().for_each(|&i| match self.asteroids[i].size {
-            AsteroidSize::Tiny => {}
-            _ => self.asteroids[i]
+        let mut new_objects: Vec<EnemyType> = Vec::<EnemyType>::with_capacity(20);
+        let damaged: Vec<usize> = self.damage(&self.enemies, bullets);
+        damaged.iter().for_each(|&i| match self.enemies[i] {
+            EnemyType::Asteroid(a) => a
                 .split()
                 .iter()
-                .for_each(|a| new_asteroids.push(a.clone())),
+                .for_each(|obj| new_objects.push(EnemyType::Asteroid(obj.clone()))),
+            EnemyType::StarShip(s) => s
+                .split()
+                .iter()
+                .for_each(|obj| new_objects.push(EnemyType::StarShip(obj.clone()))),
         });
         damaged.iter().rev().for_each(|&i| {
-            self.asteroids.remove(i);
+            self.enemies.remove(i);
         });
 
-        new_asteroids
-            .iter()
-            .for_each(|na| self.asteroids.push(na.clone()));
+        new_objects.iter().for_each(|n| match n {
+            EnemyType::Asteroid(a) => self.enemies.push(EnemyType::Asteroid(a.clone())),
+            EnemyType::StarShip(s) => self.enemies.push(EnemyType::StarShip(s.clone())),
+        });
     }
 
-    fn damage<T: Collidable>(&self, collection: &Vec<T>, bullets: &mut Bullets) -> Vec<usize> {
+    fn damage(&self, collection: &Vec<EnemyType>, bullets: &mut Bullets) -> Vec<usize> {
         let mut damaged = Vec::<usize>::with_capacity(10);
         collection.iter().enumerate().for_each(|(i, obj)| {
             let mut collided = false;
 
             bullets.bullets.iter_mut().for_each(|bullet| {
-                if obj.collide(bullet.position) {
+                if match obj {
+                    EnemyType::Asteroid(a) => a.collide(bullet.position),
+                    EnemyType::StarShip(s) => s.collide(bullet.position),
+                } {
                     collided = true;
                     bullet.life = 0.0;
                 }
@@ -124,17 +137,24 @@ impl Enemies {
 
 impl TerminalDrawble for Enemies {
     fn draw(&self, ctx: &mut AsciiContext) {
-        self.asteroids.iter().for_each(|a| a.draw(ctx));
+        self.enemies.iter().for_each(|obj| match obj {
+            EnemyType::Asteroid(a) => a.draw(ctx),
+            EnemyType::StarShip(s) => s.draw(ctx),
+        });
     }
 }
 
 impl Sprite for Enemies {
     fn update(&mut self, camera: &Camera, delta: f32) {
         self.time -= delta;
-        self.asteroids
-            .iter_mut()
-            .for_each(|a| a.update(camera, delta));
-        self.asteroids.retain(|a| a.is_alive());
+        self.enemies.iter_mut().for_each(|obj| match obj {
+            EnemyType::Asteroid(a) => a.update(camera, delta),
+            EnemyType::StarShip(s) => s.update(camera, delta),
+        });
+        self.enemies.retain(|obj| match obj {
+            EnemyType::Asteroid(a) => a.is_alive(),
+            EnemyType::StarShip(s) => s.is_alive(),
+        });
     }
 
     fn is_alive(&self) -> bool {
