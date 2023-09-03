@@ -306,6 +306,14 @@ impl TerminalDrawble for StarShip {
 
 impl Sprite for StarShip {
     fn update(&mut self, camera: &Camera, delta: f32) {
+        match self.size {
+            StarShipSize::Flying => {
+                self.speed.0 = self.angle.cos() * 7.0;
+                self.speed.1 = self.angle.sin() * 7.0;
+            }
+            _ => {}
+        };
+
         self.position.0 += self.speed.0 * delta;
         self.position.1 += self.speed.1 * delta;
 
@@ -364,7 +372,7 @@ impl Spawnable for StarShip {
             position,
             speed,
             angle: 0.0,
-            size: StarShipSize::Flying,
+            size: StarShipSize::BigCluster,
             angle_speed,
         }
     }
@@ -388,38 +396,49 @@ impl StarShip {
                 false => 1.0,
             };
         let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
-        let angle2 = angle + std::f32::consts::PI;
-        let move_speed = rnd.gen::<f32>() * 2.0 + 0.8;
-        [
-            StarShip {
+
+        let mut splitted: Vec<StarShip> = Vec::with_capacity(4);
+
+        //down transform
+        match self.size {
+            StarShipSize::BigCluster => {
+                splitted.push(StarShip {
+                    position: self.position,
+                    speed: self.speed,
+                    angle,
+                    angle_speed,
+                    size: StarShipSize::MediumCluster,
+                });
+            }
+            StarShipSize::MediumCluster => {
+                splitted.push(StarShip {
+                    position: self.position,
+                    speed: self.speed,
+                    angle,
+                    angle_speed,
+                    size: StarShipSize::SmallCluster,
+                });
+            }
+            _ => {}
+        };
+
+        //spawn ships
+        let number = match self.size {
+            StarShipSize::BigCluster | StarShipSize::MediumCluster => 2,
+            StarShipSize::SmallCluster => 4,
+            _ => 0,
+        };
+        let unit = std::f32::consts::PI * 2.0 / number as f32;
+        for i in 0..number {
+            splitted.push(StarShip {
                 position: self.position,
-                speed: (
-                    angle.cos() * move_speed + self.speed.0 * 0.5,
-                    angle.sin() * move_speed + self.speed.1 * 0.5,
-                ),
-                angle,
+                speed: (0.0, 0.0),
+                angle: angle + (i as f32) * unit,
                 angle_speed,
-                size: match self.size {
-                    StarShipSize::BigCluster => StarShipSize::MediumCluster,
-                    StarShipSize::MediumCluster => StarShipSize::SmallCluster,
-                    _ => StarShipSize::Flying,
-                },
-            },
-            StarShip {
-                position: self.position,
-                speed: (
-                    angle2.cos() * move_speed + self.speed.0 * 0.5,
-                    angle2.sin() * move_speed + self.speed.1 * 0.5,
-                ),
-                angle,
-                angle_speed,
-                size: match self.size {
-                    StarShipSize::BigCluster => StarShipSize::MediumCluster,
-                    StarShipSize::MediumCluster => StarShipSize::SmallCluster,
-                    _ => StarShipSize::Flying,
-                },
-            },
-        ]
-        .to_vec()
+                size: StarShipSize::Flying,
+            });
+        }
+
+        splitted
     }
 }
