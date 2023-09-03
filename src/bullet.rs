@@ -6,6 +6,7 @@ use crate::terminaldrawable::*;
 
 pub enum BulletType {
     Normal,
+    Piercing,
 }
 
 pub struct Bullet {
@@ -19,6 +20,7 @@ impl Bullet {
     pub fn new(position: (f32, f32), angle: f32, bullet_type: BulletType) -> Bullet {
         let linear_speed = match bullet_type {
             BulletType::Normal => 15.0,
+            BulletType::Piercing => 18.0,
         };
         let speed = (angle.cos() * linear_speed, angle.sin() * linear_speed);
         Bullet {
@@ -34,9 +36,11 @@ impl Bullet {
             position: self.position,
             color: match self.bullet_type {
                 BulletType::Normal => 128.0,
+                BulletType::Piercing => 129.0 + self.life.rem_euclid(2.0).floor(),
             },
             color_palette: match self.bullet_type {
                 BulletType::Normal => ColorPalette::Custom,
+                BulletType::Piercing => ColorPalette::Custom,
             },
         }
     }

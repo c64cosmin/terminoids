@@ -197,7 +197,7 @@ impl Ship {
             self.fire_cooldown = 0.3;
             bullets
                 .bullets
-                .push(Bullet::new(self.position, self.angle, BulletType::Normal));
+                .push(Bullet::new(self.position, self.angle, BulletType::Piercing));
         }
     }
 
