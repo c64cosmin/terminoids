@@ -44,7 +44,8 @@ fn start() {
 
     let mut enemies: Enemies = Enemies::new();
 
-    let turn_speed = 2.0;
+    let turn_speed = 6.0;
+    let thrust_speed = 1.5;
     let mut ship = Ship {
         position: (0.0, 0.0),
         speed: (0.0, 0.0),
@@ -66,7 +67,7 @@ fn start() {
                     }
                     Key::Left => ship.angle -= turn_speed * delta_time,
                     Key::Right => ship.angle += turn_speed * delta_time,
-                    Key::Up => ship.thrust(1.0),
+                    Key::Up => ship.thrust(thrust_speed),
                     Key::Char(' ') => ship.fire(&mut ship_bullets),
                     key => {
                         print!("Key pressed: {:?}", key);

@@ -27,10 +27,18 @@ impl Enemies {
                 self.asteroids.push(asteroid);
             }
         }
+        self.time = 30.0;
     }
 
     fn get_entities_no(&self) -> usize {
-        return self.asteroids.len();
+        return self
+            .asteroids
+            .iter()
+            .filter(|a| match a.size {
+                AsteroidSize::Huge | AsteroidSize::Big | AsteroidSize::Medium => true,
+                _ => false,
+            })
+            .count();
     }
 
     pub fn update_with_ship(&mut self, camera: &Camera, delta: f32, ship: &Ship) {
