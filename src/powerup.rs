@@ -113,10 +113,15 @@ impl Spawnable for Powerup {
         let angle = rnd.gen::<f32>() * std::f32::consts::PI * 2.0;
         let move_speed = rnd.gen::<f32>() * 1.5 + 0.5;
         let speed: Vec2 = (angle.cos() * move_speed, angle.sin() * move_speed);
+        let type_number = rnd.gen_range(0..10);
         Powerup {
             position,
             speed,
-            size: PowerupSize::SplitFire,
+            size: match type_number {
+                0..=1 => PowerupSize::PiercingBullets,
+                2..=4 => PowerupSize::SplitFire,
+                _ => PowerupSize::Shield,
+            },
             life: 0.0,
         }
     }
