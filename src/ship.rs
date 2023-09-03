@@ -175,11 +175,10 @@ impl Ship {
     pub fn powerup(&mut self, powerup: &Powerup) {}
 
     pub fn damage(&mut self, empty: Vec2) {
-        if self.spawning > 0.0 {
-            return;
-        }
         self.position = empty;
-        self.life -= 1;
+        if self.spawning <= 0.0 {
+            self.life -= 1;
+        }
         self.spawning = 2.0;
     }
 
