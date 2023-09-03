@@ -97,7 +97,57 @@ impl Enemies {
         None
     }
 
-    pub fn collide(&mut self, bullets: &mut Bullets) {
+    fn get_empty_point(&self, camera: &Camera) -> Vec2 {
+        let mut rnd = rand::thread_rng();
+        let bounds = camera.get_bounds();
+        let position: (f32, f32) = (0.0, 0.0);
+
+        for i in 0..32 {
+            let position: (f32, f32) = (
+                (rnd.gen::<f32>() * bounds.0)
+                    * match rand::random() {
+                        true => -1.0,
+                        false => 1.0,
+                    },
+                (rnd.gen::<f32>() * bounds.1)
+                    * match rand::random() {
+                        true => -1.0,
+                        false => 1.0,
+                    },
+            );
+
+            let mut found_space = true;
+            self.enemies.iter().for_each(|enemy| {
+                let enemy_position = match enemy {
+                    EnemyType::Asteroid(a) => a.position,
+                    EnemyType::StarShip(s) => s.position,
+                    EnemyType::Powerup(p) => p.position,
+                };
+                if distance(position, enemy_position) < 7.0 {
+                    found_space = false;
+                }
+            });
+
+            if found_space {
+                return position;
+            }
+        }
+
+        return position;
+    }
+
+    pub fn collide_with_ship(&mut self, camera: &Camera, ship: &mut Ship) {
+        self.enemies.iter().for_each(|enemy| {
+            if enemy.collide(ship.position) {
+                match enemy {
+                    EnemyType::Powerup(powerup) => ship.powerup(&powerup),
+                    _ => ship.damage(self.get_empty_point(camera)),
+                }
+            }
+        });
+    }
+
+    pub fn collide_with_bullets(&mut self, bullets: &mut Bullets) {
         let mut new_objects: Vec<EnemyType> = Vec::<EnemyType>::with_capacity(20);
         let damaged: Vec<usize> = self.damage(&self.enemies, bullets);
         damaged.iter().for_each(|&i| {

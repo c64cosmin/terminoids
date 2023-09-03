@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::bullet::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::powerup::*;
 use crate::sprite::*;
 use crate::terminaldrawable::*;
 
@@ -13,10 +14,34 @@ pub struct Ship {
     thrust_speed: f32,
     angle_speed: f32,
     turn_speed: f32,
+    life: u8,
+    spawning: f32,
 }
 
 impl TerminalDrawble for Ship {
     fn draw(&self, ctx: &mut AsciiContext) {
+        if self.spawning > 0.0 {
+            let r = self.spawning * 10.0;
+            let n = 64;
+            let u: f32 = std::f32::consts::PI * 2.0 / n as f32;
+
+            let mut points: Vec<Point> = Vec::with_capacity(n);
+
+            for i in 0..n {
+                let a = (i as f32) * u;
+                let point: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
+
+                points.push(Point {
+                    position: point,
+                    color: self.spawning / 3.0 * 0.8 + 0.2,
+                    color_palette: ColorPalette::Red,
+                });
+            }
+
+            ctx.add_points(&points);
+            return;
+        }
+
         let front = (
             f32::cos(self.angle) * 1.5 + self.position.0,
             f32::sin(self.angle) * 1.5 + self.position.1,
@@ -90,6 +115,7 @@ impl Sprite for Ship {
         }
 
         self.fire_cooldown -= delta;
+        self.spawning -= delta;
     }
 
     fn is_alive(&self) -> bool {
@@ -107,14 +133,22 @@ impl Ship {
             angle_speed: 0.0,
             turn_speed: 2.0,
             thrust_speed: 1.5,
+            life: 5,
+            spawning: 3.0,
         }
     }
     pub fn thrust(&mut self) {
+        if self.spawning > 0.0 {
+            return;
+        }
         self.speed.0 += self.angle.cos() * self.turn_speed;
         self.speed.1 += self.angle.sin() * self.turn_speed;
     }
 
     pub fn fire(&mut self, bullets: &mut Bullets) {
+        if self.spawning > 0.0 {
+            return;
+        }
         if self.fire_cooldown <= 0.0 {
             self.fire_cooldown = 0.3;
             bullets
@@ -124,6 +158,9 @@ impl Ship {
     }
 
     pub fn turn(&mut self, angle: f32) {
+        if self.spawning > 0.0 {
+            return;
+        }
         self.angle_speed += angle;
     }
 
@@ -133,5 +170,16 @@ impl Ship {
 
     pub fn turn_right(&mut self) {
         self.turn(self.turn_speed);
+    }
+
+    pub fn powerup(&mut self, powerup: &Powerup) {}
+
+    pub fn damage(&mut self, empty: Vec2) {
+        if self.spawning > 0.0 {
+            return;
+        }
+        self.position = empty;
+        self.life -= 1;
+        self.spawning = 3.0;
     }
 }

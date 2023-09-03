@@ -77,7 +77,8 @@ fn start() {
         ship.update(&camera, delta_time);
         ship_bullets.update(&camera, delta_time);
         enemies.update_with_ship(&camera, delta_time, &ship);
-        enemies.collide(&mut ship_bullets);
+        enemies.collide_with_bullets(&mut ship_bullets);
+        enemies.collide_with_ship(&camera, &mut ship);
 
         print!("{}", termion::cursor::Goto(1, 1));
 
