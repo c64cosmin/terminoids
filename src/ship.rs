@@ -196,7 +196,7 @@ impl Ship {
         if self.fire_cooldown <= 0.0 {
             self.fire_cooldown = match self.piercing > 0.0 {
                 false => 0.3,
-                true => 0.1,
+                true => 0.2,
             };
             bullets.bullets.push(Bullet::new(
                 self.position,

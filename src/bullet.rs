@@ -48,6 +48,13 @@ impl Bullet {
             },
         }
     }
+
+    pub fn destroy(&mut self) {
+        match self.bullet_type {
+            BulletType::Normal => self.life = 0.0,
+            _ => {}
+        }
+    }
 }
 
 impl Sprite for Bullet {

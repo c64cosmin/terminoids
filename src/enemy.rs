@@ -198,13 +198,9 @@ impl Enemies {
             let mut collided = false;
 
             bullets.bullets.iter_mut().for_each(|bullet| {
-                if match obj {
-                    EnemyType::Asteroid(a) => a.collide(bullet.position),
-                    EnemyType::StarShip(s) => s.collide(bullet.position),
-                    EnemyType::Powerup(p) => p.collide(bullet.position),
-                } {
+                if obj.collide(bullet.position) {
                     collided = true;
-                    bullet.life = 0.0;
+                    bullet.destroy();
                 }
             });
 
