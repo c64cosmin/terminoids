@@ -10,11 +10,11 @@ pub struct Ship {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub angle: f32,
-    pub fire_cooldown: f32,
+    pub life: i8,
+    fire_cooldown: f32,
     thrust_speed: f32,
     angle_speed: f32,
     turn_speed: f32,
-    life: u8,
     spawning: f32,
 }
 
@@ -119,7 +119,7 @@ impl Sprite for Ship {
     }
 
     fn is_alive(&self) -> bool {
-        return true;
+        self.life >= 0
     }
 }
 
@@ -141,8 +141,8 @@ impl Ship {
         if self.spawning > 0.0 {
             return;
         }
-        self.speed.0 += self.angle.cos() * self.turn_speed;
-        self.speed.1 += self.angle.sin() * self.turn_speed;
+        self.speed.0 += self.angle.cos() * self.thrust_speed;
+        self.speed.1 += self.angle.sin() * self.thrust_speed;
     }
 
     pub fn fire(&mut self, bullets: &mut Bullets) {

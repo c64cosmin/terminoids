@@ -73,6 +73,10 @@ fn start() {
             _ => {}
         }
 
+        if ship.life < 0 {
+            break;
+        }
+
         //update
         ship.update(&camera, delta_time);
         ship_bullets.update(&camera, delta_time);
@@ -96,6 +100,7 @@ fn start() {
 
         print!("{}", termion::cursor::Goto(1, 1));
         print!("{}{}", color::Black.bg_str(), color::White.fg_str());
+        println!("Lifes : {}", ship.life);
         println!("FPS{:?}", frame_start.elapsed());
 
         stdout.flush().unwrap();

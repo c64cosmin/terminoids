@@ -102,7 +102,7 @@ impl Enemies {
         let bounds = camera.get_bounds();
         let position: (f32, f32) = (0.0, 0.0);
 
-        for i in 0..32 {
+        for _ in 0..32 {
             let position: (f32, f32) = (
                 (rnd.gen::<f32>() * bounds.0)
                     * match rand::random() {
