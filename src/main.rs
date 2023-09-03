@@ -4,6 +4,7 @@ pub mod bullet;
 pub mod drawables;
 pub mod drawingcontext;
 pub mod enemy;
+pub mod powerup;
 pub mod ship;
 pub mod sprite;
 pub mod starship;
