@@ -24,32 +24,119 @@ pub struct StarShip {
 
 impl TerminalDrawble for StarShip {
     fn draw(&self, ctx: &mut AsciiContext) {
-        let (sides, radius) = self.get_description();
-        let mut triangles = vec![EMPTY_TRIANGLE; sides];
+        match self.size {
+            StarShipSize::Flying => {}
+            StarShipSize::SmallCluster => {}
+            StarShipSize::MediumCluster => {}
+            StarShipSize::BigCluster => {
+                let (sides, radius) = self.get_description();
+                let mut triangles = vec![EMPTY_TRIANGLE; sides];
 
-        let n = sides as f32;
-        let u = 2.0 * std::f32::consts::PI / n;
+                let r = radius;
+                let a = self.angle;
+                let point_a: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
+                let a = self.angle + 2.0 * std::f32::consts::FRAC_PI_3;
+                let point_b: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
+                let a = self.angle + 4.0 * std::f32::consts::FRAC_PI_3;
+                let point_c: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
 
-        for i in 0..sides {
-            let angle_left = (i as f32) * u + self.angle;
-            let angle_right = (i as f32) * u + u + self.angle;
+                triangles[0] = Triangle {
+                    points: [point_a, point_b, point_c],
+                    colors: [0.3, 0.3, 0.3],
+                    color_palette: ColorPalette::Red,
+                };
 
-            let point_left: Vec2 = (
-                f32::cos(angle_left) * radius + self.position.0,
-                f32::sin(angle_left) * radius + self.position.1,
-            );
-            let point_right: Vec2 = (
-                f32::cos(angle_right) * radius + self.position.0,
-                f32::sin(angle_right) * radius + self.position.1,
-            );
+                let a = self.angle + std::f32::consts::FRAC_PI_3;
+                let point_a: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
+                let a = self.angle + 3.0 * std::f32::consts::FRAC_PI_3;
+                let point_b: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
+                let a = self.angle + 5.0 * std::f32::consts::FRAC_PI_3;
+                let point_c: Vec2 = (a.cos() * r + self.position.0, a.sin() * r + self.position.1);
 
-            triangles[i] = Triangle {
-                points: [self.position, point_left, point_right],
-                colors: [0.55, 0.2, 0.3],
-                color_palette: ColorPalette::Red,
-            };
-        }
-        ctx.add_triangles(&triangles);
+                triangles[1] = Triangle {
+                    points: [point_a, point_b, point_c],
+                    colors: [0.5, 0.5, 0.5],
+                    color_palette: ColorPalette::Red,
+                };
+
+                let n = 4.0;
+                let u = 2.0 * std::f32::consts::PI / n;
+                let sides = 4;
+
+                for i in 0..sides {
+                    let ai = (i as f32) * u + self.angle;
+                    let al = ai - std::f32::consts::FRAC_PI_4;
+                    let ar = ai + std::f32::consts::FRAC_PI_4;
+
+                    let point_head: Vec2 = (
+                        ai.cos() * radius * 1.2 + self.position.0,
+                        ai.sin() * radius * 1.2 + self.position.1,
+                    );
+
+                    let point_left: Vec2 = (
+                        al.cos() * radius * 0.2 + self.position.0,
+                        al.sin() * radius * 0.2 + self.position.1,
+                    );
+                    let point_right: Vec2 = (
+                        ar.cos() * radius * 0.2 + self.position.0,
+                        ar.sin() * radius * 0.2 + self.position.1,
+                    );
+
+                    let color_a = ai.cos() * 0.4 + 0.5;
+                    let color_b = (ai + u).cos() * 0.3 + 0.5;
+
+                    triangles[i * 2 + 2] = Triangle {
+                        points: [self.position, point_left, point_head],
+                        colors: [color_a, color_a, color_a],
+                        color_palette: ColorPalette::Magenta,
+                    };
+                    triangles[i * 2 + 3] = Triangle {
+                        points: [self.position, point_right, point_head],
+                        colors: [color_b, color_b, color_b],
+                        color_palette: ColorPalette::Magenta,
+                    };
+                }
+
+                let n = 4.0;
+                let u = 2.0 * std::f32::consts::PI / n;
+                let sides = 4;
+
+                for i in 0..sides {
+                    let ai = (i as f32) * u + self.angle + std::f32::consts::FRAC_PI_4;
+                    let al = ai - std::f32::consts::FRAC_PI_4;
+                    let ar = ai + std::f32::consts::FRAC_PI_4;
+
+                    let point_head: Vec2 = (
+                        ai.cos() * radius * 1.5 + self.position.0,
+                        ai.sin() * radius * 1.5 + self.position.1,
+                    );
+
+                    let point_left: Vec2 = (
+                        al.cos() * radius * 0.2 + self.position.0,
+                        al.sin() * radius * 0.2 + self.position.1,
+                    );
+                    let point_right: Vec2 = (
+                        ar.cos() * radius * 0.2 + self.position.0,
+                        ar.sin() * radius * 0.2 + self.position.1,
+                    );
+
+                    let color_a = ai.cos() * 0.4 + 0.5;
+                    let color_b = (ai + u).cos() * 0.3 + 0.5;
+
+                    triangles[i * 2 + 10] = Triangle {
+                        points: [self.position, point_left, point_head],
+                        colors: [color_a, color_a, color_a],
+                        color_palette: ColorPalette::Blue,
+                    };
+                    triangles[i * 2 + 11] = Triangle {
+                        points: [self.position, point_right, point_head],
+                        colors: [color_b, color_b, color_b],
+                        color_palette: ColorPalette::Blue,
+                    };
+                }
+                ctx.add_triangles(&triangles);
+            }
+        };
     }
 }
 
@@ -125,7 +212,7 @@ impl StarShip {
             StarShipSize::Flying => (3, 1.9),
             StarShipSize::SmallCluster => (4, 2.1),
             StarShipSize::MediumCluster => (5, 2.6),
-            StarShipSize::BigCluster => (6, 3.3),
+            StarShipSize::BigCluster => (18, 5.2),
         }
     }
 

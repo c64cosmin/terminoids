@@ -27,9 +27,14 @@ impl Enemies {
     }
 
     pub fn init_level(&mut self, camera: &Camera, ship: &Ship) {
-        for _ in 0..3 {
-            if let Some(asteroid) = self.spawn::<Asteroid>(camera, ship) {
-                self.enemies.push(EnemyType::Asteroid(asteroid));
+        for _ in 0..1 {
+            if let Some(obj) = self.spawn::<StarShip>(camera, ship) {
+                self.enemies.push(EnemyType::StarShip(obj));
+            }
+        }
+        for _ in 0..1 {
+            if let Some(obj) = self.spawn::<Asteroid>(camera, ship) {
+                self.enemies.push(EnemyType::Asteroid(obj));
             }
         }
         self.time = 30.0;
