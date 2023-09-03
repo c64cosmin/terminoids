@@ -18,7 +18,7 @@ pub struct Ship {
     turn_speed: f32,
     spawning: f32,
     piercing: f32,
-    rapidfire: f32,
+    splitfire: f32,
     pub shield: f32,
 }
 
@@ -153,7 +153,7 @@ impl Sprite for Ship {
 
         self.fire_cooldown -= delta;
         self.spawning -= delta;
-        self.rapidfire -= delta;
+        self.splitfire -= delta;
         self.shield -= delta;
         self.piercing -= delta;
     }
@@ -177,8 +177,8 @@ impl Ship {
             spawning: 2.0,
             score: 0,
             shield: 0.0,
-            rapidfire: 0.0,
-            piercing: 20.0,
+            splitfire: 20.0,
+            piercing: 0.0,
         }
     }
     pub fn thrust(&mut self) {
@@ -198,14 +198,25 @@ impl Ship {
                 false => 0.3,
                 true => 0.2,
             };
-            bullets.bullets.push(Bullet::new(
-                self.position,
-                self.angle,
-                match self.piercing > 0.0 {
-                    true => BulletType::Piercing,
-                    false => BulletType::Normal,
-                },
-            ));
+
+            let n = match self.splitfire > 0.0 {
+                false => 1,
+                true => 7,
+            };
+
+            let u = std::f32::consts::PI * 2.0 / n as f32;
+
+            for i in 0..n {
+                let angle = (i as f32) * u + self.angle;
+                bullets.bullets.push(Bullet::new(
+                    self.position,
+                    angle,
+                    match self.piercing > 0.0 {
+                        true => BulletType::Piercing,
+                        false => BulletType::Normal,
+                    },
+                ));
+            }
         }
     }
 
@@ -228,7 +239,7 @@ impl Ship {
         match powerup.size {
             PowerupSize::Shield => self.shield = 30.0,
             PowerupSize::PiercingBullets => self.piercing = 20.0,
-            PowerupSize::RapidFire => self.rapidfire = 30.0,
+            PowerupSize::SplitFire => self.splitfire = 30.0,
         }
     }
 

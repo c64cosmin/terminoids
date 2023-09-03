@@ -9,7 +9,7 @@ use rand::Rng;
 
 #[derive(Clone, Copy, Debug)]
 pub enum PowerupSize {
-    RapidFire,
+    SplitFire,
     PiercingBullets,
     Shield,
 }
@@ -116,7 +116,7 @@ impl Spawnable for Powerup {
         Powerup {
             position,
             speed,
-            size: PowerupSize::RapidFire,
+            size: PowerupSize::SplitFire,
             life: 0.0,
         }
     }
