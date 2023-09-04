@@ -61,7 +61,7 @@ fn start() {
                     Key::Left => ship.turn_left(),
                     Key::Right => ship.turn_right(),
                     Key::Up => ship.thrust(),
-                    Key::Char(' ') => ship.fire(&mut ship_bullets),
+                    Key::Char(' ') => ship.fire(),
                     key => {
                         print!("Key pressed: {:?}", key);
                     }
@@ -77,6 +77,7 @@ fn start() {
 
         //update
         ship.update(&camera, delta_time);
+        ship.update_switches(&mut ship_bullets);
         ship_bullets.update(&camera, delta_time);
         enemies.update_with_ship(&camera, delta_time, &ship);
         enemies.collide_with_bullets(&mut ship_bullets, &mut ship);

@@ -20,6 +20,9 @@ pub struct Ship {
     piercing: f32,
     splitfire: f32,
     pub shield: f32,
+    turning: f32,
+    thrusting: bool,
+    firing: bool,
 }
 
 impl TerminalDrawble for Ship {
@@ -141,7 +144,7 @@ impl Sprite for Ship {
         self.speed.1 *= damp;
 
         self.angle += self.angle_speed * delta;
-        self.angle_speed *= damp;
+        self.angle_speed *= damp * damp * damp;
 
         //angle bounds
         if self.angle < 0.0 {
@@ -172,27 +175,54 @@ impl Ship {
             fire_cooldown: 0.0,
             angle_speed: 0.0,
             turn_speed: 2.0,
-            thrust_speed: 1.5,
+            thrust_speed: 1.0,
             life: 5,
             spawning: 2.0,
             score: 0,
             shield: 3.0,
             splitfire: 0.0,
             piercing: 0.0,
+            turning: 0.0,
+            thrusting: false,
+            firing: false,
         }
     }
     pub fn thrust(&mut self) {
         if self.spawning > 0.0 {
             return;
         }
-        self.speed.0 += self.angle.cos() * self.thrust_speed;
-        self.speed.1 += self.angle.sin() * self.thrust_speed;
+        self.thrusting = !self.thrusting;
     }
 
-    pub fn fire(&mut self, bullets: &mut Bullets) {
+    pub fn fire(&mut self) {
         if self.spawning > 0.0 {
             return;
         }
+        self.firing = !self.firing;
+    }
+
+    pub fn update_switches(&mut self, bullets: &mut Bullets) {
+        if self.spawning > 0.0 {
+            self.firing = false;
+            self.thrusting = false;
+            self.turning = 0.0;
+        }
+
+        if self.firing {
+            self.spawn_bullet(bullets);
+        }
+
+        if self.thrusting {
+            self.speed.0 += self.angle.cos() * self.thrust_speed;
+            self.speed.1 += self.angle.sin() * self.thrust_speed;
+        }
+
+        if self.turning != 0.0 {
+            self.angle_speed = self.turning;
+        }
+    }
+
+    fn spawn_bullet(&mut self, bullets: &mut Bullets) {
         if self.fire_cooldown <= 0.0 {
             self.fire_cooldown = match self.piercing > 0.0 {
                 false => 0.3,
@@ -220,19 +250,28 @@ impl Ship {
         }
     }
 
-    pub fn turn(&mut self, angle: f32) {
+    pub fn turn_left(&mut self) {
         if self.spawning > 0.0 {
             return;
         }
-        self.angle_speed += angle;
-    }
 
-    pub fn turn_left(&mut self) {
-        self.turn(-self.turn_speed);
+        if self.turning != 0.0 {
+            self.turning = 0.0;
+            return;
+        }
+        self.turning = -self.turn_speed;
     }
 
     pub fn turn_right(&mut self) {
-        self.turn(self.turn_speed);
+        if self.spawning > 0.0 {
+            return;
+        }
+
+        if self.turning != 0.0 {
+            self.turning = 0.0;
+            return;
+        }
+        self.turning = self.turn_speed;
     }
 
     pub fn powerup(&mut self, powerup: &Powerup) {
