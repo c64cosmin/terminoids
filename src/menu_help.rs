@@ -1,7 +1,6 @@
 use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
-use crate::particle::*;
 use std::io::Write;
 use std::{thread, time};
 use termion::event::Key;
@@ -16,15 +15,13 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
 
     let frame_fps = 24;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
-    let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
+    let mut _delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
 
     let camera = Camera {
         position: (0.0, 0.0),
         size: (term_size.0 as f32, term_size.1 as f32),
         zoom: 2.0,
     };
-
-    let mut particles: Vec<Particle> = Vec::with_capacity(100);
 
     let messages = [
         "",
@@ -96,7 +93,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
             thread::sleep(i)
         }
 
-        delta_time =
+        _delta_time =
             time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
     }
 }
