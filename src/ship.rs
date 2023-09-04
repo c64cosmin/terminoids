@@ -21,9 +21,7 @@ pub struct Ship {
     splitfire: f32,
     rapidfire: f32,
     pub shield: f32,
-    thrusting: bool,
     firing: bool,
-    sticky: bool,
 }
 
 impl TerminalDrawble for Ship {
@@ -185,14 +183,8 @@ impl Ship {
             splitfire: 0.0,
             rapidfire: 0.0,
             piercing: 0.0,
-            thrusting: false,
             firing: false,
-            sticky: true,
         }
-    }
-
-    pub fn switch_sticky(&mut self) {
-        self.sticky = !self.sticky;
     }
 
     pub fn turn_left(&mut self) {
@@ -212,50 +204,28 @@ impl Ship {
     }
 
     pub fn thrust(&mut self) {
-        if !self.sticky {
-            self.speed.0 += self.angle.cos() * self.thrust_speed;
-            self.speed.1 += self.angle.sin() * self.thrust_speed;
-        }
-
         if self.spawning > 0.0 {
             return;
         }
-        self.thrusting = !self.thrusting;
+
+        self.speed.0 += self.angle.cos() * self.thrust_speed;
+        self.speed.1 += self.angle.sin() * self.thrust_speed;
     }
 
     pub fn fire(&mut self, bullets: &mut Bullets) {
-        if !self.sticky {
-            self.spawn_bullet(bullets);
-            return;
-        }
-
         if self.spawning > 0.0 {
             return;
         }
         self.firing = !self.firing;
     }
 
-    pub fn stop(&mut self) {
-        self.thrusting = false;
-    }
-
     pub fn update_switches(&mut self, bullets: &mut Bullets) {
-        if !self.sticky {
-            return;
-        }
-
         if self.spawning > 0.0 {
             self.firing = false;
-            self.thrusting = false;
         }
 
         if self.firing {
             self.spawn_bullet(bullets);
-        }
-
-        if self.thrusting {
-            self.speed.0 += self.angle.cos() * self.thrust_speed;
-            self.speed.1 += self.angle.sin() * self.thrust_speed;
         }
     }
 
