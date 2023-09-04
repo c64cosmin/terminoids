@@ -1,10 +1,14 @@
 # Asteroids game inside the terminal
 
+![Title](img/title.png)
+
 ![Screenshot](img/asterscr0.png)
 
 ![Screenshot](img/asterscr1.png)
 
 ### Building
+
+You will need Rust to compile the binary
 
 ```
 cargo build --release

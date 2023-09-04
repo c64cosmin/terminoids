@@ -27,6 +27,8 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
     let mut plasma = FireDrawer::new(term_size);
 
     let messages = [
+        "Recommended font size : 10",
+        "",
         "Unfortunately terminals don't directly support input like UI apps do.",
         "What I mean is that KEY_UP & KEY_DOWN events are not supported,",
         "the way the terminal works is to get a key stroke event and act accordingly.",
