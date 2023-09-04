@@ -1,35 +1,47 @@
 use crate::drawables::*;
 use rand::Rng;
 
-pub struct PlasmaDrawer {
+pub struct FireDrawer {
     bitmap: Vec<f32>,
     size: (usize, usize),
     terminal_size: (u16, u16),
+    wind: i16,
+    time: f32,
 }
 
-impl PlasmaDrawer {
-    pub fn new(size: (u16, u16)) -> PlasmaDrawer {
+impl FireDrawer {
+    pub fn new(size: (u16, u16)) -> FireDrawer {
         let plasma_size = (size.0 as usize, 30);
-        PlasmaDrawer {
+        FireDrawer {
             bitmap: vec![0.0; plasma_size.0 * plasma_size.1],
             size: plasma_size,
             terminal_size: size,
+            wind: 0,
+            time: 3.0,
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, delta: f32) {
         let mut rnd = rand::thread_rng();
+
+        self.time -= delta;
+        if self.time < 0.0 {
+            self.time = 3.0;
+            self.wind = rnd.gen_range(0..=2) - 1;
+        }
+
         for x in 0..self.size.0 {
             self.set_value(x, self.size.1 - 1, rnd.gen::<f32>() * 0.2 + 0.8);
         }
+
         for y in (0..self.size.1 - 1).rev() {
             for x in 0..self.size.0 {
-                let offset_x = rnd.gen_range(0..=3) - 1 as usize;
-                let offset_y = rnd.gen_range(0..=1) as usize;
-                let new_x = (x + offset_x).clamp(0, self.size.0 - 1);
-                let new_y = (y + offset_y).clamp(0, self.size.1 - 1);
-                let pixel =
-                    self.get_value(new_x, new_y) * (1.0 - rnd.gen::<f32>() * 0.2).clamp(0.0, 1.0);
+                let offset_x = rnd.gen_range(0..=2) - 1 + self.wind;
+                let offset_y = rnd.gen_range(0..=1);
+                let new_x = (x as i16 + offset_x).clamp(0, self.size.0 as i16 - 1);
+                let new_y = (y as i16 + offset_y).clamp(0, self.size.1 as i16 - 1);
+                let pixel = self.get_value(new_x as usize, new_y as usize)
+                    * (1.0 - rnd.gen::<f32>() * 0.2).clamp(0.0, 1.0);
                 self.set_value(x, y, pixel);
             }
         }

@@ -16,7 +16,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
 
     let frame_fps = 10;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
-    let mut _delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
+    let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
 
     let camera = Camera {
         position: (0.0, 0.0),
@@ -24,7 +24,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
         zoom: 2.0,
     };
 
-    let mut plasma = PlasmaDrawer::new(term_size);
+    let mut plasma = FireDrawer::new(term_size);
 
     let messages = [
         "",
@@ -90,7 +90,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
             _ => {}
         }
 
-        plasma.update();
+        plasma.update(delta_time);
 
         plasma.draw();
 
@@ -100,7 +100,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
             thread::sleep(i)
         }
 
-        _delta_time =
+        delta_time =
             time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
     }
 }
