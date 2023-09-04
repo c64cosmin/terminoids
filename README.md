@@ -18,17 +18,17 @@ cargo build --release
 
 ### Gameplay
 
-Unfortunately terminals don't directly support input like UI apps do.
-What I mean is that KEY_UP & KEY_DOWN events are not supported,
+Unfortunately terminals don't directly support input like UI apps do.\
+What I mean is that KEY_UP & KEY_DOWN events are not supported,\
 the way the terminal works is to get a key stroke event and act accordingly.
 
-Due to this limitation the game will work by switching on & off movements.
-Pressing the movement once to activates it, pressing it again turn it off.
+Due to this limitation the game will work by switching movements on & off.\
+Pressing the movement once activates it, pressing it again turns it off.
 
 
-Left - Right  : Rotate ship
-Up            : Move forward
-Down          : Stop movement
+Left - Right  : Rotate ship\
+Up            : Move forward\
+Down          : Stop movement\
 Space         : Fire
 
 
