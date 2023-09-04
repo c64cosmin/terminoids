@@ -9,6 +9,7 @@ pub struct AsciiContext {
     points: Vec<Point>,
     pub lifes: i8,
     pub score: u32,
+    pub display_score: bool,
 }
 
 pub fn vertex_shader(input: &Vec2, camera: &Camera) -> Vec2 {
@@ -32,6 +33,7 @@ impl AsciiContext {
             points: Vec::with_capacity(100),
             lifes: 0,
             score: 0,
+            display_score: false,
         }
     }
 
@@ -280,7 +282,7 @@ impl DrawingContext for AsciiContext {
                 print!("\n");
             }
 
-            if i == 1 {
+            if i == 1 && self.display_score {
                 print!("{}", termion::cursor::Goto(1, 1));
                 print!("{}{}", color::Black.bg_str(), color::White.fg_str());
                 print!("Lifes : {} Score : {}", self.lifes, self.score);

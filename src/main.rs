@@ -29,7 +29,65 @@ use termion::raw::IntoRawMode;
 use termion::raw::RawTerminal;
 use termion::terminal_size;
 
-fn start() {
+fn menu() {
+    let term_size = terminal_size().unwrap();
+    let mut scr: AsciiContext = AsciiContext::new(term_size);
+    let mut stdin = async_stdin().keys();
+    let mut stdout: RawTerminal<std::io::Stdout> = stdout().into_raw_mode().unwrap();
+
+    let frame_fps = 5;
+    let frame_len = time::Duration::from_micros(1000000 / frame_fps);
+    let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
+
+    let camera = Camera {
+        position: (0.0, 0.0),
+        size: (term_size.0 as f32, term_size.1 as f32),
+        zoom: 2.0,
+    };
+
+    loop {
+        let frame_start = time::Instant::now();
+
+        match stdin.next() {
+            Some(result) => match result {
+                Ok(key) => match key {
+                    Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
+                        break;
+                    }
+                    key => {
+                        print!("Key pressed: {:?}", key);
+                    }
+                },
+                _ => {}
+            },
+            _ => {}
+        }
+
+        print!("{}", termion::cursor::Goto(1, 1));
+
+        scr.flush_triangles();
+        scr.flush_points();
+        scr.clear();
+
+        scr.draw_triangles(&camera);
+        scr.draw_points(&camera);
+        scr.display();
+
+        stdout.flush().unwrap();
+
+        if let Some(i) = (frame_len).checked_sub(frame_start.elapsed()) {
+            thread::sleep(i)
+        }
+
+        delta_time =
+            time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
+    }
+
+    print!("{}", termion::clear::All);
+    stdout.suspend_raw_mode().unwrap();
+}
+
+fn game() {
     let term_size = terminal_size().unwrap();
     let mut scr: AsciiContext = AsciiContext::new(term_size);
     let mut stdin = async_stdin().keys();
@@ -153,5 +211,5 @@ fn start() {
 }
 
 fn main() {
-    start();
+    menu();
 }
