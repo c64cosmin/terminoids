@@ -58,11 +58,12 @@ fn start() {
                     Key::Ctrl('c') | Key::Char('q') | Key::Esc => {
                         break;
                     }
+                    Key::BackTab | Key::Char('\t') => ship.switch_sticky(),
                     Key::Left => ship.turn_left(),
                     Key::Right => ship.turn_right(),
                     Key::Up => ship.thrust(),
                     Key::Down => ship.stop(),
-                    Key::Char(' ') => ship.fire(),
+                    Key::Char(' ') => ship.fire(&mut ship_bullets),
                     key => {
                         print!("Key pressed: {:?}", key);
                     }

@@ -22,13 +22,20 @@ Unfortunately terminals don't directly support input like UI apps do.\
 What I mean is that KEY_UP & KEY_DOWN events are not supported,\
 the way the terminal works is to get a key stroke event and act accordingly.
 
-Due to this limitation the game will work by switching movements on & off.\
-Pressing the movement once activates it, pressing it again turns it off.
+Due to this limitation the game has two input modes:\
+- Sticky : This works by pressing one button, it becomes enabled until you press again\
+           For example if you press forward once you keep going forward until\
+           you press forward again\
+- Non-sticky : This mean that buttons have to be tapped in order to get a move\
+               holding a button down will work until another button is pressed\
+               Remember this works inside the terminal, so like a text editor\
+               You cannot press two buttons at once, you got to tap them.
 
 
 Left - Right  : Rotate ship\
 Up            : Move forward\
 Down          : Stop movement\
+Tab           : Switch between sticky & non-sticky\
 Space         : Fire
 
 

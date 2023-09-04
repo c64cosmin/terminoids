@@ -23,6 +23,7 @@ pub struct Ship {
     turning: f32,
     thrusting: bool,
     firing: bool,
+    sticky: bool,
 }
 
 impl TerminalDrawble for Ship {
@@ -185,16 +186,64 @@ impl Ship {
             turning: 0.0,
             thrusting: false,
             firing: false,
+            sticky: false,
         }
     }
+
+    pub fn switch_sticky(&mut self) {
+        self.sticky = !self.sticky;
+    }
+
+    pub fn turn_left(&mut self) {
+        if !self.sticky {
+            self.angle_speed -= self.turn_speed;
+        }
+
+        if self.spawning > 0.0 {
+            return;
+        }
+
+        if self.turning != 0.0 {
+            self.turning = 0.0;
+            return;
+        }
+        self.turning = -self.turn_speed;
+    }
+
+    pub fn turn_right(&mut self) {
+        if !self.sticky {
+            self.angle_speed += self.turn_speed;
+        }
+
+        if self.spawning > 0.0 {
+            return;
+        }
+
+        if self.turning != 0.0 {
+            self.turning = 0.0;
+            return;
+        }
+        self.turning = self.turn_speed;
+    }
+
     pub fn thrust(&mut self) {
+        if !self.sticky {
+            self.speed.0 += self.angle.cos() * self.thrust_speed;
+            self.speed.1 += self.angle.sin() * self.thrust_speed;
+        }
+
         if self.spawning > 0.0 {
             return;
         }
         self.thrusting = !self.thrusting;
     }
 
-    pub fn fire(&mut self) {
+    pub fn fire(&mut self, bullets: &mut Bullets) {
+        if !self.sticky {
+            self.spawn_bullet(bullets);
+            return;
+        }
+
         if self.spawning > 0.0 {
             return;
         }
@@ -208,6 +257,10 @@ impl Ship {
     }
 
     pub fn update_switches(&mut self, bullets: &mut Bullets) {
+        if !self.sticky {
+            return;
+        }
+
         if self.spawning > 0.0 {
             self.firing = false;
             self.thrusting = false;
@@ -254,30 +307,6 @@ impl Ship {
                 ));
             }
         }
-    }
-
-    pub fn turn_left(&mut self) {
-        if self.spawning > 0.0 {
-            return;
-        }
-
-        if self.turning != 0.0 {
-            self.turning = 0.0;
-            return;
-        }
-        self.turning = -self.turn_speed;
-    }
-
-    pub fn turn_right(&mut self) {
-        if self.spawning > 0.0 {
-            return;
-        }
-
-        if self.turning != 0.0 {
-            self.turning = 0.0;
-            return;
-        }
-        self.turning = self.turn_speed;
     }
 
     pub fn powerup(&mut self, powerup: &Powerup) {
