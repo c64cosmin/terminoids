@@ -97,6 +97,10 @@ Space         : Fire
 
 ![Preview](img/aster_p_2.png)
 
+- White          : 1000pts - gives rapid fire for 5 seconds
+
+![Preview](img/aster_p_3.png)
+
 
 ## Self-Promotion
 
