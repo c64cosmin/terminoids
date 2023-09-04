@@ -76,7 +76,7 @@ impl TerminalDrawble for StarShip {
                 let n = 4.0;
                 let u = 2.0 * std::f32::consts::PI / n;
                 let sides = 4;
-                let small_radius = 0.4;
+                let small_radius = 0.6;
 
                 for i in 0..sides {
                     let ai = (i as f32) * u + self.angle;

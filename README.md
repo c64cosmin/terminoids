@@ -10,7 +10,7 @@
 
 ### Building
 
-You will need Rust to compile the binary
+[You will need Rust to compile the binary](https://www.rust-lang.org/tools/install)
 
 ```
 cargo build --release

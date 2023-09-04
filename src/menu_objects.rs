@@ -136,7 +136,7 @@ pub fn menu_objects(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std:
         match stdin.next() {
             Some(result) => match result {
                 Ok(key) => match key {
-                    Key::Ctrl('c') | Key::Esc | Key::Char('q') => {
+                    Key::Ctrl('c') | Key::Esc | Key::Char('q') | Key::Char('\n') => {
                         break;
                     }
                     _ => {}
@@ -155,11 +155,6 @@ pub fn menu_objects(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std:
         scr.flush_points();
         scr.clear();
 
-        scr.add_text_entry(&TextEntry {
-            position: (2.0, 2.0),
-            string: String::from("Press ESC to exit"),
-            color_palette: TextColorPalette::Warning,
-        });
         scr.add_text_entry(&TextEntry {
             position: (10.0, 10.0),
             string: String::from("Asteroids"),
