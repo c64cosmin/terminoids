@@ -106,7 +106,7 @@ impl TerminalDrawble for DrawbleLogo {
         );
         let mut logo_shaded = vec![EMPTY_TRIANGLE; self.logo.len()];
         self.logo.iter().enumerate().for_each(|(i, triangle)| {
-            logo_shaded[i].color_palette = ColorPalette::Green;
+            logo_shaded[i].color_palette = self.color_palette;
             for j in 0..3 {
                 let point = (
                     triangle.points[j].0 * shader_scale.0 + shader_offset.0,

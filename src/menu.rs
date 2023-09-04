@@ -3,6 +3,7 @@ use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::game::*;
 use crate::logo::*;
+use crate::menu_help::*;
 use crate::menu_objects::*;
 use crate::sprite::Sprite;
 use crate::terminaldrawable::TerminalDrawble;
@@ -48,7 +49,7 @@ pub fn menu() {
                     Key::Char('\n') => {
                         match message_selection {
                             0 => game(&mut stdin, &mut stdout),
-                            1 => {}
+                            1 => menu_help(&mut stdin, &mut stdout),
                             2 => menu_objects(&mut stdin, &mut stdout),
                             _ => break,
                         };
