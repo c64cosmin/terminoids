@@ -22,7 +22,8 @@ pub struct StarShip {
     pub speed: (f32, f32),
     pub angle: f32,
     pub size: StarShipSize,
-    angle_speed: f32,
+    pub angle_speed: f32,
+    pub disabled: bool,
 }
 
 impl TerminalDrawble for StarShip {
@@ -309,14 +310,16 @@ impl TerminalDrawble for StarShip {
 
 impl Sprite for StarShip {
     fn update(&mut self, camera: &Camera, delta: f32) {
-        let flying_ship_speed = 9.0;
-        match self.size {
-            StarShipSize::Flying => {
-                self.speed.0 = self.angle.cos() * flying_ship_speed;
-                self.speed.1 = self.angle.sin() * flying_ship_speed;
-            }
-            _ => {}
-        };
+        if !self.disabled {
+            let flying_ship_speed = 9.0;
+            match self.size {
+                StarShipSize::Flying => {
+                    self.speed.0 = self.angle.cos() * flying_ship_speed;
+                    self.speed.1 = self.angle.sin() * flying_ship_speed;
+                }
+                _ => {}
+            };
+        }
 
         self.position.0 += self.speed.0 * delta;
         self.position.1 += self.speed.1 * delta;
@@ -393,6 +396,7 @@ impl Collidable for StarShip {
                     angle,
                     angle_speed,
                     size: StarShipSize::MediumCluster,
+                    disabled: false,
                 }));
             }
             StarShipSize::MediumCluster => {
@@ -402,6 +406,7 @@ impl Collidable for StarShip {
                     angle,
                     angle_speed,
                     size: StarShipSize::SmallCluster,
+                    disabled: false,
                 }));
             }
             _ => {}
@@ -420,6 +425,7 @@ impl Collidable for StarShip {
                 angle: angle + (i as f32) * unit,
                 angle_speed,
                 size: StarShipSize::Flying,
+                disabled: false,
             }));
         }
 
@@ -454,6 +460,7 @@ impl Spawnable for StarShip {
             angle: 0.0,
             size: StarShipSize::BigCluster,
             angle_speed,
+            disabled: false,
         }
     }
 }

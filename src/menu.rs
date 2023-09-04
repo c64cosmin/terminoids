@@ -3,6 +3,7 @@ use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::game::*;
 use crate::logo::*;
+use crate::menu_objects::*;
 use std::io::{stdout, Write};
 use std::{thread, time};
 use termion::async_stdin;
@@ -47,7 +48,7 @@ pub fn menu() {
                         match message_selection {
                             0 => game(&mut stdin, &mut stdout),
                             1 => {}
-                            2 => {}
+                            2 => menu_objects(&mut stdin, &mut stdout),
                             _ => break,
                         };
                     }

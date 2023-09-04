@@ -23,8 +23,8 @@ pub struct Asteroid {
     pub speed: (f32, f32),
     pub angle: f32,
     pub size: AsteroidSize,
-    angle_speed: f32,
-    color_palette: ColorPalette,
+    pub angle_speed: f32,
+    pub color_palette: ColorPalette,
 }
 
 impl TerminalDrawble for Asteroid {
@@ -206,7 +206,7 @@ impl Spawnable for Asteroid {
 }
 
 impl Asteroid {
-    fn get_random_color() -> ColorPalette {
+    pub fn get_random_color() -> ColorPalette {
         let mut rnd = rand::thread_rng();
         match rnd.gen_range(0..6) {
             0 => ColorPalette::Red,

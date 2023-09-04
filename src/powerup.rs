@@ -20,7 +20,7 @@ pub struct Powerup {
     pub position: (f32, f32),
     pub speed: (f32, f32),
     pub size: PowerupSize,
-    life: f32,
+    pub life: f32,
 }
 
 impl TerminalDrawble for Powerup {
