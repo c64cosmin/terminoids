@@ -28,7 +28,30 @@ Pressing the movement once to activates it, pressing it again turn it off.
 
 Left - Right  : Rotate ship
 Up            : Move forward
+Down          : Stop movement
 Space         : Fire
+
+
+#### Asteroids
+
+- Huge           : 200pts
+- Big            : 150pts
+- Medium         : 100pts
+- Small          :  75pts
+- Tiny           :  50pts
+
+#### Star-ships
+
+- Big cluster    : 250pts
+- Medium cluster : 200pts
+- Small cluster  : 150pts
+- Flying ship    : 100pts
+
+#### Power-ups
+
+- Red            : 1000pts - gives piercing bullets for 5 seconds
+- Green          : 1000pts - gives split fire for 7 seconds
+- Blue           : 1000pts - gives shield for 10 seconds
 
 ## Self-Promotion
 

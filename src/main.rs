@@ -61,6 +61,7 @@ fn start() {
                     Key::Left => ship.turn_left(),
                     Key::Right => ship.turn_right(),
                     Key::Up => ship.thrust(),
+                    Key::Down => ship.stop(),
                     Key::Char(' ') => ship.fire(),
                     key => {
                         print!("Key pressed: {:?}", key);

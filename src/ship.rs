@@ -201,6 +201,12 @@ impl Ship {
         self.firing = !self.firing;
     }
 
+    pub fn stop(&mut self) {
+        self.firing = false;
+        self.thrusting = false;
+        self.turning = 0.0;
+    }
+
     pub fn update_switches(&mut self, bullets: &mut Bullets) {
         if self.spawning > 0.0 {
             self.firing = false;

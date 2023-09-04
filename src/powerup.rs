@@ -53,7 +53,7 @@ impl TerminalDrawble for Powerup {
                 color_palette: match self.size {
                     PowerupSize::Shield => ColorPalette::Blue,
                     PowerupSize::SplitFire => ColorPalette::Green,
-                    PowerupSize::PiercingBullets => ColorPalette::Yellow,
+                    PowerupSize::PiercingBullets => ColorPalette::Red,
                 },
             };
         }
