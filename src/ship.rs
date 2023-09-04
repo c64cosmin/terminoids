@@ -269,9 +269,9 @@ impl Ship {
         }
     }
 
-    pub fn damage(&mut self, empty: Vec2) {
+    pub fn damage(&mut self, empty: Vec2, force: bool) {
         self.position = empty;
-        if self.spawning <= 0.0 {
+        if self.spawning <= 0.0 || force {
             self.life -= 1;
         }
         self.spawning = 2.0;

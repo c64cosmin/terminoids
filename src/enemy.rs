@@ -155,7 +155,7 @@ impl Enemies {
             if enemy.collide_with_ship(ship) {
                 match enemy {
                     EnemyType::Powerup(powerup) => ship.powerup(&powerup),
-                    _ => ship.damage(self.get_empty_point(camera)),
+                    _ => ship.damage(self.get_empty_point(camera), false),
                 }
             }
         });
