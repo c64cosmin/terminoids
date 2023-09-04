@@ -6,6 +6,8 @@
 
 ![Screenshot](img/asterscr1.png)
 
+![Screenshot](img/asterscr2.png)
+
 ### Building
 
 You will need Rust to compile the binary
