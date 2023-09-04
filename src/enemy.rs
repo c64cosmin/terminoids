@@ -58,6 +58,10 @@ impl Enemies {
     pub fn update_with_ship(&mut self, camera: &Camera, delta: f32, ship: &Ship) {
         self.update(camera, delta);
 
+        self.spawn_stuff(camera, ship);
+    }
+
+    fn spawn_stuff(&mut self, camera: &Camera, ship: &Ship) {
         if (self.time < 0.0 || self.get_entities_no() == 0) && self.get_entities_no() < 8 {
             let mut rnd = rand::thread_rng();
             let choice: u8 = rnd.gen_range(0..self.level_interval);
