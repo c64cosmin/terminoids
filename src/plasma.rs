@@ -11,13 +11,13 @@ pub struct FireDrawer {
 
 impl FireDrawer {
     pub fn new(size: (u16, u16)) -> FireDrawer {
-        let plasma_size = (size.0 as usize, 30);
+        let plasma_size = (size.0 as usize, 27);
         FireDrawer {
             bitmap: vec![0.0; plasma_size.0 * plasma_size.1],
             size: plasma_size,
             terminal_size: size,
             wind: 0,
-            time: 3.0,
+            time: 10.0,
         }
     }
 

@@ -22,7 +22,7 @@ Unfortunately terminals don't directly support input like UI apps do.\
 What I mean is that KEY_UP & KEY_DOWN events are not supported,\
 the way the terminal works is to get a key stroke event and act accordingly.
 
-This mean that buttons have to be tapped in order to get a move\
+This means that buttons have to be tapped in order to get a move\
 holding a button down will work until another button is pressed\
 Remember this works inside the terminal, so like a text editor\
 You cannot press two buttons at once, you got to tap them.
