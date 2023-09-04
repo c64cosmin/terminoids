@@ -35,17 +35,44 @@ Space         : Fire
 #### Asteroids
 
 - Huge           : 200pts
+
+![Preview](aster_0.png)
+
 - Big            : 150pts
+
+![Preview](aster_1.png)
+
 - Medium         : 100pts
+
+![Preview](aster_2.png)
+
 - Small          :  75pts
+
+![Preview](aster_3.png)
+
 - Tiny           :  50pts
+
+![Preview](aster_4.png)
+
 
 #### Star-ships
 
 - Big cluster    : 250pts
+
+![Preview](aster_5.png)
+
 - Medium cluster : 200pts
+
+![Preview](aster_6.png)
+
 - Small cluster  : 150pts
+
+![Preview](aster_7.png)
+
 - Flying ship    : 100pts
+
+![Preview](aster_8.png)
+
 
 #### Power-ups
 
