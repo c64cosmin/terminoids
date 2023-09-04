@@ -353,6 +353,10 @@ impl Sprite for StarShip {
 }
 
 impl Collidable for StarShip {
+    fn get_position(&self) -> Vec2 {
+        self.position.clone()
+    }
+
     fn collide(&self, p: Vec2) -> bool {
         if distance(self.position, p) < self.get_description().1 {
             return true;
@@ -405,9 +409,8 @@ impl Collidable for StarShip {
 
         //spawn ships
         let number = match self.size {
-            StarShipSize::BigCluster | StarShipSize::MediumCluster => 2,
-            StarShipSize::SmallCluster => 4,
-            _ => 0,
+            StarShipSize::Flying => 0,
+            _ => 4,
         };
         let unit = std::f32::consts::PI * 2.0 / number as f32;
         for i in 0..number {
@@ -423,7 +426,7 @@ impl Collidable for StarShip {
         //powerup
         match self.size {
             StarShipSize::Flying => {
-                if rnd.gen_range(0..20) == 0 {
+                if rnd.gen_range(0..25) == 0 {
                     splitted.push(EnemyType::Powerup(Powerup::spawn(self.position)));
                 }
             }

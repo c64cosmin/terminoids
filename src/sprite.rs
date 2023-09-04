@@ -9,6 +9,7 @@ pub trait Sprite {
 }
 
 pub trait Collidable {
+    fn get_position(&self) -> Vec2;
     fn collide(&self, p: Vec2) -> bool;
     fn collide_with_ship(&self, ship: &Ship) -> bool;
     fn split(&self) -> Vec<EnemyType>;

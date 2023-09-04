@@ -2,6 +2,8 @@ use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
+use crate::particle;
+use crate::particle::*;
 use crate::powerup::Powerup;
 use crate::ship::*;
 use crate::sprite::*;
@@ -18,6 +20,7 @@ pub enum EnemyType {
 
 pub struct Enemies {
     pub enemies: Vec<EnemyType>,
+    pub particles: Vec<Particle>,
     time: f32,
     time_interval: f32,
     level: u8,
@@ -28,6 +31,7 @@ impl Enemies {
     pub fn new() -> Enemies {
         Enemies {
             enemies: Vec::with_capacity(100),
+            particles: Vec::with_capacity(300),
             time: 60.0,
             time_interval: 40.0,
             level: 0,
@@ -186,6 +190,9 @@ impl Enemies {
                     StarShipSize::Flying => 100,
                 },
             };
+
+            self.spawn_particles(self.enemies[i].get_position());
+
             self.enemies.remove(i);
         });
 
@@ -194,6 +201,12 @@ impl Enemies {
             EnemyType::StarShip(s) => self.enemies.push(EnemyType::StarShip(s.clone())),
             EnemyType::Powerup(s) => self.enemies.push(EnemyType::Powerup(s.clone())),
         });
+    }
+
+    fn spawn_particles(&mut self, position: Vec2) {
+        for _ in 0..20 {
+            self.particles.push(Particle::spawn(position));
+        }
     }
 
     fn damage(&self, collection: &Vec<EnemyType>, bullets: &mut Bullets) -> Vec<usize> {
@@ -215,6 +228,12 @@ impl Enemies {
 
         damaged
     }
+
+    pub fn draw_particles(&self, ctx: &mut AsciiContext) {
+        self.particles
+            .iter()
+            .for_each(|particle| particle.draw(ctx));
+    }
 }
 
 impl TerminalDrawble for Enemies {
@@ -231,6 +250,11 @@ impl Sprite for Enemies {
     fn update(&mut self, camera: &Camera, delta: f32) {
         self.time -= delta;
         self.time_interval = (self.time_interval - delta / 120.0).max(1.0);
+
+        self.particles
+            .iter_mut()
+            .for_each(|particle| particle.update(camera, delta));
+        self.particles.retain(|particle| particle.is_alive());
 
         self.enemies.iter_mut().for_each(|obj| match obj {
             EnemyType::Asteroid(a) => a.update(camera, delta),
@@ -250,6 +274,14 @@ impl Sprite for Enemies {
 }
 
 impl Collidable for EnemyType {
+    fn get_position(&self) -> Vec2 {
+        match self {
+            EnemyType::Asteroid(a) => a.get_position(),
+            EnemyType::StarShip(s) => s.get_position(),
+            EnemyType::Powerup(p) => p.get_position(),
+        }
+    }
+
     fn collide(&self, point: Vec2) -> bool {
         match self {
             EnemyType::Asteroid(a) => a.collide(point),

@@ -4,6 +4,7 @@ pub mod bullet;
 pub mod drawables;
 pub mod drawingcontext;
 pub mod enemy;
+pub mod particle;
 pub mod powerup;
 pub mod ship;
 pub mod sprite;
@@ -90,6 +91,10 @@ fn start() {
         scr.flush_triangles();
         scr.flush_points();
         scr.clear();
+
+        enemies.draw_particles(&mut scr);
+        scr.draw_points(&camera);
+        scr.flush_points();
 
         enemies.draw(&mut scr);
         ship.draw(&mut scr);

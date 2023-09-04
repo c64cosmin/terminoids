@@ -95,6 +95,10 @@ impl Sprite for Asteroid {
 }
 
 impl Collidable for Asteroid {
+    fn get_position(&self) -> Vec2 {
+        self.position.clone()
+    }
+
     fn collide(&self, p: Vec2) -> bool {
         if distance(self.position, p) < self.get_description().1 {
             return true;
