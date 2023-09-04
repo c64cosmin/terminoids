@@ -309,10 +309,11 @@ impl TerminalDrawble for StarShip {
 
 impl Sprite for StarShip {
     fn update(&mut self, camera: &Camera, delta: f32) {
+        let flying_ship_speed = 9.0;
         match self.size {
             StarShipSize::Flying => {
-                self.speed.0 = self.angle.cos() * 7.0;
-                self.speed.1 = self.angle.sin() * 7.0;
+                self.speed.0 = self.angle.cos() * flying_ship_speed;
+                self.speed.1 = self.angle.sin() * flying_ship_speed;
             }
             _ => {}
         };

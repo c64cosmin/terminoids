@@ -12,6 +12,7 @@ pub enum PowerupSize {
     SplitFire,
     PiercingBullets,
     Shield,
+    RapidFire,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -54,6 +55,7 @@ impl TerminalDrawble for Powerup {
                     PowerupSize::Shield => ColorPalette::Blue,
                     PowerupSize::SplitFire => ColorPalette::Green,
                     PowerupSize::PiercingBullets => ColorPalette::Red,
+                    PowerupSize::RapidFire => ColorPalette::Gray,
                 },
             };
         }

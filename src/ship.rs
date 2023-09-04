@@ -19,6 +19,7 @@ pub struct Ship {
     spawning: f32,
     piercing: f32,
     splitfire: f32,
+    rapidfire: f32,
     pub shield: f32,
     thrusting: bool,
     firing: bool,
@@ -157,6 +158,7 @@ impl Sprite for Ship {
         self.fire_cooldown -= delta;
         self.spawning -= delta;
         self.splitfire -= delta;
+        self.rapidfire -= delta;
         self.shield -= delta;
         self.piercing -= delta;
     }
@@ -181,6 +183,7 @@ impl Ship {
             score: 0,
             shield: 3.0,
             splitfire: 0.0,
+            rapidfire: 0.0,
             piercing: 0.0,
             thrusting: false,
             firing: false,
@@ -233,7 +236,6 @@ impl Ship {
     }
 
     pub fn stop(&mut self) {
-        self.firing = false;
         self.thrusting = false;
     }
 
@@ -260,9 +262,12 @@ impl Ship {
     fn spawn_bullet(&mut self, bullets: &mut Bullets) {
         if self.fire_cooldown <= 0.0 {
             self.fire_cooldown = match self.piercing > 0.0 {
-                false => 0.3,
+                false => 0.4,
                 true => 0.2,
             };
+            if self.rapidfire > 0.0 {
+                self.fire_cooldown = 0.1;
+            }
 
             let n = match self.splitfire > 0.0 {
                 false => 1,
@@ -290,6 +295,7 @@ impl Ship {
             PowerupSize::Shield => self.shield = 10.0,
             PowerupSize::PiercingBullets => self.piercing = 5.0,
             PowerupSize::SplitFire => self.splitfire = 7.0,
+            PowerupSize::RapidFire => self.rapidfire = 5.0,
         }
     }
 
