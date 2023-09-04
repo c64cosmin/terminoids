@@ -1,4 +1,8 @@
+use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
+use crate::drawingcontext::DrawingContext;
+use crate::sprite::*;
+use crate::terminaldrawable::TerminalDrawble;
 use std::env;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -65,4 +69,54 @@ fn current_binary_directory() -> Option<PathBuf> {
         }
     }
     None
+}
+
+pub struct DrawbleLogo {
+    pub color_palette: ColorPalette,
+    logo: Vec<Triangle>,
+    time: f32,
+}
+
+impl DrawbleLogo {
+    pub fn new() -> DrawbleLogo {
+        DrawbleLogo {
+            color_palette: ColorPalette::Green,
+            logo: load_logo(),
+            time: 0.0,
+        }
+    }
+}
+
+impl Sprite for DrawbleLogo {
+    fn update(&mut self, _camera: &Camera, delta: f32) {
+        self.time += delta;
+    }
+
+    fn is_alive(&self) -> bool {
+        true
+    }
+}
+
+impl TerminalDrawble for DrawbleLogo {
+    fn draw(&self, ctx: &mut AsciiContext) {
+        let shader_scale = (25.0 + (0.3 * self.time).cos() * 5.0, 25.0);
+        let shader_offset = (
+            0.0 + (0.4 * self.time).cos(),
+            -5.0 + (0.3 * self.time).sin(),
+        );
+        let mut logo_shaded = vec![EMPTY_TRIANGLE; self.logo.len()];
+        self.logo.iter().enumerate().for_each(|(i, triangle)| {
+            logo_shaded[i].color_palette = ColorPalette::Green;
+            for j in 0..3 {
+                let point = (
+                    triangle.points[j].0 * shader_scale.0 + shader_offset.0,
+                    triangle.points[j].1 * shader_scale.1 + shader_offset.1,
+                );
+                logo_shaded[i].points[j] = point;
+                logo_shaded[i].colors[j] =
+                    (point.0 * 0.1 + point.1 + 0.1 + self.time * 0.5).cos() * 0.4 + 0.6;
+            }
+        });
+        ctx.add_triangles(&logo_shaded);
+    }
 }

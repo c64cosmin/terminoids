@@ -4,6 +4,8 @@ use crate::drawingcontext::DrawingContext;
 use crate::game::*;
 use crate::logo::*;
 use crate::menu_objects::*;
+use crate::sprite::Sprite;
+use crate::terminaldrawable::TerminalDrawble;
 use std::io::{stdout, Write};
 use std::{thread, time};
 use termion::async_stdin;
@@ -29,9 +31,8 @@ pub fn menu() {
         zoom: 2.0,
     };
 
-    let logo = load_logo();
-    let mut logo_shaded = vec![EMPTY_TRIANGLE; logo.len()];
-    let mut logo_time = 0.0;
+    let mut logo: DrawbleLogo = DrawbleLogo::new();
+
     let messages = ["New game", "Help", "Objects", "Exit"];
     let mut message_selection: i8 = 0;
 
@@ -62,6 +63,8 @@ pub fn menu() {
             },
             _ => {}
         }
+
+        logo.update(&camera, delta_time);
 
         print!("{}", termion::cursor::Goto(1, 1));
 
@@ -103,25 +106,7 @@ pub fn menu() {
             });
         }
 
-        logo_time += delta_time;
-        let shader_scale = (25.0 + (0.3 * logo_time).cos() * 5.0, 25.0);
-        let shader_offset = (
-            0.0 + (0.4 * logo_time).cos(),
-            -5.0 + (0.3 * logo_time).sin(),
-        );
-        logo.iter().enumerate().for_each(|(i, triangle)| {
-            logo_shaded[i].color_palette = ColorPalette::Green;
-            for j in 0..3 {
-                let point = (
-                    triangle.points[j].0 * shader_scale.0 + shader_offset.0,
-                    triangle.points[j].1 * shader_scale.1 + shader_offset.1,
-                );
-                logo_shaded[i].points[j] = point;
-                logo_shaded[i].colors[j] =
-                    (point.0 * 0.1 + point.1 + 0.1 + logo_time * 0.5).cos() * 0.4 + 0.6;
-            }
-        });
-        scr.add_triangles(&logo_shaded);
+        logo.draw(&mut scr);
 
         scr.draw_triangles(&camera);
         scr.draw_points(&camera);

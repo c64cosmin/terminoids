@@ -7,6 +7,7 @@ pub mod enemy;
 pub mod game;
 pub mod logo;
 pub mod menu;
+pub mod menu_help;
 pub mod menu_objects;
 pub mod particle;
 pub mod powerup;

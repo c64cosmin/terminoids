@@ -1,12 +1,10 @@
 use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
-use crate::bullet::*;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::enemy::*;
 use crate::powerup::PowerupSize;
 use crate::powerup::*;
-use crate::ship::*;
 use crate::sprite::Sprite;
 use crate::starship::StarShipSize;
 use crate::starship::*;
