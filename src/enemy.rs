@@ -248,7 +248,7 @@ impl TerminalDrawble for Enemies {
 impl Sprite for Enemies {
     fn update(&mut self, camera: &Camera, delta: f32) {
         self.time -= delta;
-        self.time_interval = (self.time_interval - delta / 120.0).max(1.0);
+        self.time_interval = (self.time_interval - delta / 80.0).max(1.0);
 
         self.particles
             .iter_mut()
