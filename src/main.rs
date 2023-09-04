@@ -149,7 +149,19 @@ fn game() {
             enemies.collide_with_bullets(&mut ship_bullets, &mut ship);
             enemies.collide_with_ship(&camera, &mut ship);
 
-            print!("{}", termion::cursor::Goto(1, 1));
+            //add the text
+            scr.flush_text_entries();
+
+            let score_string: String = format!("Score : {}", ship.score);
+            let life_string: String = format!("Life : {}", ship.life);
+            scr.add_text_entry(&TextEntry {
+                position: (0.0, 0.0),
+                string: score_string,
+            });
+            scr.add_text_entry(&TextEntry {
+                position: (0.0, 1.0),
+                string: life_string,
+            });
 
             scr.flush_triangles();
             scr.flush_points();
@@ -165,30 +177,25 @@ fn game() {
 
             scr.draw_triangles(&camera);
             scr.draw_points(&camera);
-            scr.lifes = ship.life;
-            scr.score = ship.score;
-            scr.display();
 
-            print!("{}", termion::cursor::Goto(1, 1));
-            print!("{}{}", color::Black.bg_str(), color::White.fg_str());
-            print!("\nFPS{:?}", frame_start.elapsed());
+            scr.display();
 
             stdout.flush().unwrap();
         } else {
             if !paused_draw {
-                print!("{}", termion::cursor::Goto(1, 1));
-                scr.display();
-
                 let messages = ["==============", ">>> PAUSED <<<", "=============="];
                 let message_x = (term_size.0 - messages[0].len() as u16) / 2;
                 let message_y = (term_size.1 - messages.len() as u16) / 2;
 
+                scr.flush_text_entries();
                 for i in 0..messages.len() {
-                    print!("{}", termion::cursor::Goto(message_x, message_y + i as u16));
-                    print!("{}{}", color::Red.bg_str(), color::LightWhite.fg_str());
-                    print!("{}", messages[i]);
+                    scr.add_text_entry(&TextEntry {
+                        position: (message_x as f32, message_y as f32 + i as f32),
+                        string: String::from(messages[i]),
+                    });
                 }
-                print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
+
+                scr.display();
 
                 stdout.flush().unwrap();
 
@@ -211,5 +218,6 @@ fn game() {
 }
 
 fn main() {
+    game();
     menu();
 }

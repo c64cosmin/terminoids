@@ -7,9 +7,7 @@ pub struct AsciiContext {
     size: (u16, u16),
     triangles: Vec<Triangle>,
     points: Vec<Point>,
-    pub lifes: i8,
-    pub score: u32,
-    pub display_score: bool,
+    text_entries: Vec<TextEntry>,
 }
 
 pub fn vertex_shader(input: &Vec2, camera: &Camera) -> Vec2 {
@@ -31,9 +29,7 @@ impl AsciiContext {
             size,
             triangles: Vec::with_capacity(100),
             points: Vec::with_capacity(100),
-            lifes: 0,
-            score: 0,
-            display_score: false,
+            text_entries: Vec::with_capacity(10),
         }
     }
 
@@ -254,12 +250,20 @@ impl DrawingContext for AsciiContext {
         self.bitmap.resize((self.size.0 * self.size.1) as usize, 0);
     }
 
+    fn flush_text_entries(&mut self) {
+        self.text_entries.resize(0, TextEntry::empty_text_entry());
+    }
+
     fn flush_triangles(&mut self) {
         self.triangles.resize(0, EMPTY_TRIANGLE);
     }
 
     fn flush_points(&mut self) {
         self.points.resize(0, EMPTY_POINT);
+    }
+
+    fn add_text_entry(&mut self, text_entry: &TextEntry) {
+        self.text_entries.push(text_entry.clone());
     }
 
     fn add_triangles(&mut self, triangle: &Vec<Triangle>) {
@@ -277,16 +281,21 @@ impl DrawingContext for AsciiContext {
     }
 
     fn display(&self) {
+        print!("{}", termion::cursor::Goto(1, 1));
         for (i, line) in self.bitmap.chunks(self.size.0 as usize).enumerate() {
             if i != 0 {
                 print!("\n");
-            }
 
-            if i == 1 && self.display_score {
-                print!("{}", termion::cursor::Goto(1, 1));
-                print!("{}{}", color::Black.bg_str(), color::White.fg_str());
-                print!("Lifes : {} Score : {}", self.lifes, self.score);
-                print!("{}", termion::cursor::Goto(1, 2));
+                self.text_entries.iter().for_each(|text| {
+                    if i - 1 == text.position.1 as usize {
+                        let posx = text.position.0 as u16 + 1;
+                        let posy = text.position.1 as u16 + 1;
+                        print!("{}", termion::cursor::Goto(posx, posy));
+                        print!("{}", text.string);
+                    }
+                });
+
+                print!("{}", termion::cursor::Goto(1, (i + 1) as u16));
             }
 
             let mut was_colored = false;

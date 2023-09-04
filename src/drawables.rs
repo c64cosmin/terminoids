@@ -113,6 +113,12 @@ pub enum ColorPalette {
 }
 
 #[derive(Clone, Debug)]
+pub struct TextEntry {
+    pub position: Vec2,
+    pub string: String,
+}
+
+#[derive(Clone, Debug)]
 pub struct Triangle {
     pub points: [Vec2; 3],
     pub colors: [ColorLuma; 3],
@@ -124,6 +130,15 @@ pub struct Point {
     pub position: Vec2,
     pub color: ColorLuma,
     pub color_palette: ColorPalette,
+}
+
+impl TextEntry {
+    pub fn empty_text_entry() -> TextEntry {
+        TextEntry {
+            position: (0.0, 0.0),
+            string: String::from(""),
+        }
+    }
 }
 
 pub const EMPTY_POINT: Point = Point {
