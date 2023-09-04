@@ -101,6 +101,13 @@ pub struct Camera {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub enum TextColorPalette {
+    Text,
+    Menu,
+    Warning,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub enum ColorPalette {
     Red,
     Green,
@@ -116,6 +123,7 @@ pub enum ColorPalette {
 pub struct TextEntry {
     pub position: Vec2,
     pub string: String,
+    pub color_palette: TextColorPalette,
 }
 
 #[derive(Clone, Debug)]
@@ -137,6 +145,7 @@ impl TextEntry {
         TextEntry {
             position: (0.0, 0.0),
             string: String::from(""),
+            color_palette: TextColorPalette::Text,
         }
     }
 }

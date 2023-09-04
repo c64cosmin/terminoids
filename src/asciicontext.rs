@@ -291,11 +291,23 @@ impl DrawingContext for AsciiContext {
                         let posx = text.position.0 as u16 + 1;
                         let posy = text.position.1 as u16 + 1;
                         print!("{}", termion::cursor::Goto(posx, posy));
+                        match text.color_palette {
+                            TextColorPalette::Text => {
+                                print!("{}{}", color::Bg(color::Black), color::Fg(color::White))
+                            }
+                            TextColorPalette::Menu => {
+                                print!("{}{}", color::Bg(color::Blue), color::Fg(color::LightCyan))
+                            }
+                            TextColorPalette::Warning => {
+                                print!("{}{}", color::Bg(color::LightRed), color::Fg(color::Black))
+                            }
+                        };
                         print!("{}", text.string);
                     }
                 });
 
                 print!("{}", termion::cursor::Goto(1, (i + 1) as u16));
+                print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
             }
 
             let mut was_colored = false;

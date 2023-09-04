@@ -157,10 +157,12 @@ fn game() {
             scr.add_text_entry(&TextEntry {
                 position: (0.0, 0.0),
                 string: score_string,
+                color_palette: TextColorPalette::Menu,
             });
             scr.add_text_entry(&TextEntry {
                 position: (0.0, 1.0),
                 string: life_string,
+                color_palette: TextColorPalette::Text,
             });
 
             scr.flush_triangles();
@@ -192,6 +194,7 @@ fn game() {
                     scr.add_text_entry(&TextEntry {
                         position: (message_x as f32, message_y as f32 + i as f32),
                         string: String::from(messages[i]),
+                        color_palette: TextColorPalette::Warning,
                     });
                 }
 
