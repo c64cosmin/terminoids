@@ -27,7 +27,6 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
     let mut plasma = FireDrawer::new(term_size);
 
     let messages = [
-        "",
         "Unfortunately terminals don't directly support input like UI apps do.",
         "What I mean is that KEY_UP & KEY_DOWN events are not supported,",
         "the way the terminal works is to get a key stroke event and act accordingly.",
@@ -49,7 +48,6 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
         "Space         : Fire",
         "P             : Pause",
         "Q or Ctrl-C   : Exit",
-        "",
     ];
 
     print!("{}", termion::cursor::Goto(1, 1));
