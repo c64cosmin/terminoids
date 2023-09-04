@@ -38,9 +38,9 @@ fn menu() {
     let mut stdin = async_stdin().keys();
     let mut stdout: RawTerminal<std::io::Stdout> = stdout().into_raw_mode().unwrap();
 
-    let frame_fps = 8;
+    let frame_fps = 24;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
-    let mut _delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
+    let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
 
     let camera = Camera {
         position: (0.0, 0.0),
@@ -48,6 +48,9 @@ fn menu() {
         zoom: 2.0,
     };
 
+    let logo = load_logo();
+    let mut logo_shaded = vec![EMPTY_TRIANGLE; logo.len()];
+    let mut logo_time = 0.0;
     let messages = ["New game", "Help", "Objects", "Exit"];
     let mut message_selection: i8 = 0;
 
@@ -119,6 +122,26 @@ fn menu() {
             });
         }
 
+        logo_time += delta_time;
+        let shader_scale = (25.0 + (0.3 * logo_time).cos() * 5.0, 25.0);
+        let shader_offset = (
+            0.0 + (0.4 * logo_time).cos(),
+            -5.0 + (0.3 * logo_time).sin(),
+        );
+        logo.iter().enumerate().for_each(|(i, triangle)| {
+            logo_shaded[i].color_palette = ColorPalette::Green;
+            for j in 0..3 {
+                let point = (
+                    triangle.points[j].0 * shader_scale.0 + shader_offset.0,
+                    triangle.points[j].1 * shader_scale.1 + shader_offset.1,
+                );
+                logo_shaded[i].points[j] = point;
+                logo_shaded[i].colors[j] =
+                    (point.0 * 0.1 + point.1 + 0.1 + logo_time * 0.5).cos() * 0.4 + 0.6;
+            }
+        });
+        scr.add_triangles(&logo_shaded);
+
         scr.draw_triangles(&camera);
         scr.draw_points(&camera);
         scr.display();
@@ -129,7 +152,7 @@ fn menu() {
             thread::sleep(i)
         }
 
-        _delta_time =
+        delta_time =
             time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
     }
 
