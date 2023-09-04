@@ -50,6 +50,9 @@ fn start() {
     let mut ship = Ship::new();
     let mut ship_bullets = Bullets::new();
 
+    let mut paused = false;
+    let mut paused_draw = false;
+
     loop {
         let frame_start = time::Instant::now();
 
@@ -63,6 +66,7 @@ fn start() {
                     Key::Right => ship.turn_right(),
                     Key::Up => ship.thrust(),
                     Key::Char(' ') => ship.fire(&mut ship_bullets),
+                    Key::Char('p') | Key::Char('P') => paused = !paused,
                     key => {
                         print!("Key pressed: {:?}", key);
                     }
@@ -72,43 +76,56 @@ fn start() {
             _ => {}
         }
 
-        if ship.life < 0 {
-            break;
+        if !paused {
+            paused_draw = false;
+
+            if ship.life < 0 {
+                break;
+            }
+
+            //update
+            ship.update(&camera, delta_time);
+            ship.update_switches(&mut ship_bullets);
+            ship_bullets.update(&camera, delta_time);
+            enemies.update_with_ship(&camera, delta_time, &ship);
+            enemies.collide_with_bullets(&mut ship_bullets, &mut ship);
+            enemies.collide_with_ship(&camera, &mut ship);
+
+            print!("{}", termion::cursor::Goto(1, 1));
+
+            scr.flush_triangles();
+            scr.flush_points();
+            scr.clear();
+
+            enemies.draw_particles(&mut scr);
+            scr.draw_points(&camera);
+            scr.flush_points();
+
+            enemies.draw(&mut scr);
+            ship.draw(&mut scr);
+            ship_bullets.draw(&mut scr);
+
+            scr.draw_triangles(&camera);
+            scr.draw_points(&camera);
+            scr.lifes = ship.life;
+            scr.score = ship.score;
+            scr.paused = paused;
+            scr.display();
+
+            print!("{}", termion::cursor::Goto(1, 1));
+            print!("{}{}", color::Black.bg_str(), color::White.fg_str());
+            print!("\nFPS{:?}", frame_start.elapsed());
+
+            stdout.flush().unwrap();
+        } else {
+            if !paused_draw {
+                print!("{}", termion::cursor::Goto(1, 1));
+                scr.paused = paused;
+                scr.display();
+
+                paused_draw = true;
+            }
         }
-
-        //update
-        ship.update(&camera, delta_time);
-        ship.update_switches(&mut ship_bullets);
-        ship_bullets.update(&camera, delta_time);
-        enemies.update_with_ship(&camera, delta_time, &ship);
-        enemies.collide_with_bullets(&mut ship_bullets, &mut ship);
-        enemies.collide_with_ship(&camera, &mut ship);
-
-        print!("{}", termion::cursor::Goto(1, 1));
-
-        scr.flush_triangles();
-        scr.flush_points();
-        scr.clear();
-
-        enemies.draw_particles(&mut scr);
-        scr.draw_points(&camera);
-        scr.flush_points();
-
-        enemies.draw(&mut scr);
-        ship.draw(&mut scr);
-        ship_bullets.draw(&mut scr);
-
-        scr.draw_triangles(&camera);
-        scr.draw_points(&camera);
-        scr.lifes = ship.life;
-        scr.score = ship.score;
-        scr.display();
-
-        print!("{}", termion::cursor::Goto(1, 1));
-        print!("{}{}", color::Black.bg_str(), color::White.fg_str());
-        print!("\nFPS{:?}", frame_start.elapsed());
-
-        stdout.flush().unwrap();
 
         if let Some(i) = (frame_len).checked_sub(frame_start.elapsed()) {
             thread::sleep(i)

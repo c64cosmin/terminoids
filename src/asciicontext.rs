@@ -9,6 +9,7 @@ pub struct AsciiContext {
     points: Vec<Point>,
     pub lifes: i8,
     pub score: u32,
+    pub paused: bool,
 }
 
 pub fn vertex_shader(input: &Vec2, camera: &Camera) -> Vec2 {
@@ -32,6 +33,7 @@ impl AsciiContext {
             points: Vec::with_capacity(100),
             lifes: 0,
             score: 0,
+            paused: false,
         }
     }
 
@@ -285,6 +287,12 @@ impl DrawingContext for AsciiContext {
                 print!("{}{}", color::Black.bg_str(), color::White.fg_str());
                 print!("Lifes : {} Score : {}", self.lifes, self.score);
                 print!("{}", termion::cursor::Goto(1, 2));
+            }
+            if self.paused && i == 10 {
+                print!("{}", termion::cursor::Goto(10, 10));
+                print!("{}{}", color::LightRed.bg_str(), color::White.fg_str());
+                print!(">>> PAUSED <<<");
+                print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
             }
 
             let mut was_colored = false;
