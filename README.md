@@ -36,49 +36,58 @@ Space         : Fire
 
 - Huge           : 200pts
 
-![Preview](aster_0.png)
+![Preview](aster_a_0.png)
 
 - Big            : 150pts
 
-![Preview](aster_1.png)
+![Preview](aster_a_1.png)
 
 - Medium         : 100pts
 
-![Preview](aster_2.png)
+![Preview](aster_a_2.png)
 
 - Small          :  75pts
 
-![Preview](aster_3.png)
+![Preview](aster_a_3.png)
 
 - Tiny           :  50pts
 
-![Preview](aster_4.png)
+![Preview](aster_a_4.png)
 
 
 #### Star-ships
 
 - Big cluster    : 250pts
 
-![Preview](aster_5.png)
+![Preview](aster_s_0.png)
 
 - Medium cluster : 200pts
 
-![Preview](aster_6.png)
+![Preview](aster_s_1.png)
 
 - Small cluster  : 150pts
 
-![Preview](aster_7.png)
+![Preview](aster_s_2.png)
 
 - Flying ship    : 100pts
 
-![Preview](aster_8.png)
+![Preview](aster_s_3.png)
 
 
 #### Power-ups
 
 - Red            : 1000pts - gives piercing bullets for 5 seconds
+
+![Preview](aster_p_0.png)
+
 - Green          : 1000pts - gives split fire for 7 seconds
+
+![Preview](aster_p_1.png)
+
 - Blue           : 1000pts - gives shield for 10 seconds
+
+![Preview](aster_p_1.png)
+
 
 ## Self-Promotion
 
