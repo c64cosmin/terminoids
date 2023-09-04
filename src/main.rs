@@ -65,7 +65,7 @@ fn start() {
                     Key::Left => ship.turn_left(),
                     Key::Right => ship.turn_right(),
                     Key::Up => ship.thrust(),
-                    Key::Char(' ') => ship.fire(&mut ship_bullets),
+                    Key::Char(' ') => ship.fire(),
                     Key::Char('p') | Key::Char('P') => paused = !paused,
                     key => {
                         print!("Key pressed: {:?}", key);
@@ -109,7 +109,6 @@ fn start() {
             scr.draw_points(&camera);
             scr.lifes = ship.life;
             scr.score = ship.score;
-            scr.paused = paused;
             scr.display();
 
             print!("{}", termion::cursor::Goto(1, 1));
@@ -120,8 +119,20 @@ fn start() {
         } else {
             if !paused_draw {
                 print!("{}", termion::cursor::Goto(1, 1));
-                scr.paused = paused;
                 scr.display();
+
+                let messages = ["==============", ">>> PAUSED <<<", "=============="];
+                let message_x = (term_size.0 - messages[0].len() as u16) / 2;
+                let message_y = (term_size.1 - messages.len() as u16) / 2;
+
+                for i in 0..messages.len() {
+                    print!("{}", termion::cursor::Goto(message_x, message_y + i as u16));
+                    print!("{}{}", color::Red.bg_str(), color::LightWhite.fg_str());
+                    print!("{}", messages[i]);
+                }
+                print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
+
+                stdout.flush().unwrap();
 
                 paused_draw = true;
             }

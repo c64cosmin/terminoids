@@ -2,7 +2,6 @@ use crate::asciicontext::AsciiContext;
 use crate::asteroid::*;
 use crate::bullet::*;
 use crate::drawables::*;
-use crate::particle;
 use crate::particle::*;
 use crate::powerup::Powerup;
 use crate::ship::*;

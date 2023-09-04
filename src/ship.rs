@@ -212,7 +212,7 @@ impl Ship {
         self.speed.1 += self.angle.sin() * self.thrust_speed;
     }
 
-    pub fn fire(&mut self, bullets: &mut Bullets) {
+    pub fn fire(&mut self) {
         if self.spawning > 0.0 {
             return;
         }
