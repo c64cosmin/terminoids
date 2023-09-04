@@ -81,6 +81,10 @@ impl Enemies {
                     self.time = self.time_interval;
                 }
             }
+            if let Some(starship) = self.spawn::<Powerup>(camera, ship) {
+                self.enemies.push(EnemyType::Powerup(starship));
+                self.time = self.time_interval;
+            }
         }
     }
 
