@@ -1,6 +1,7 @@
 use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
+use crate::plasma::*;
 use std::io::Write;
 use std::{thread, time};
 use termion::event::Key;
@@ -13,7 +14,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
     let term_size = terminal_size().unwrap();
     let mut scr: AsciiContext = AsciiContext::new(term_size);
 
-    let frame_fps = 24;
+    let frame_fps = 10;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
     let mut _delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
 
@@ -22,6 +23,8 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
         size: (term_size.0 as f32, term_size.1 as f32),
         zoom: 2.0,
     };
+
+    let mut plasma = PlasmaDrawer::new(term_size);
 
     let messages = [
         "",
@@ -49,13 +52,35 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
         "",
     ];
 
+    print!("{}", termion::cursor::Goto(1, 1));
+
+    scr.flush_text_entries();
+    scr.flush_triangles();
+    scr.flush_points();
+    scr.clear();
+
+    for i in 0..messages.len() {
+        let message_y = 6;
+        let message = String::from(messages[i]);
+        let message_x = (term_size.0 - message.len() as u16) / 2;
+        scr.add_text_entry(&TextEntry {
+            position: (message_x as f32, message_y as f32 + i as f32),
+            string: message,
+            color_palette: TextColorPalette::Text,
+        });
+    }
+
+    scr.draw_triangles(&camera);
+    scr.draw_points(&camera);
+    scr.display();
+
     loop {
         let frame_start = time::Instant::now();
 
         match stdin.next() {
             Some(result) => match result {
                 Ok(key) => match key {
-                    Key::Ctrl('c') | Key::Esc | Key::Char('q') => {
+                    Key::Ctrl('c') | Key::Esc | Key::Char('q') | Key::Char('\n') => {
                         break;
                     }
                     _ => {}
@@ -65,27 +90,9 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
             _ => {}
         }
 
-        print!("{}", termion::cursor::Goto(1, 1));
+        plasma.update();
 
-        scr.flush_text_entries();
-        scr.flush_triangles();
-        scr.flush_points();
-        scr.clear();
-
-        for i in 0..messages.len() {
-            let message_y = (term_size.1 - messages.len() as u16) / 2;
-            let message = String::from(messages[i]);
-            let message_x = (term_size.0 - message.len() as u16) / 2;
-            scr.add_text_entry(&TextEntry {
-                position: (message_x as f32, message_y as f32 + i as f32),
-                string: message,
-                color_palette: TextColorPalette::Text,
-            });
-        }
-
-        scr.draw_triangles(&camera);
-        scr.draw_points(&camera);
-        scr.display();
+        plasma.draw();
 
         stdout.flush().unwrap();
 

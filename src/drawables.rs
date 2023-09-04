@@ -41,6 +41,14 @@ pub const CHARS_GRADIENT: [char; 5] = [' ', '\u{2591}', '\u{2592}', '\u{2593}', 
 pub const DEFAULT_COLOR: (&str, &str) = ("\u{1b}[48;5;0m", "\u{1b}[38;5;7m");
 pub const PALETTE_RANGE: u8 = 16;
 
+pub const FIRE_PALETTE: [(&str, &str); 5] = [
+    ("\u{1b}[48;5;0m", "\u{1b}[38;5;1m"),
+    ("\u{1b}[48;5;1m", "\u{1b}[38;5;9m"),
+    ("\u{1b}[48;5;9m", "\u{1b}[38;5;11m"),
+    ("\u{1b}[48;5;11m", "\u{1b}[38;5;15m"),
+    ("\u{1b}[48;5;15m", "\u{1b}[38;5;14m"),
+];
+
 pub const RED_PALETTE: [(&str, &str); 3] = [
     ("\u{1b}[48;5;0m", "\u{1b}[38;5;1m"),
     ("\u{1b}[48;5;1m", "\u{1b}[38;5;9m"),

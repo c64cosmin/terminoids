@@ -10,6 +10,7 @@ pub mod menu;
 pub mod menu_help;
 pub mod menu_objects;
 pub mod particle;
+pub mod plasma;
 pub mod powerup;
 pub mod ship;
 pub mod sprite;
