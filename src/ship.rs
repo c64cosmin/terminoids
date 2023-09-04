@@ -184,7 +184,7 @@ impl Ship {
             piercing: 0.0,
             thrusting: false,
             firing: false,
-            sticky: false,
+            sticky: true,
         }
     }
 
