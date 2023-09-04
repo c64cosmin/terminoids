@@ -20,7 +20,6 @@ pub struct Ship {
     piercing: f32,
     splitfire: f32,
     pub shield: f32,
-    turning: f32,
     thrusting: bool,
     firing: bool,
     sticky: bool,
@@ -183,7 +182,6 @@ impl Ship {
             shield: 3.0,
             splitfire: 0.0,
             piercing: 0.0,
-            turning: 0.0,
             thrusting: false,
             firing: false,
             sticky: false,
@@ -195,35 +193,19 @@ impl Ship {
     }
 
     pub fn turn_left(&mut self) {
-        if !self.sticky {
-            self.angle_speed -= self.turn_speed;
-        }
-
         if self.spawning > 0.0 {
             return;
         }
 
-        if self.turning != 0.0 {
-            self.turning = 0.0;
-            return;
-        }
-        self.turning = -self.turn_speed;
+        self.angle_speed -= self.turn_speed;
     }
 
     pub fn turn_right(&mut self) {
-        if !self.sticky {
-            self.angle_speed += self.turn_speed;
-        }
-
         if self.spawning > 0.0 {
             return;
         }
 
-        if self.turning != 0.0 {
-            self.turning = 0.0;
-            return;
-        }
-        self.turning = self.turn_speed;
+        self.angle_speed += self.turn_speed;
     }
 
     pub fn thrust(&mut self) {
@@ -253,7 +235,6 @@ impl Ship {
     pub fn stop(&mut self) {
         self.firing = false;
         self.thrusting = false;
-        self.turning = 0.0;
     }
 
     pub fn update_switches(&mut self, bullets: &mut Bullets) {
@@ -264,7 +245,6 @@ impl Ship {
         if self.spawning > 0.0 {
             self.firing = false;
             self.thrusting = false;
-            self.turning = 0.0;
         }
 
         if self.firing {
@@ -274,10 +254,6 @@ impl Ship {
         if self.thrusting {
             self.speed.0 += self.angle.cos() * self.thrust_speed;
             self.speed.1 += self.angle.sin() * self.thrust_speed;
-        }
-
-        if self.turning != 0.0 {
-            self.angle_speed = self.turning;
         }
     }
 
