@@ -225,6 +225,26 @@ impl AsciiContext {
             );
         });
     }
+
+    pub fn display_text(&self) {
+        self.text_entries.iter().for_each(|text| {
+            let posx = text.position.0 as u16 + 1;
+            let posy = text.position.1 as u16 + 1;
+            print!("{}", termion::cursor::Goto(posx, posy));
+            match text.color_palette {
+                TextColorPalette::Text => {
+                    print!("{}{}", color::Bg(color::Black), color::Fg(color::White))
+                }
+                TextColorPalette::Menu => {
+                    print!("{}{}", color::Bg(color::Blue), color::Fg(color::LightCyan))
+                }
+                TextColorPalette::Warning => {
+                    print!("{}{}", color::Bg(color::LightRed), color::Fg(color::Black))
+                }
+            };
+            print!("{}", text.string);
+        });
+    }
 }
 
 fn edge_function(a: Vec2, b: Vec2, c: Vec2) -> f32 {

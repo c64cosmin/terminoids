@@ -5,6 +5,7 @@ pub mod drawables;
 pub mod drawingcontext;
 pub mod enemy;
 pub mod game;
+pub mod leaderboard;
 pub mod logo;
 pub mod menu;
 pub mod menu_help;

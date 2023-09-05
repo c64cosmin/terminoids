@@ -14,7 +14,7 @@ pub fn menu_help(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io
     let term_size = terminal_size().unwrap();
     let mut scr: AsciiContext = AsciiContext::new(term_size);
 
-    let frame_fps = 10;
+    let frame_fps = 20;
     let frame_len = time::Duration::from_micros(1000000 / frame_fps);
     let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
 

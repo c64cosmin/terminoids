@@ -2,6 +2,7 @@ use crate::asciicontext::AsciiContext;
 use crate::drawables::*;
 use crate::drawingcontext::DrawingContext;
 use crate::game::*;
+use crate::leaderboard::*;
 use crate::logo::*;
 use crate::menu_help::*;
 use crate::menu_objects::*;
@@ -34,7 +35,7 @@ pub fn menu() {
 
     let mut logo: DrawbleLogo = DrawbleLogo::new();
 
-    let messages = ["New game", "Help", "Objects", "Exit"];
+    let messages = ["New game", "Help", "Objects", "Leader board", "Exit"];
     let mut message_selection: i8 = 0;
 
     loop {
@@ -51,6 +52,7 @@ pub fn menu() {
                             0 => game(&mut stdin, &mut stdout),
                             1 => menu_help(&mut stdin, &mut stdout),
                             2 => menu_objects(&mut stdin, &mut stdout),
+                            3 => leaderboard(&mut stdin, &mut stdout),
                             _ => break,
                         };
                     }
