@@ -61,7 +61,7 @@ pub fn game(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io::Std
         if !paused {
             paused_draw = false;
 
-            if ship.life < 0 {
+            if ship.life <= 0 {
                 break;
             }
 

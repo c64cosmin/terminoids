@@ -154,7 +154,7 @@ impl Enemies {
         self.enemies.iter().for_each(|enemy| {
             if enemy.collide_with_ship(ship) {
                 match enemy {
-                    EnemyType::Powerup(powerup) => ship.powerup(&powerup),
+                    EnemyType::Powerup(_) => {}
                     _ => ship.damage(self.get_empty_point(camera), false),
                 }
             }

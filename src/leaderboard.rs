@@ -6,6 +6,7 @@ use curl::easy::*;
 use serde::Deserialize;
 use std::io::Write;
 use std::{thread, time};
+use termion::color;
 use termion::event::Key;
 use termion::input::Keys;
 use termion::raw::RawTerminal;
@@ -13,6 +14,7 @@ use termion::terminal_size;
 use termion::AsyncReader;
 
 pub fn leaderboard(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io::Stdout>) {
+    print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
     print!("{}", termion::cursor::Goto(1, 1));
     print!("{}", termion::clear::All);
 
@@ -106,6 +108,7 @@ pub fn leaderboard_entry(
     stdout: &mut RawTerminal<std::io::Stdout>,
     score: u32,
 ) {
+    print!("{}{}", color::Bg(color::Black), color::Fg(color::White));
     print!("{}", termion::cursor::Goto(1, 1));
     print!("{}", termion::clear::All);
 
@@ -121,6 +124,7 @@ pub fn leaderboard_entry(
     let messages_height = 3;
 
     let mut input_name = String::from("");
+    let mut submit = false;
 
     loop {
         let frame_start = time::Instant::now();
@@ -135,6 +139,7 @@ pub fn leaderboard_entry(
                         input_name.pop();
                     }
                     Key::Char('\n') => {
+                        submit = true;
                         break;
                     }
                     Key::Char(c) => {
@@ -197,7 +202,9 @@ pub fn leaderboard_entry(
             time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
     }
 
-    push_leaderboard(input_name, score);
+    if submit {
+        push_leaderboard(input_name, score);
+    }
 }
 
 #[derive(Debug, Deserialize)]

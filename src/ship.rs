@@ -176,7 +176,7 @@ impl Ship {
             angle_speed: 0.0,
             turn_speed: 2.0,
             thrust_speed: 3.0,
-            life: 5,
+            life: 3,
             spawning: 2.0,
             score: 0,
             shield: 3.0,
