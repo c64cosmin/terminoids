@@ -218,11 +218,11 @@ struct LeaderboardStruct {
     list: Vec<LeaderboardEntry>,
 }
 
-fn push_leaderboard(name: String, score: u32) {
+pub fn push_leaderboard(name: String, score: u32) {
     //hey there cowboy, please don't ruin the fun for others :)
     //happy you are curious, hit me up on Twitter @c64cosmin :D
     do_http_request(format!(
-        "https://www.stupidrat.com/terminoids/hi/score.php?mode=push&name={}&score={}",
+        "https://www.stupidrat.com/terminoids/hi/score.php?mode=push&name={}&value={}",
         name, score
     ));
 }
@@ -250,6 +250,7 @@ fn get_leaderboard() -> LeaderboardStruct {
 }
 
 fn do_http_request(url: String) -> String {
+    println!("{}", url);
     let mut easy = Easy::new();
     easy.url(url.as_str()).unwrap();
 
