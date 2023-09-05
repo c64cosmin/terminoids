@@ -101,6 +101,105 @@ pub fn leaderboard(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::
     }
 }
 
+pub fn leaderboard_entry(
+    stdin: &mut Keys<AsyncReader>,
+    stdout: &mut RawTerminal<std::io::Stdout>,
+    score: u32,
+) {
+    print!("{}", termion::cursor::Goto(1, 1));
+    print!("{}", termion::clear::All);
+
+    let term_size = terminal_size().unwrap();
+    let mut scr: AsciiContext = AsciiContext::new(term_size);
+
+    let frame_fps = 20;
+    let frame_len = time::Duration::from_micros(1000000 / frame_fps);
+    let mut delta_time: f32 = frame_len.as_micros() as f32 / 1000000.0;
+
+    let mut plasma = FireDrawer::new(term_size);
+
+    let messages_height = 3;
+
+    let mut input_name = String::from("");
+
+    loop {
+        let frame_start = time::Instant::now();
+
+        match stdin.next() {
+            Some(result) => match result {
+                Ok(key) => match key {
+                    Key::Ctrl('c') | Key::Esc => {
+                        break;
+                    }
+                    Key::Backspace => {
+                        input_name.pop();
+                    }
+                    Key::Char('\n') => {
+                        break;
+                    }
+                    Key::Char(c) => {
+                        if c.is_alphanumeric() && input_name.len() < 9 {
+                            input_name.push(c);
+                        }
+                    }
+                    _ => {}
+                },
+                _ => {}
+            },
+            _ => {}
+        }
+
+        plasma.update(delta_time);
+
+        scr.flush_text_entries();
+
+        for i in 0..messages_height {
+            let message_y = 3;
+            let message = String::from("                                              ");
+            let message_x = (term_size.0 - message.len() as u16) / 2;
+            scr.add_text_entry(&TextEntry {
+                position: (message_x as f32, message_y as f32 + i as f32 * 2.0),
+                string: message,
+                color_palette: TextColorPalette::Text,
+            });
+        }
+
+        for i in 0..messages_height {
+            let message_y = 3;
+            let message = match i {
+                0 => format!("Your score was : {}", score),
+                1 => String::from("Enter your name: (ESC to cancel)"),
+                _ => String::from(&input_name),
+            };
+            let message_x = (term_size.0 - message.len() as u16) / 2;
+            scr.add_text_entry(&TextEntry {
+                position: (message_x as f32, message_y as f32 + i as f32 * 2.0),
+                string: message,
+                color_palette: match i {
+                    0 => TextColorPalette::Warning,
+                    1 => TextColorPalette::Text,
+                    _ => TextColorPalette::Menu,
+                },
+            });
+        }
+
+        scr.display_text();
+
+        plasma.draw();
+
+        stdout.flush().unwrap();
+
+        if let Some(i) = (frame_len).checked_sub(frame_start.elapsed()) {
+            thread::sleep(i)
+        }
+
+        delta_time =
+            time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
+    }
+
+    push_leaderboard(input_name, score);
+}
+
 #[derive(Debug, Deserialize)]
 struct LeaderboardEntry {
     name: String,
@@ -110,6 +209,15 @@ struct LeaderboardEntry {
 #[derive(Debug, Deserialize)]
 struct LeaderboardStruct {
     list: Vec<LeaderboardEntry>,
+}
+
+fn push_leaderboard(name: String, score: u32) {
+    //hey there cowboy, please don't ruin the fun for others :)
+    //happy you are curious, hit me up on Twitter @c64cosmin :D
+    do_http_request(format!(
+        "https://www.stupidrat.com/terminoids/hi/score.php?mode=push&name={}&score={}",
+        name, score
+    ));
 }
 
 fn get_leaderboard() -> LeaderboardStruct {
