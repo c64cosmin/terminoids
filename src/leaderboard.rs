@@ -250,7 +250,6 @@ fn get_leaderboard() -> LeaderboardStruct {
 }
 
 fn do_http_request(url: String) -> String {
-    println!("{}", url);
     let mut easy = Easy::new();
     easy.url(url.as_str()).unwrap();
 
@@ -266,8 +265,6 @@ fn do_http_request(url: String) -> String {
             .unwrap();
         transfer.perform().unwrap();
     }
-
-    easy.perform().unwrap();
 
     match easy.response_code() {
         Ok(200) => {

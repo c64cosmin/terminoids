@@ -137,6 +137,8 @@ pub fn game(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::io::Std
         delta_time =
             time::Instant::now().duration_since(frame_start).as_micros() as f32 / 1000000.0;
     }
-    leaderboard_entry(stdin, stdout, ship.score);
+    if ship.score > 0 {
+        leaderboard_entry(stdin, stdout, ship.score);
+    }
     leaderboard(stdin, stdout);
 }
