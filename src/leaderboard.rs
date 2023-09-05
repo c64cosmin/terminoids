@@ -80,8 +80,8 @@ pub fn leaderboard(stdin: &mut Keys<AsyncReader>, stdout: &mut RawTerminal<std::
             scr.add_text_entry(&TextEntry {
                 position: (message_x as f32, message_y as f32 + i as f32 * 2.0),
                 string: message,
-                color_palette: match pos {
-                    0..=3 => TextColorPalette::Warning,
+                color_palette: match pos + 1 {
+                    1..=3 => TextColorPalette::Warning,
                     4..=10 => TextColorPalette::Menu,
                     _ => TextColorPalette::Text,
                 },
