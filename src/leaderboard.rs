@@ -160,7 +160,7 @@ pub fn leaderboard_entry(
 
         for i in 0..messages_height {
             let message_y = 3;
-            let message = String::from("                                              ");
+            let message = String::from("                                                    ");
             let message_x = (term_size.0 - message.len() as u16) / 2;
             scr.add_text_entry(&TextEntry {
                 position: (message_x as f32, message_y as f32 + i as f32 * 2.0),
@@ -174,7 +174,10 @@ pub fn leaderboard_entry(
             let message = match i {
                 0 => format!("Your score was : {}", score),
                 1 => String::from("Enter your name: (ESC to cancel)"),
-                _ => String::from(&input_name),
+                _ => match input_name.len() == 0 {
+                    true => String::from("Write your name, then press Enter to submit online"),
+                    false => String::from(&input_name),
+                },
             };
             let message_x = (term_size.0 - message.len() as u16) / 2;
             scr.add_text_entry(&TextEntry {
