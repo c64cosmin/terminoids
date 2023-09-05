@@ -66,7 +66,7 @@ impl FireDrawer {
     }
 
     fn fill_color(&self, color: f32) {
-        let ((fg, bg), chr) = self.fire_palette((color * 100.0) as u16);
+        let ((fg, bg), chr) = self.fire_palette((color.powf(0.9) * 100.0) as u16);
 
         print!("{}{}{}", bg, fg, chr);
     }
